@@ -1,6 +1,9 @@
 #include <allegro5/allegro5.h>
-#include <allegro5/allegro_image.h>
-#include <allegro5/allegro_font.h>
+#include <allegro5/allegro_primitives.h>
+//#include <allegro5/allegro_opengl.h>
+
+#include <imgui.h>
+#include <imgui_impl_allegro5.h>
 
 int main() {
     al_init();
@@ -8,48 +11,65 @@ int main() {
     al_install_mouse();
     al_install_joystick();
     
-    al_init_image_addon();
-    al_init_font_addon();
+    al_init_primitives_addon();
 
-    ALLEGRO_TIMER* timer = al_create_timer(1.0 / 30.0);
     ALLEGRO_EVENT_QUEUE* queue = al_create_event_queue();
-    ALLEGRO_DISPLAY* display = al_create_display(300, 200);
-    ALLEGRO_FONT* font = al_create_builtin_font();
+    
+    al_set_new_display_flags(ALLEGRO_WINDOWED | ALLEGRO_RESIZABLE);
+    ALLEGRO_DISPLAY* display = al_create_display(1280, 720);
+    al_set_window_title(display, "Untitled Tabletop Engine");
 
+    al_register_event_source(queue, al_get_display_event_source(display));
     al_register_event_source(queue, al_get_keyboard_event_source());
     al_register_event_source(queue, al_get_mouse_event_source());
     al_register_event_source(queue, al_get_joystick_event_source());
-    al_register_event_source(queue, al_get_display_event_source(display));
-    al_register_event_source(queue, al_get_timer_event_source(timer));
+
+    // Setup Dear ImGui context
+    IMGUI_CHECKVERSION();
+    ImGui::CreateContext();
+    ImGuiIO& io = ImGui::GetIO(); (void)io;
+    io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;  // Enable Keyboard Controls
+    io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;      // Enable Docking
+
+    // Setup Dear ImGui style
+    ImGui::StyleColorsDark();
+
+    // Setup Platform/Renderer backends
+    ImGui_ImplAllegro5_Init(display);
+
+    io.Fonts->AddFontDefault();
 
     bool running = true;
-    bool redraw = true;
-    ALLEGRO_EVENT event;
-
-    al_start_timer(timer);
     while (running) {
-        al_wait_for_event(queue, &event);
-
-        switch (event.type) {
-            case ALLEGRO_EVENT_TIMER: redraw=true; break;
-            case ALLEGRO_EVENT_DISPLAY_CLOSE: running = false; break;
+        ALLEGRO_EVENT event;
+        while (al_get_next_event(queue, &event)) {
+            ImGui_ImplAllegro5_ProcessEvent(&event);
+            if (event.type == ALLEGRO_EVENT_DISPLAY_CLOSE) {
+                running = false;
+            }
+            if (event.type == ALLEGRO_EVENT_DISPLAY_RESIZE) {
+                ImGui_ImplAllegro5_InvalidateDeviceObjects();
+                al_acknowledge_resize(display);
+                ImGui_ImplAllegro5_CreateDeviceObjects();
+            }
         }
+        
+        // Start the Dear ImGui frame
+        ImGui_ImplAllegro5_NewFrame();
+        ImGui::NewFrame();
 
-        if(redraw && al_is_event_queue_empty(queue))
-        {
-            al_clear_to_color(al_map_rgb(0, 0, 0));
+        ImGui::ShowDemoWindow();
 
-            al_draw_text(font, al_map_rgb(255, 255, 255), 20, 20, 0, "Hello world!");
-
-            al_flip_display();
-
-            redraw = false;
-        }
+        ImGui::Render();
+        al_clear_to_color(al_map_rgb(0, 0, 0));
+        ImGui_ImplAllegro5_RenderDrawData(ImGui::GetDrawData());
+        al_flip_display();
     }
-    
-    al_destroy_font(font);
+
+    // Cleanup
+    ImGui_ImplAllegro5_Shutdown();
+    ImGui::DestroyContext();
     al_destroy_display(display);
-    al_destroy_timer(timer);
     al_destroy_event_queue(queue);
 
     return 0;
