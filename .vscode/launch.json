@@ -5,10 +5,10 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "(gdb) Launch",
+            "name": "(gdb) Client Launch",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/builddir/demo.exe",
+            "program": "${workspaceFolder}/builddir/client.exe",
             "args": [],
             "stopAtEntry": false,
             "cwd": "${fileDirname}",
@@ -28,7 +28,7 @@
                     "ignoreFailures": true
                 }
             ],
-            "preLaunchTask":"Meson: Build demo:executable"
+            "preLaunchTask":"Meson: Build client:executable"
         }
 
     ]
