@@ -1,6 +1,9 @@
 #include <allegro5/allegro5.h>
 #include <allegro5/allegro_opengl.h>
+#include <allegro5/allegro_image.h>
 #include <allegro5/allegro_primitives.h>
+
+#include "GL/glu.h"
 
 #include <imgui.h>
 #include <imgui_impl_allegro5.h>
@@ -13,6 +16,7 @@ int main() {
     al_install_joystick();
     al_install_touch_input();
     
+    al_init_image_addon();
     al_init_primitives_addon(); // Required for ImGui
     
     // Create display (window)
@@ -45,11 +49,13 @@ int main() {
     io.Fonts->AddFontDefault();
 
 
+    /*
     ALLEGRO_SHADER* shader = al_create_shader(ALLEGRO_SHADER_GLSL);
     al_attach_shader_source_file(shader, ALLEGRO_VERTEX_SHADER, "src/shaders/vert.glsl");
     al_attach_shader_source_file(shader, ALLEGRO_PIXEL_SHADER, "src/shaders/frag.glsl");
     al_build_shader(shader);
     al_use_shader(shader);
+    */
 
 
     bool running = true;
@@ -139,18 +145,28 @@ int main() {
         ImGui_ImplAllegro5_NewFrame();
         ImGui::NewFrame();
 
-        ImGui::ShowDemoWindow();
+        ImGui::DockSpaceOverViewport(0, NULL, ImGuiDockNodeFlags_PassthruCentralNode | ImGuiDockNodeFlags_NoDockingOverCentralNode);
 
         ImGui::Render();
-        al_clear_to_color(al_map_rgb(0, 0, 0));
 
-        //glMatrixMode(GL_MODELVIEW);
-        //glLoadIdentity();
-        //if (al_have_opengl_extension("GL_EXT_framebuffer_object")) { }
-        
+        // Render
+        glClearColor(0, 0, 0, 1);
+        glClear(GL_COLOR_BUFFER_BIT);
+
+        glMatrixMode(GL_MODELVIEW);
+        glLoadIdentity();
+        glColor3f(1, 1, 1);
+        glBegin(GL_QUADS);
+        glVertex2f(-100, -100);
+        glVertex2f(+100, -100);
+        glVertex2f(+100, +100);
+        glVertex2f(-100, +100);
+        glEnd();
 
         ImGui_ImplAllegro5_RenderDrawData(ImGui::GetDrawData());
+        
         al_flip_display();
+        al_wait_for_vsync();
     }
 
     // Cleanup

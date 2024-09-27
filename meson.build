@@ -5,10 +5,18 @@ project(
 )
 
 # Program source
-src = [
-    'src/main.cpp'
+shared_src = []
+shared_include_dir = 'src/shared'
+
+client_src = [
+    'src/client/client_main.cpp'
 ]
-include_dirs = [ 'include' ]
+client_include_dir = 'src/client'
+
+server_src = [
+    'src/server/server_main.cpp'
+]
+server_include_dir = 'src/server'
 
 # ImGui source
 imgui_src = [
@@ -24,12 +32,14 @@ lua = dependency('lua', version:'>=5.4')
 enet = dependency('libenet')
 allegro_deps = [
     dependency('allegro-5'),
+    dependency('allegro_image-5'),
     dependency('allegro_primitives-5')
 ]
+opengl = dependency('gl')
 
 executable('client',
-    sources: src + imgui_src,
-    include_directories: include_dirs + imgui_include_dirs,
-    dependencies: allegro_deps + [ lua, enet ],
+    sources: shared_src + client_src + imgui_src,
+    include_directories: [ shared_include_dir, client_include_dir ] + imgui_include_dirs,
+    dependencies: allegro_deps + [ opengl, lua, enet ],
     cpp_args: imgui_args
 )
