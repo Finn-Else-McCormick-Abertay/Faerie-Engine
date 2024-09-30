@@ -33,6 +33,9 @@ glew = dependency('glew')
 lua = dependency('lua', version:'>=5.4')
 enet = dependency('libenet')
 
+# Copy assets to build directory
+run_target('assets', command: ['scripts/copy_assets.cmd'])
+
 executable('client',
     sources: shared_src + client_src + imgui_src,
     include_directories: [ shared_include_dir, client_include_dir ] + imgui_include_dirs,

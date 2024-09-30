@@ -28,7 +28,7 @@
                     "ignoreFailures": true
                 }
             ],
-            "preLaunchTask":"Meson: Build client:executable"
+            "preLaunchTask":"Build Client with Assets"
         }
 
     ]
