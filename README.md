@@ -18,7 +18,8 @@ Use msys2 to install the following tools:
 - [pkgconf](http://pkgconf.org/)
 
 And the following dependencies:
-- [Allegro](https://liballeg.org/)
+- [SDL2](https://www.libsdl.org/)
+- [GLEW](https://glew.sourceforge.net/)
 - [lua](https://www.lua.org/)
 - [enet](http://enet.bespin.org/)
 
@@ -28,7 +29,7 @@ This can be done by running the following commands in the msys2 ucrt64 console:
 pacman -S mingw-w64-ucrt-x86_64-gcc mingw-w64-ucrt-x86_64-meson mingw-w64-ucrt-x86_64-python pkgconf
 ```
 ```
-pacman -S mingw-w64-ucrt-x86_64-allegro mingw-w64-ucrt-x86_64-lua mingw-w64-ucrt-x86_64-enet
+pacman -S mingw-w64-ucrt-x86_64-SDL2 mingw-w64-ucrt-x86_64-glew  mingw-w64-ucrt-x86_64-lua mingw-w64-ucrt-x86_64-enet
 ```
 
 Once the tools and dependencies have been installed, you can set up Meson by running the following command in the project directory:
@@ -36,10 +37,9 @@ Once the tools and dependencies have been installed, you can set up Meson by run
 meson setup builddir
 ```
 
-Once builddir exists, the project can be built by calling 'meson compile' from within it:
+Once builddir exists, the project can be built with the following command:
 ```
-cd builddir
-meson compile
+meson compile -C builddir
 ```
 
 > If Meson cannot find the dependencies, check that it is finding the right pkg-config. It will use the first one available in PATH, and libraries like gstreamer will sometimes have their own one.
