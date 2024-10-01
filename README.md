@@ -20,6 +20,7 @@ Use msys2 to install the following tools:
 And the following dependencies:
 - [SDL2](https://www.libsdl.org/)
 - [GLEW](https://glew.sourceforge.net/)
+- [glm](https://github.com/g-truc/glm)
 - [lua](https://www.lua.org/)
 - [enet](http://enet.bespin.org/)
 
@@ -29,7 +30,7 @@ This can be done by running the following commands in the msys2 ucrt64 console:
 pacman -S mingw-w64-ucrt-x86_64-gcc mingw-w64-ucrt-x86_64-meson mingw-w64-ucrt-x86_64-python pkgconf
 ```
 ```
-pacman -S mingw-w64-ucrt-x86_64-SDL2 mingw-w64-ucrt-x86_64-glew  mingw-w64-ucrt-x86_64-lua mingw-w64-ucrt-x86_64-enet
+pacman -S mingw-w64-ucrt-x86_64-SDL2 mingw-w64-ucrt-x86_64-glew mingw-w64-ucrt-x86_64-glm mingw-w64-ucrt-x86_64-lua mingw-w64-ucrt-x86_64-enet
 ```
 
 Once the tools and dependencies have been installed, you can set up Meson by running the following command in the project directory:
