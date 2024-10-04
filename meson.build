@@ -15,11 +15,13 @@ client_src = [
     'src/client/systems/impl/input_system_impl_sdl2.cpp',
 ]
 client_include_dirs = [ 'src/client' ]
+client_pch_path = 'pch/client_pch.h'
 
 server_src = [
     'src/server/server_main.cpp'
 ]
 server_include_dir = 'src/server'
+server_pch_path = 'pch/server_pch.h'
 
 # ImGui source
 imgui_src = [
@@ -33,7 +35,7 @@ sdl2 = dependency('sdl2')
 #sdl2_main = dependency('sdl2main')
 opengl = dependency('gl')
 glew = dependency('glew')
-glm = dependency('glm')
+#glm = dependency('glm')
 lua = dependency('lua', version:'>=5.4')
 enet = dependency('libenet')
 
@@ -43,6 +45,7 @@ run_target('assets', command: ['scripts/copy_assets.cmd'])
 executable('client',
     sources: shared_src + client_src + imgui_src,
     include_directories: [ shared_include_dir ] + client_include_dirs + imgui_include_dirs,
+    cpp_pch: client_pch_path,
     #win_subsystem: 'windows',
-    dependencies: [ sdl2, opengl, glew, glm, lua, enet ]
+    dependencies: [ sdl2, opengl, glew, lua, enet ]
 )
