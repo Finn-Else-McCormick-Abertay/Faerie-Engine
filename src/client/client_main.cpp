@@ -17,16 +17,22 @@
 #include <vector>
 
 #include <systems/window_system.h>
-#include <systems/impl/window_system_impl_sdl2.h>
+
+#include <systems/scripting_system.h>
+#include <systems/impl/scripting_system_impl_lua.h>
 
 GLuint LoadShaders(const char * vertex_file_path, const char * fragment_file_path);
 
 int main(int argc, char *argv[]) {
-    WindowSystemImplSDL2 windowSystem;
-
+    WindowSystem windowSystem;
     if (!windowSystem.Init()) {
         return -1;
     }
+	
+	ScriptingSystemImplLua scriptingSystem;
+	if (!scriptingSystem.Init()) {
+		return -1;
+	}
 
     /*
     GLuint VertexArrayID;
@@ -60,6 +66,7 @@ int main(int argc, char *argv[]) {
     }
 
     windowSystem.Shutdown();
+	scriptingSystem.Shutdown();
 
     return 0;
 }

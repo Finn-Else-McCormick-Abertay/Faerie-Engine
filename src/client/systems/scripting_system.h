@@ -2,8 +2,7 @@
 
 #include <systems/system.h>
 
-class IInputSystem : public ISystem
+class IScriptingSystem : public ISystem
 {
 public:
-
 };

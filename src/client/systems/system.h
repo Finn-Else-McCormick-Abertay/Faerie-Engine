@@ -1,6 +1,6 @@
 #pragma once
 
-class ISubsystem
+class ISystem
 {
 public:
     virtual bool Init() = 0;
