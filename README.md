@@ -15,6 +15,7 @@ Use msys2 to install the following tools:
 - [gcc](https://gcc.gnu.org/)
 - [Meson](https://mesonbuild.com/)
 - [pkgconf](http://pkgconf.org/)
+- [CMake](https://cmake.org/)
 
 And the following dependencies:
 - [SDL2](https://www.libsdl.org/)
@@ -25,11 +26,9 @@ And the following dependencies:
 - [enet](http://enet.bespin.org/)
 - [ENTT](https://github.com/skypjack/entt)
 
-! GLM DOESNT PROVIDE PKGCONF FILES SO IT CANT BE USED WITHOUT CMAKE INSTALLED -> DEAL WITH THIS !
-
 This can be done by running the following commands in the msys2 ucrt64 console:
 ```
-pacman -S mingw-w64-ucrt-x86_64-gcc mingw-w64-ucrt-x86_64-meson pkgconf
+pacman -S mingw-w64-ucrt-x86_64-gcc mingw-w64-ucrt-x86_64-meson pkgconf mingw-w64-ucrt-x86_64-cmake
 ```
 ```
 pacman -S mingw-w64-ucrt-x86_64-SDL2 mingw-w64-ucrt-x86_64-glew mingw-w64-ucrt-x86_64-glm mingw-w64-ucrt-x86_64-lua mingw-w64-ucrt-x86_64-sol2 mingw-w64-ucrt-x86_64-enet mingw-w64-ucrt-x86_64-entt
