@@ -81,7 +81,7 @@ void RenderSystemImplOpenGl3::CreateContext(SDL_Window* window) {
     glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
     glBufferData(GL_ARRAY_BUFFER, sizeof(g_vertex_buffer_data), g_vertex_buffer_data, GL_STATIC_DRAW);
 
-    shaderProgram = LoadShaders((appPath + "assets/shaders/vert.glsl").c_str(), (appPath + "assets/shaders/frag.glsl").c_str());
+    shaderProgram = LoadShaders((appPath + "resources/shaders/vert.glsl").c_str(), (appPath + "resources/shaders/frag.glsl").c_str());
 
     matrixId = glGetUniformLocation(shaderProgram, "MVP");
 }

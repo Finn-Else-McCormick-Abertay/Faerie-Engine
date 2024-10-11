@@ -1,1 +1,0 @@
-xcopy "%MESON_SOURCE_ROOT%/assets" "%MESON_BUILD_ROOT%/assets" /s /y /i

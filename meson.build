@@ -47,7 +47,7 @@ enet = dependency('libenet')
 entt = dependency('entt')
 
 # Copy assets to build directory
-run_target('assets', command: ['scripts/copy_assets.cmd'])
+run_target('resources', command: ['buildscripts/copy_resources.cmd'])
 
 executable('client',
     sources: shared_src + client_src + imgui_src,

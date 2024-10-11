@@ -28,7 +28,7 @@
                     "ignoreFailures": true
                 }
             ],
-            "preLaunchTask":"Build Client with Assets"
+            "preLaunchTask":"Build Client with Resources"
         }
 
     ]
