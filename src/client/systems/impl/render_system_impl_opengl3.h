@@ -11,16 +11,24 @@
 class RenderSystemImplOpenGl3 : public IRenderSystem
 {
 public:
-    virtual bool Init() override;
-    virtual void Shutdown() override;
-
     void CreateContext(SDL_Window* window);
 
     virtual void Render() override;
-    virtual void ImGuiRender() override;
+
+protected:
+    virtual bool InitImpl() override;
+    virtual void ShutdownImpl() override;
+
+    virtual void BeginImGuiFrame() override;
+
+    GLuint LoadShaders(const char * vertex_file_path, const char * fragment_file_path);
 
 private:
     SDL_Window* p_window = nullptr;
     SDL_GLContext m_glContext;
     std::string m_glslVersion;
+
+    // TEMP! THESE SHOULDN'T BE HERE!
+    GLuint shaderProgram, vertexBuffer;
+    GLuint vertexArrayId, matrixId; 
 };

@@ -9,7 +9,7 @@
 #include <imgui.h>
 #include <imgui_impl_sdl2.h>
 
-bool WindowSystem::Init() {
+bool WindowSystem::InitImpl() {
     // Setup SDL
     if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER | SDL_INIT_GAMECONTROLLER) != 0)
     {
@@ -47,7 +47,7 @@ bool WindowSystem::Init() {
     return true;
 }
 
-void WindowSystem::Shutdown() {
+void WindowSystem::ShutdownImpl() {
     if (m_renderSystem) { m_renderSystem->Shutdown(); }
     if (p_window) { SDL_DestroyWindow(p_window); }
     SDL_Quit();

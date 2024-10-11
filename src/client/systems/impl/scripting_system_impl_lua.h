@@ -8,9 +8,10 @@
 class ScriptingSystemImplLua : public IScriptingSystem
 {
 public:
-    virtual bool Init() override;
-    virtual void Shutdown() override;
 
 private:
+    virtual bool InitImpl() override;
+    virtual void ShutdownImpl() override;
+
     sol::state m_lua;
 };

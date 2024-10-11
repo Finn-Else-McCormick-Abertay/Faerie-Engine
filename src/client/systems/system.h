@@ -3,6 +3,15 @@
 class ISystem
 {
 public:
-    virtual bool Init() = 0;
-    virtual void Shutdown() = 0;
+    ~ISystem();
+
+    bool Init();
+    void Shutdown();
+
+protected:
+    virtual bool InitImpl() = 0;
+    virtual void ShutdownImpl() = 0;
+
+private:
+    bool m_initialised = false;
 };

@@ -10,9 +10,14 @@ shared_include_dir = 'src/shared'
 
 client_src = [
     'src/client/client_main.cpp',
+    'src/client/systems/system.cpp',
     'src/client/systems/window_system.cpp',
+    'src/client/systems/ecs.cpp',
+    'src/client/systems/render_system.cpp',
     'src/client/systems/impl/render_system_impl_opengl3.cpp',
     'src/client/systems/impl/scripting_system_impl_lua.cpp',
+    'src/client/components/transform.cpp',
+    'src/client/components/model.cpp'
 ]
 client_include_dirs = [ 'src/client' ]
 
@@ -37,6 +42,7 @@ glm = dependency('glm')
 lua = dependency('lua', version:'>=5.4')
 sol2 = dependency('sol2')
 enet = dependency('libenet')
+entt = dependency('entt')
 
 # Copy assets to build directory
 run_target('assets', command: ['scripts/copy_assets.cmd'])
@@ -45,6 +51,6 @@ executable('client',
     sources: shared_src + client_src + imgui_src,
     include_directories: [ shared_include_dir ] + client_include_dirs + imgui_include_dirs,
     #win_subsystem: 'windows',
-    dependencies: [ sdl2, opengl, glew, glm, lua, sol2, enet ],
+    dependencies: [ sdl2, opengl, glew, glm, lua, sol2, enet, entt ],
     cpp_args: ['-DOPENGL3']
 )

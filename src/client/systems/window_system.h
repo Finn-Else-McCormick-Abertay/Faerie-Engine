@@ -10,9 +10,6 @@
 class WindowSystem : public ISystem
 {
 public:
-    virtual bool Init() override;
-    virtual void Shutdown() override;
-
     void Update();
 
     bool ShouldClose();
@@ -20,6 +17,9 @@ public:
     IRenderSystem* RenderSystem();
 
 private:
+    virtual bool InitImpl() override;
+    virtual void ShutdownImpl() override;
+
     SDL_Window* p_window = nullptr;
     bool m_shouldClose = false;
     std::string m_appPath;

@@ -1,12 +1,12 @@
 #include "scripting_system_impl_lua.h"
 
-bool ScriptingSystemImplLua::Init() {
+bool ScriptingSystemImplLua::InitImpl() {
     
 	m_lua.open_libraries(sol::lib::base);
 
     return true;
 }
 
-void ScriptingSystemImplLua::Shutdown() {
+void ScriptingSystemImplLua::ShutdownImpl() {
 
 }
