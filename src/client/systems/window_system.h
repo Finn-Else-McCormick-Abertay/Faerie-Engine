@@ -1,16 +1,28 @@
 #pragma once
 
-#include <systems/subsystem.h>
 #include <systems/render_system.h>
-#include <systems/input_system.h>
 
-class IWindowSystem : public ISubsystem
+#include <SDL.h>
+
+#include <string>
+#include <memory>
+
+class WindowSystem : public ISystem
 {
 public:
-    virtual void Update() = 0;
+    void Update();
 
-    virtual IRenderSystem* RenderSystem() = 0;
-    virtual IInputSystem* InputSystem() = 0;
+    bool ShouldClose();
 
-    virtual bool ShouldClose() = 0;
+    IRenderSystem* RenderSystem();
+
+private:
+    virtual bool InitImpl() override;
+    virtual void ShutdownImpl() override;
+
+    SDL_Window* p_window = nullptr;
+    bool m_shouldClose = false;
+    std::string m_appPath;
+
+    std::unique_ptr<IRenderSystem> m_renderSystem;
 };

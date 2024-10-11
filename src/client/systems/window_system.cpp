@@ -1,10 +1,15 @@
-#include "window_system_impl_sdl2.h"
+#include "window_system.h"
+
+#ifdef OPENGL3
+#include <systems/impl/render_system_impl_opengl3.h>
+#endif // OPENGL3
+//#include <systems/impl/input_system_impl_sdl2.h>
 
 #include <stdio.h>
 #include <imgui.h>
 #include <imgui_impl_sdl2.h>
 
-bool WindowSystemImplSDL2::Init() {
+bool WindowSystem::InitImpl() {
     // Setup SDL
     if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER | SDL_INIT_GAMECONTROLLER) != 0)
     {
@@ -20,18 +25,18 @@ bool WindowSystemImplSDL2::Init() {
     m_appPath = std::string(pathBuf);
     SDL_free(pathBuf);
 
+    SDL_WindowFlags windowFlags = (SDL_WindowFlags)(SDL_WINDOW_RESIZABLE | SDL_WINDOW_ALLOW_HIGHDPI);
+
+#ifdef OPENGL3
     m_renderSystem = std::make_unique<RenderSystemImplOpenGl3>();
+    windowFlags = (SDL_WindowFlags)(SDL_WINDOW_OPENGL | windowFlags);
+#endif // OPENGL3
+
     if (!m_renderSystem->Init()) {
         return false;
     }
 
-    m_inputSystem = std::make_unique<InputSystemImplSDL2>();
-    if (!m_inputSystem->Init()) {
-        return false;
-    }
-
-    SDL_WindowFlags window_flags = (SDL_WindowFlags)(SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_ALLOW_HIGHDPI);
-    p_window = SDL_CreateWindow("Untitled Tabletop Engine", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 1280, 720, window_flags);
+    p_window = SDL_CreateWindow("Untitled Tabletop Engine", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 1280, 720, windowFlags);
     if (p_window == nullptr) {
         printf("Error: SDL_CreateWindow(): %s\n", SDL_GetError());
         return false;
@@ -42,14 +47,13 @@ bool WindowSystemImplSDL2::Init() {
     return true;
 }
 
-void WindowSystemImplSDL2::Shutdown() {
+void WindowSystem::ShutdownImpl() {
     if (m_renderSystem) { m_renderSystem->Shutdown(); }
-    if (m_inputSystem) { m_inputSystem->Shutdown(); }
     if (p_window) { SDL_DestroyWindow(p_window); }
     SDL_Quit();
 }
 
-void WindowSystemImplSDL2::Update() {
+void WindowSystem::Update() {
     ImGuiIO& io = ImGui::GetIO();
     SDL_Event event;
     while (SDL_PollEvent(&event))
@@ -97,14 +101,10 @@ void WindowSystemImplSDL2::Update() {
     m_renderSystem->Render();
 }
 
-bool WindowSystemImplSDL2::ShouldClose() {
+bool WindowSystem::ShouldClose() {
     return m_shouldClose;
 }
 
-IRenderSystem* WindowSystemImplSDL2::RenderSystem() {
+IRenderSystem* WindowSystem::RenderSystem() {
     return m_renderSystem.get();
-}
-
-IInputSystem* WindowSystemImplSDL2::InputSystem() {
-    return m_inputSystem.get();
 }

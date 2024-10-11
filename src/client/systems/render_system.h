@@ -1,10 +1,17 @@
 #pragma once
 
-#include <systems/subsystem.h>
+#include <systems/system.h>
 
-class IRenderSystem : public ISubsystem
+#include <SDL.h>
+
+class IRenderSystem : public ISystem
 {
 public:
     virtual void Render() = 0;
-    virtual void ImGuiRender() = 0;
+    void ImGuiRender();
+
+    virtual void CreateContext(SDL_Window* window) = 0;
+
+protected:
+    virtual void BeginImGuiFrame() = 0;
 };
