@@ -4,15 +4,12 @@
 #include <imgui_impl_sdl2.h>
 #include <imgui_impl_opengl3.h>
 
+#include <systems/resource_manager.h>
 #include <systems/ecs.h>
 #include <components/model.h>
 #include <components/transform.h>
 
 #include <stdio.h>
-#include <string.h>
-#include <fstream>
-#include <sstream>
-#include <vector>
 
 bool RenderSystemImplOpenGl3::InitImpl() {
     // GL 3.0 + GLSL 130
@@ -80,10 +77,6 @@ void RenderSystemImplOpenGl3::CreateContext(SDL_Window* window) {
     glGenBuffers(1, &vertexBuffer);
     glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
     glBufferData(GL_ARRAY_BUFFER, sizeof(g_vertex_buffer_data), g_vertex_buffer_data, GL_STATIC_DRAW);
-
-    shaderProgram = LoadShaders((appPath + "resources/shaders/vert.glsl").c_str(), (appPath + "resources/shaders/frag.glsl").c_str());
-
-    matrixId = glGetUniformLocation(shaderProgram, "MVP");
 }
 
 void RenderSystemImplOpenGl3::BeginImGuiFrame() {
@@ -104,11 +97,14 @@ void RenderSystemImplOpenGl3::Render() {
         glm::vec3(0,1,0)  // Head is up (set to 0,-1,0 to look upside-down)
     );
 
-    glUseProgram(shaderProgram);
 
     auto view = ECS::Registry().view<const Components::Model, const Components::Transform>();
     for (auto entity : view) {
         auto [model, trans] = view.get(entity);
+        
+        Shader shader = ResourceManager::Get<Shader, const std::string&, const std::string&>(model.vertexShader, model.fragmentShader);
+        glUseProgram(shader.ProgramId);
+        GLuint matrixId = glGetUniformLocation(shader.ProgramId, "MVP");
 
         glm::mat4 worldMat = trans.AsMatrix();
 
@@ -136,7 +132,7 @@ void RenderSystemImplOpenGl3::Render() {
     SDL_GL_SwapWindow(p_window);
 }
 
-
+/*
 GLuint RenderSystemImplOpenGl3::LoadShaders(const char * vertex_file_path, const char * fragment_file_path){
 
 	// Create the shaders
@@ -224,3 +220,4 @@ GLuint RenderSystemImplOpenGl3::LoadShaders(const char * vertex_file_path, const
 
 	return ProgramID;
 }
+*/

@@ -13,11 +13,16 @@ client_src = [
     'src/client/systems/system.cpp',
     'src/client/systems/window_system.cpp',
     'src/client/systems/ecs.cpp',
+    'src/client/systems/resource_manager.cpp',
     'src/client/systems/render_system.cpp',
     'src/client/systems/impl/render_system_impl_opengl3.cpp',
     'src/client/systems/impl/scripting_system_impl_lua.cpp',
     'src/client/components/transform.cpp',
-    'src/client/components/model.cpp'
+    'src/client/components/model.cpp',
+    'src/client/components/sprite.cpp',
+    'src/client/resources/shader.cpp',
+    'src/client/resources/texture.cpp',
+    'src/client/stb/stb.cpp'
 ]
 client_include_dirs = [ 'src/client' ]
 client_pch_path = 'pch/client_pch.h'
@@ -55,5 +60,5 @@ executable('client',
     cpp_pch: client_pch_path,
     #win_subsystem: 'windows',
     dependencies: [ sdl2, opengl, glew, glm, lua, sol2, enet, entt ],
-    cpp_args: ['-DOPENGL3']
+    cpp_args: ['-DOPENGL3 -DSOL_ALL_SAFETIES_ON']
 )

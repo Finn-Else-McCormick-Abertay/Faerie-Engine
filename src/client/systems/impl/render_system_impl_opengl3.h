@@ -21,7 +21,7 @@ protected:
 
     virtual void BeginImGuiFrame() override;
 
-    GLuint LoadShaders(const char * vertex_file_path, const char * fragment_file_path);
+    //GLuint LoadShaders(const char * vertex_file_path, const char * fragment_file_path);
 
 private:
     SDL_Window* p_window = nullptr;
@@ -29,6 +29,6 @@ private:
     std::string m_glslVersion;
 
     // TEMP! THESE SHOULDN'T BE HERE!
-    GLuint shaderProgram, vertexBuffer;
-    GLuint vertexArrayId, matrixId; 
+    GLuint vertexBuffer;
+    GLuint vertexArrayId; 
 };

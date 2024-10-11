@@ -1,10 +1,12 @@
 #pragma once
 
+#include <string>
+
 namespace Components
 {
     struct Model
     {
-        int i;
+        std::string vertexShader, fragmentShader;
     
         Model();
     };

@@ -3,7 +3,6 @@
 #ifdef OPENGL3
 #include <systems/impl/render_system_impl_opengl3.h>
 #endif // OPENGL3
-//#include <systems/impl/input_system_impl_sdl2.h>
 
 #include <stdio.h>
 #include <imgui.h>
@@ -20,10 +19,6 @@ bool WindowSystem::InitImpl() {
 #ifdef SDL_HINT_IME_SHOW_UI
     SDL_SetHint(SDL_HINT_IME_SHOW_UI, "1");
 #endif
-    
-    char* pathBuf = SDL_GetBasePath();
-    m_appPath = std::string(pathBuf);
-    SDL_free(pathBuf);
 
     SDL_WindowFlags windowFlags = (SDL_WindowFlags)(SDL_WINDOW_RESIZABLE | SDL_WINDOW_ALLOW_HIGHDPI);
 

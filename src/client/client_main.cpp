@@ -9,19 +9,21 @@
 
 #include <systems/window_system.h>
 #include <systems/ecs.h>
+#include <systems/resource_manager.h>
 #include <systems/scripting_system.h>
 #include <systems/impl/scripting_system_impl_lua.h>
 
 #include <components/model.h>
 #include <components/transform.h>
 
-GLuint LoadShaders(const char * vertex_file_path, const char * fragment_file_path);
-
 int main(int argc, char *argv[]) {
-	if (!ECS::Instance().Init()) { return -1; }
 
     WindowSystem windowSystem;
     if (!windowSystem.Init()) { return -1; }
+    
+    if (!ResourceManager::Instance().Init()) { return -1; }
+    
+	if (!ECS::Instance().Init()) { return -1; }
 	
 	ScriptingSystemImplLua scriptingSystem;
 	if (!scriptingSystem.Init()) { return -1; }
@@ -29,12 +31,21 @@ int main(int argc, char *argv[]) {
 	auto& registry = ECS::Registry();
 	auto ent = registry.create();
 	registry.emplace<Components::Transform>(ent);
-	registry.emplace<Components::Model>(ent);
+	auto& model = registry.emplace<Components::Model>(ent);
+    model.vertexShader = "resources/shaders/vert.glsl";
+    model.fragmentShader = "resources/shaders/frag.glsl";
+
+    ResourceManager::Load<Shader, const std::string&, const std::string&>(model.vertexShader, model.fragmentShader);
 
     // Main loop
     while (!windowSystem.ShouldClose()) {
         windowSystem.Update();
     }
+
+    windowSystem.Shutdown();
+    ResourceManager::Instance().Shutdown();
+    ECS::Instance().Shutdown();
+    scriptingSystem.Shutdown();
 
     return 0;
 }

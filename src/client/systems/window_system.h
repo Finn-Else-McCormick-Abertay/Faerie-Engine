@@ -22,7 +22,6 @@ private:
 
     SDL_Window* p_window = nullptr;
     bool m_shouldClose = false;
-    std::string m_appPath;
 
     std::unique_ptr<IRenderSystem> m_renderSystem;
 };
