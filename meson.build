@@ -1,6 +1,6 @@
 project(
     'untitled_tabletop_engine',
-    'cpp', default_options: ['cpp_std=c++17'],
+    'cpp', default_options: ['cpp_std=c++20'],
     version: '0.0.1'
 )
 
@@ -22,7 +22,7 @@ client_src = [
     'src/client/components/sprite.cpp',
     'src/client/resources/shader.cpp',
     'src/client/resources/texture.cpp',
-    'src/client/stb/stb.cpp'
+    'src/client/util/stb.cpp'
 ]
 client_include_dirs = [ 'src/client' ]
 client_pch_path = 'pch/client_pch.h'

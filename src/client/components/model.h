@@ -1,12 +1,12 @@
 #pragma once
 
-#include <string>
+#include <resources/resource_info.h>
 
 namespace Components
 {
     struct Model
     {
-        std::string vertexShader, fragmentShader;
+        ResourceIdentifier shaderId;
     
         Model();
     };

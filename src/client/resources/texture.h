@@ -1,9 +1,6 @@
 #pragma once
 
-class Texture
+struct Texture
 {
-public:
 
-private:
-    int id;
 };

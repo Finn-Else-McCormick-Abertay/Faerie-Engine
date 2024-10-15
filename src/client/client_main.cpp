@@ -32,10 +32,7 @@ int main(int argc, char *argv[]) {
 	auto ent = registry.create();
 	registry.emplace<Components::Transform>(ent);
 	auto& model = registry.emplace<Components::Model>(ent);
-    model.vertexShader = "resources/shaders/vert.glsl";
-    model.fragmentShader = "resources/shaders/frag.glsl";
-
-    ResourceManager::Load<Shader, const std::string&, const std::string&>(model.vertexShader, model.fragmentShader);
+    model.shaderId = ResourceManager::Load(ResourceInfo<Shader>("resources/shaders/vert.glsl", "resources/shaders/frag.glsl"));
 
     // Main loop
     while (!windowSystem.ShouldClose()) {
