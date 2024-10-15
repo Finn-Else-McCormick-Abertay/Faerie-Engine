@@ -11,7 +11,7 @@
             "program": "${workspaceFolder}/builddir/client.exe",
             "args": [],
             "stopAtEntry": false,
-            "cwd": "${fileDirname}",
+            "cwd": "${workspaceFolder}/builddir",
             "environment": [],
             "externalConsole": false,
             "MIMode": "gdb",
