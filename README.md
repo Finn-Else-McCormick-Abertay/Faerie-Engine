@@ -50,6 +50,8 @@ meson compile -C builddir
 
 If working in VSCode, you should install the [C++](https://marketplace.visualstudio.com/items?itemName=ms-vscode.cpptools) and [Meson](https://marketplace.visualstudio.com/items?itemName=mesonbuild.mesonbuild) extensions.
 
+There is a bug in the C++ extension that messes up the intellisense when Meson has dependencies. Until this is fixed, you should use version 1.21.6 of the C++ extension.
+
 In order to debug from VSCode, you will also need [GDB](https://sourceware.org/gdb/).
 
 If you don't already have it, it can be installed through msys2 with the following command:
