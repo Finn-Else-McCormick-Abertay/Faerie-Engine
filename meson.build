@@ -49,6 +49,10 @@ imgui_src = [
 ]
 imgui_include_dirs = [im_rt, im_rt/'backends']
 
+cpp = meson.get_compiler('cpp')
+wasmtime = cpp.find_library('wasmtime.dll')
+wasmtime_include_dir = 'vendor/wasmtime/include'
+
 # Dependencies
 sdl2 = dependency('sdl2')
 #sdl2_main = dependency('sdl2main')
@@ -65,9 +69,9 @@ run_target('resources', command: ['buildscripts/copy_resources.cmd'])
 
 executable('client',
     sources: shared_src + client_src + imgui_src,
-    include_directories: [ shared_include_dir ] + client_include_dirs + imgui_include_dirs,
+    include_directories: [ shared_include_dir ] + client_include_dirs + imgui_include_dirs + wasmtime_include_dir,
     cpp_pch: client_pch_path,
     #win_subsystem: 'windows',
-    dependencies: [ sdl2, opengl, glew, glm, lua, sol2, enet, entt ],
+    dependencies: [ sdl2, opengl, glew, glm, lua, sol2, enet, entt, wasmtime ],
     cpp_args: ['-DOPENGL3 -DSOL_ALL_SAFETIES_ON']
 )

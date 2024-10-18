@@ -16,6 +16,8 @@
 #include <components/model.h>
 #include <components/transform.h>
 
+#include <wasmtime.hh>
+
 int main(int argc, char *argv[]) {
 
     WindowSystem windowSystem;
@@ -27,6 +29,8 @@ int main(int argc, char *argv[]) {
 	
 	ScriptingSystemImplLua scriptingSystem;
 	if (!scriptingSystem.Init()) { return -1; }
+
+    wasmtime::Engine engine;
 
 	auto& registry = ECS::Registry();
 	auto ent = registry.create();
