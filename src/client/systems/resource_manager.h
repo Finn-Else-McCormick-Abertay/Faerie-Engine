@@ -28,6 +28,8 @@ public:
         return Get<T>(info.Identifier());
     }
 
+    const std::string& RootPath() const;
+
 private:
     ResourceManager() = default;
     virtual bool InitImpl() override;

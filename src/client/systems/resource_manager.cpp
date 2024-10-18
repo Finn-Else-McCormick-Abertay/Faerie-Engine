@@ -26,6 +26,9 @@ void ResourceManager::ShutdownImpl() {
 }
 
 
+const std::string& ResourceManager::RootPath() const { return m_appPath; }
+
+
 template<>
 Texture ResourceManager::Get<Texture>(ResourceIdentifier id) {
     return Instance().m_textures.at(id);

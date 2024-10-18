@@ -14,11 +14,12 @@ client_src = [
     cl_rt/'client_main.cpp',
     cl_rt/'systems/system.cpp',
     cl_rt/'systems/window_system.cpp',
-    cl_rt/'systems/ecs.cpp',
-    cl_rt/'systems/resource_manager.cpp',
     cl_rt/'systems/render_system.cpp',
+    cl_rt/'systems/resource_manager.cpp',
+    cl_rt/'systems/scripting_system.cpp',
+    cl_rt/'systems/ecs.cpp',
     cl_rt/'systems/impl/render_system_impl_opengl3.cpp',
-    cl_rt/'systems/impl/scripting_system_impl_lua.cpp',
+    cl_rt/'systems/impl/scripting_system_impl_wasmtime.cpp',
     cl_rt/'components/transform.cpp',
     cl_rt/'components/model.cpp',
     cl_rt/'components/sprite.cpp',
@@ -50,17 +51,17 @@ imgui_src = [
 imgui_include_dirs = [im_rt, im_rt/'backends']
 
 cpp = meson.get_compiler('cpp')
-wasmtime = cpp.find_library('wasmtime.dll')
-wasmtime_include_dir = 'vendor/wasmtime/include'
+wasmtime = declare_dependency(
+    dependencies: cpp.find_library('wasmtime.dll'),
+    include_directories: 'vendor/wasmtime/include',
+    compile_args: '-DWASMTIME'
+)
 
 # Dependencies
 sdl2 = dependency('sdl2')
-#sdl2_main = dependency('sdl2main')
 opengl = dependency('gl')
 glew = dependency('glew')
 glm = dependency('glm')
-lua = dependency('lua', version:'>=5.4')
-sol2 = dependency('sol2')
 enet = dependency('libenet')
 entt = dependency('entt')
 
@@ -69,9 +70,8 @@ run_target('resources', command: ['buildscripts/copy_resources.cmd'])
 
 executable('client',
     sources: shared_src + client_src + imgui_src,
-    include_directories: [ shared_include_dir ] + client_include_dirs + imgui_include_dirs + wasmtime_include_dir,
+    include_directories: [ shared_include_dir ] + client_include_dirs + imgui_include_dirs,
     cpp_pch: client_pch_path,
-    #win_subsystem: 'windows',
-    dependencies: [ sdl2, opengl, glew, glm, lua, sol2, enet, entt, wasmtime ],
-    cpp_args: ['-DOPENGL3 -DSOL_ALL_SAFETIES_ON']
+    dependencies: [ sdl2, opengl, glew, glm, enet, entt, wasmtime ],
+    cpp_args: ['-DOPENGL3']
 )

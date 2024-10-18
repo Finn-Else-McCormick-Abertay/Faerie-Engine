@@ -2,7 +2,11 @@
 
 #include <systems/system.h>
 
-class IScriptingSystem : public ISystem
+class ScriptingSystem : public ISystem
 {
 public:
+    static ScriptingSystem& Instance();
+
+protected:
+    ScriptingSystem() = default;
 };

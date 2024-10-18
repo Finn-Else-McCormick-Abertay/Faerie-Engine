@@ -21,8 +21,6 @@ protected:
 
     virtual void BeginImGuiFrame() override;
 
-    //GLuint LoadShaders(const char * vertex_file_path, const char * fragment_file_path);
-
 private:
     SDL_Window* p_window = nullptr;
     SDL_GLContext m_glContext;
