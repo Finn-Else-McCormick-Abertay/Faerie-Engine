@@ -6,5 +6,6 @@
     "files.associations": {
         "*.tcc": "cpp",
         "*.h": "cpp",
+        "iosfwd": "cpp"
     }
 }

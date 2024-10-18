@@ -5,9 +5,7 @@
 #include <SDL_opengl.h>
 
 #include <string.h>
-#include <fstream>
 #include <sstream>
-#include <vector>
 
 ResourceManager& ResourceManager::Instance() {
     static ResourceManager instance;
@@ -16,8 +14,14 @@ ResourceManager& ResourceManager::Instance() {
 
 bool ResourceManager::InitImpl() {
     char* pathBuf = SDL_GetBasePath();
-    m_appPath = std::string(pathBuf);
+    std::string appPath = std::string(pathBuf);
     SDL_free(pathBuf);
+
+	auto rootFileSystem = std::make_unique<vfspp::NativeFileSystem>(appPath);
+	rootFileSystem->Initialize();
+
+	pm_virtualFileSystem = std::make_unique<vfspp::VirtualFileSystem>();
+	pm_virtualFileSystem->AddFileSystem("/", std::move(rootFileSystem));
 
     return true;
 }
@@ -51,31 +55,29 @@ Shader ResourceManager::Get<Shader>(ResourceIdentifier id) {
 template<>
 ResourceIdentifier ResourceManager::Load<Shader>(const ResourceInfo<Shader>& info) {
     auto& inst = Instance();
-
-    std::string vertPath = inst.m_appPath + info.VertPath(), fragPath = inst.m_appPath + info.FragPath();
     
 	// Create the shaders
 	GLuint vertShaderId = glCreateShader(GL_VERTEX_SHADER);
 	GLuint fragShaderId = glCreateShader(GL_FRAGMENT_SHADER);
 
-	// Read the Vertex Shader code from the file
 	std::string vertShaderCode;
-	std::ifstream vertShaderStream(vertPath.c_str(), std::ios::in);
-	if(vertShaderStream.is_open()){
-		std::stringstream sstr;
-		sstr << vertShaderStream.rdbuf();
-		vertShaderCode = sstr.str();
-		vertShaderStream.close();
+	if (auto file = inst.pm_virtualFileSystem->OpenFile(vfspp::FileInfo(info.VertPath()), vfspp::IFile::FileMode::Read)) {
+		if (file->IsOpened()) {
+			std::stringstream sstr;
+			file->Read(sstr, file->Size());
+			vertShaderCode = sstr.str();
+			file->Close();
+		}
 	}
 
-	// Read the Fragment Shader code from the file
 	std::string fragShaderCode;
-	std::ifstream fragShaderStream(fragPath.c_str(), std::ios::in);
-	if(fragShaderStream.is_open()){
-		std::stringstream sstr;
-		sstr << fragShaderStream.rdbuf();
-		fragShaderCode = sstr.str();
-		fragShaderStream.close();
+	if (auto file = inst.pm_virtualFileSystem->OpenFile(vfspp::FileInfo(info.FragPath()), vfspp::IFile::FileMode::Read)) {
+		if (file->IsOpened()) {
+			std::stringstream sstr;
+			file->Read(sstr, file->Size());
+			fragShaderCode = sstr.str();
+			file->Close();
+		}
 	}
 
 	GLint result = GL_FALSE;

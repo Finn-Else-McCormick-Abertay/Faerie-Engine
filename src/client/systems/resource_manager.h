@@ -10,6 +10,7 @@
 #include <unordered_map>
 #include <memory>
 
+#include <vfspp/VFS.h>
 
 // Must be initialised after the window
 class ResourceManager : public ISystem
@@ -33,7 +34,7 @@ private:
     virtual bool InitImpl() override;
     virtual void ShutdownImpl() override;
 
-    std::string m_appPath;
+    std::unique_ptr<vfspp::VirtualFileSystem> pm_virtualFileSystem;
 
     std::unordered_map<ResourceIdentifier, Texture> m_textures;
     std::unordered_map<ResourceIdentifier, Shader> m_shaders;
