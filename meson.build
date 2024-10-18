@@ -5,40 +5,49 @@ project(
 )
 
 # Program source
+sh_rt = 'src/shared'
 shared_src = []
-shared_include_dir = 'src/shared'
+shared_include_dir = sh_rt
 
+cl_rt = 'src/client'
 client_src = [
-    'src/client/client_main.cpp',
-    'src/client/systems/system.cpp',
-    'src/client/systems/window_system.cpp',
-    'src/client/systems/ecs.cpp',
-    'src/client/systems/resource_manager.cpp',
-    'src/client/systems/render_system.cpp',
-    'src/client/systems/impl/render_system_impl_opengl3.cpp',
-    'src/client/systems/impl/scripting_system_impl_lua.cpp',
-    'src/client/components/transform.cpp',
-    'src/client/components/model.cpp',
-    'src/client/components/sprite.cpp',
-    'src/client/resources/shader.cpp',
-    'src/client/resources/texture.cpp',
-    'src/client/util/stb.cpp'
+    cl_rt/'client_main.cpp',
+    cl_rt/'systems/system.cpp',
+    cl_rt/'systems/window_system.cpp',
+    cl_rt/'systems/ecs.cpp',
+    cl_rt/'systems/resource_manager.cpp',
+    cl_rt/'systems/render_system.cpp',
+    cl_rt/'systems/impl/render_system_impl_opengl3.cpp',
+    cl_rt/'systems/impl/scripting_system_impl_lua.cpp',
+    cl_rt/'components/transform.cpp',
+    cl_rt/'components/model.cpp',
+    cl_rt/'components/sprite.cpp',
+    cl_rt/'resources/shader.cpp',
+    cl_rt/'resources/texture.cpp',
+    cl_rt/'util/stb.cpp'
 ]
-client_include_dirs = [ 'src/client' ]
+client_include_dirs = cl_rt
 client_pch_path = 'pch/client_pch.h'
 
+sv_rt = 'src/server'
 server_src = [
-    'src/server/server_main.cpp'
+    sv_rt/'server_main.cpp'
 ]
-server_include_dir = 'src/server'
+server_include_dir = sv_rt
 server_pch_path = 'pch/server_pch.h'
 
 # ImGui source
+im_rt = 'vendor/imgui'
 imgui_src = [
-    'imgui/imgui.cpp', 'imgui/imgui_demo.cpp', 'imgui/imgui_draw.cpp', 'imgui/imgui_tables.cpp', 'imgui/imgui_widgets.cpp',
-    'imgui/backends/imgui_impl_sdl2.cpp', 'imgui/backends/imgui_impl_opengl3.cpp'
+    im_rt/'imgui.cpp',
+    im_rt/'imgui_demo.cpp',
+    im_rt/'imgui_draw.cpp',
+    im_rt/'imgui_tables.cpp',
+    im_rt/'imgui_widgets.cpp',
+    im_rt/'backends/imgui_impl_sdl2.cpp',
+    im_rt/'backends/imgui_impl_opengl3.cpp'
 ]
-imgui_include_dirs = ['imgui', 'imgui/backends']
+imgui_include_dirs = [im_rt, im_rt/'backends']
 
 # Dependencies
 sdl2 = dependency('sdl2')
