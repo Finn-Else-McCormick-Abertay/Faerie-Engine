@@ -35,12 +35,16 @@ server_pch_path = 'pch/server_pch.h'
 
 # ImGui source
 imgui_src = [
-    'submodules/imgui/imgui.cpp',
-    'submodules/imgui/imgui_demo.cpp', 'submodules/imgui/imgui_draw.cpp',
-    'submodules/imgui/imgui_tables.cpp', 'submodules/imgui/imgui_widgets.cpp',
-    'submodules/imgui/backends/imgui_impl_sdl2.cpp', 'submodules/imgui/backends/imgui_impl_opengl3.cpp'
+    'imgui/imgui.cpp',
+    'imgui/imgui_demo.cpp', 'imgui/imgui_draw.cpp',
+    'imgui/imgui_tables.cpp', 'imgui/imgui_widgets.cpp',
+    'imgui/backends/imgui_impl_sdl2.cpp', 'imgui/backends/imgui_impl_opengl3.cpp'
 ]
-imgui_include_dirs = ['submodules/imgui', 'submodules/imgui/backends']
+imgui_include_dirs = ['imgui', 'imgui/backends']
+
+cmake = import('cmake')
+vfspp_proj = cmake.subproject('vfspp')
+vfspp = vfspp_proj.dependency('vfspp')
 
 # Dependencies
 sdl2 = dependency('sdl2')
@@ -61,6 +65,6 @@ executable('client',
     include_directories: [ shared_include_dir ] + client_include_dirs + imgui_include_dirs,
     cpp_pch: client_pch_path,
     #win_subsystem: 'windows',
-    dependencies: [ sdl2, opengl, glew, glm, lua, sol2, enet, entt ],
-    cpp_args: ['-DOPENGL3 -DSOL_ALL_SAFETIES_ON']
+    dependencies: [ sdl2, opengl, glew, glm, lua, sol2, enet, entt, vfspp ],
+    cpp_args: ['-DOPENGL3 -DSOL_ALL_SAFETIES_ON -DVFSPP_ENABLE_MULTITHREADING']
 )

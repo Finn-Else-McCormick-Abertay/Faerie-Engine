@@ -1,3 +1,6 @@
 [submodule "imgui"]
-	path = submodules/imgui
+	path = imgui
 	url = https://github.com/ocornut/imgui.git
+[submodule "subprojects/vfspp"]
+	path = subprojects/vfspp
+	url = https://github.com/nextgeniuspro/vfspp.git
