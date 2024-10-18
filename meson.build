@@ -35,10 +35,12 @@ server_pch_path = 'pch/server_pch.h'
 
 # ImGui source
 imgui_src = [
-    'imgui/imgui.cpp', 'imgui/imgui_demo.cpp', 'imgui/imgui_draw.cpp', 'imgui/imgui_tables.cpp', 'imgui/imgui_widgets.cpp',
-    'imgui/backends/imgui_impl_sdl2.cpp', 'imgui/backends/imgui_impl_opengl3.cpp'
+    'submodules/imgui/imgui.cpp',
+    'submodules/imgui/imgui_demo.cpp', 'submodules/imgui/imgui_draw.cpp',
+    'submodules/imgui/imgui_tables.cpp', 'submodules/imgui/imgui_widgets.cpp',
+    'submodules/imgui/backends/imgui_impl_sdl2.cpp', 'submodules/imgui/backends/imgui_impl_opengl3.cpp'
 ]
-imgui_include_dirs = ['imgui', 'imgui/backends']
+imgui_include_dirs = ['submodules/imgui', 'submodules/imgui/backends']
 
 # Dependencies
 sdl2 = dependency('sdl2')
