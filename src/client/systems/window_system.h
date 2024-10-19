@@ -7,7 +7,7 @@
 #include <string>
 #include <memory>
 
-class WindowSystem : public ISystem
+class WindowSystem final : public ISystem
 {
 public:
     void Update();

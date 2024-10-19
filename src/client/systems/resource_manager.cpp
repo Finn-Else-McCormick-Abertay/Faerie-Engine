@@ -35,23 +35,22 @@ bool ResourceManager::InitImpl() {
 }
 
 void ResourceManager::ShutdownImpl() {
+	__UnloadAll<Texture>();
+	__UnloadAll<Shader>();
+
 	pm_vfs = nullptr;
 }
 
+template<> std::unordered_map<ResourceIdentifier, Texture>& ResourceManager::__Map() { return Instance().m_textures; }
+template<> std::unordered_map<ResourceIdentifier, Shader>& ResourceManager::__Map() { return Instance().m_shaders; }
 
 vfspp::VirtualFileSystem& ResourceManager::FileSystem() { return *Instance().pm_vfs; }
 
-template<>
-std::string ResourceManager::ReadFile(const std::string& path) {
+std::string ResourceManager::ReadTextFile(const std::string& path) {
 	if (auto file = FileSystem().OpenFile(vfspp::FileInfo(path), vfspp::IFile::FileMode::Read); file && file->IsOpened()) {
 		std::stringstream sstr;
 		file->Read(sstr, file->Size());
 		return sstr.str();
 	}
 	return "";
-}
-
-template<>
-const char* ResourceManager::ReadFile(const std::string& path) {
-	return ReadFile<std::string>(path).c_str();
 }

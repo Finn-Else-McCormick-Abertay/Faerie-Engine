@@ -13,45 +13,81 @@
 #include <vfspp/VirtualFileSystem.hpp>
 
 // Must be initialised after the window
-class ResourceManager : public ISystem
+class ResourceManager final : public ISystem
 {
 public:
     static ResourceManager& Instance();
+    
+    template<typename T>
+    static const T& Get(ResourceIdentifier id) {
+        return __Map<T>().at(id);
+    }
 
     template<typename T>
-    static ResourceIdentifier Load(const ResourceInfo<T>&);
-
-    template<typename T>
-    static T Get(ResourceIdentifier);
-
-    template<typename T>
-    static T Get(const ResourceInfo<T>& info) {
+    static const T& Get(const ResourceInfo<T>& info) {
         return Get<T>(info.Identifier());
     }
+
+    template<typename T>
+    static ResourceIdentifier Load(const ResourceInfo<T>& info) {
+        ResourceIdentifier id = info.Identifier();
+        __Map<T>().emplace(id, __LoadInternal<T>(info));
+        return id;
+    }
+    
+    template<typename T>
+    static void Unload(ResourceIdentifier id) {
+        __UnloadInternal<T>(__Map<T>().at(id));
+        __Map<T>().erase(id);
+    }
+    
+    template<typename T>
+    static void Unload(const ResourceInfo<T>& info) {
+        Unload<T>(info.Identifier());
+    }
+
+protected:
+    // Get the relevent map for a given resource type
+    template<typename T> static std::unordered_map<ResourceIdentifier, T>& __Map();
+    
+    // Load resource from given resource definition
+    template<typename T> static T __LoadInternal(const ResourceInfo<T>&);
+
+    // Clean up resource, ready for deletion
+    // (called by unload, but also in a loop in the destructor where we can't be erasing elements)
+    template<typename T> static void __UnloadInternal(T&);
+
+protected:
+    static vfspp::VirtualFileSystem& FileSystem();
+
+    static std::string ReadTextFile(const std::string& virtualPath);
 
 private:
     ResourceManager() = default;
     virtual bool InitImpl() override;
     virtual void ShutdownImpl() override;
 
-    static vfspp::VirtualFileSystem& FileSystem();
-
-    template<typename T>
-    static T ReadFile(const std::string& virtualPath);
-
     std::unique_ptr<vfspp::VirtualFileSystem> pm_vfs;
 
     std::unordered_map<ResourceIdentifier, Texture> m_textures;
     std::unordered_map<ResourceIdentifier, Shader> m_shaders;
+
+    template<typename T>
+    static void __UnloadAll() {
+        for (auto [id, resource] : __Map<T>()) {
+            __UnloadInternal<T>(resource);
+        }
+        __Map<T>().clear();
+    }
 };
 
-template<> std::string ResourceManager::ReadFile<std::string>(const std::string& virtualPath);
-template<> const char* ResourceManager::ReadFile<const char*>(const std::string& virtualPath);
+template<> std::unordered_map<ResourceIdentifier, Texture>& ResourceManager::__Map();
+template<> std::unordered_map<ResourceIdentifier, Shader>& ResourceManager::__Map();
 
-// Defined in resources/texture.cpp
-template<> ResourceIdentifier ResourceManager::Load<Texture>(const ResourceInfo<Texture>&);
-template<> Texture ResourceManager::Get<Texture>(ResourceIdentifier);
+// Load and __CleanUp defined in cpp file of relevant resource
 
-// Defined in resources/shader.cpp
-template<> ResourceIdentifier ResourceManager::Load<Shader>(const ResourceInfo<Shader>&);
-template<> Shader ResourceManager::Get<Shader>(ResourceIdentifier);
+template<> Texture ResourceManager::__LoadInternal(const ResourceInfo<Texture>&);
+template<> void ResourceManager::__UnloadInternal(Texture&);
+
+template<> Shader ResourceManager::__LoadInternal(const ResourceInfo<Shader>&);
+template<> void ResourceManager::__UnloadInternal(Shader&);

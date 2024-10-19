@@ -62,9 +62,9 @@ int main(int argc, char *argv[]) {
     }
 
     windowSystem.Shutdown();
-    ResourceManager::Instance().Shutdown();
     ECS::Instance().Shutdown();
     ScriptingSystem::Instance().Shutdown();
+    ResourceManager::Instance().Shutdown();
 
     return 0;
 }

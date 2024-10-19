@@ -25,12 +25,7 @@ const std::string& ResourceInfo<Shader>::FragPath() const { return m_frag; }
 
 
 template<>
-Shader ResourceManager::Get<Shader>(ResourceIdentifier id) {
-    return Instance().m_shaders.at(id);
-}
-
-template<>
-ResourceIdentifier ResourceManager::Load<Shader>(const ResourceInfo<Shader>& info) {
+Shader ResourceManager::__LoadInternal(const ResourceInfo<Shader>& info) {
 	auto glStatus = [](GLuint id, GLenum name, GLenum type = GL_SHADER){
 		GLint result;
 		switch (type) {
@@ -68,10 +63,10 @@ ResourceIdentifier ResourceManager::Load<Shader>(const ResourceInfo<Shader>& inf
     
 	// Load and compile shaders
 	GLuint vertShaderId = glCreateShader(GL_VERTEX_SHADER);
-	compile(vertShaderId, ReadFile<std::string>(info.VertPath()));
+	compile(vertShaderId, ReadTextFile(info.VertPath()));
 
 	GLuint fragShaderId = glCreateShader(GL_FRAGMENT_SHADER);
-	compile(fragShaderId, ReadFile<std::string>(info.FragPath()));
+	compile(fragShaderId, ReadTextFile(info.FragPath()));
 
 	// Link the program
 	GLuint programId = glCreateProgram();
@@ -90,10 +85,10 @@ ResourceIdentifier ResourceManager::Load<Shader>(const ResourceInfo<Shader>& inf
 	glDeleteShader(vertShaderId);
 	glDeleteShader(fragShaderId);
 
-	// Create resource object
-	Shader shader = Shader(programId);
-	ResourceIdentifier id = info.Identifier();
+    return Shader(programId);
+}
 
-    Instance().m_shaders.emplace(id, shader);
-    return id;
+template<>
+void ResourceManager::__UnloadInternal(Shader& shader) {
+    glDeleteProgram(shader.ProgramId());
 }

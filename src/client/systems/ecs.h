@@ -4,7 +4,7 @@
 
 #include <entt/entt.hpp>
 
-class ECS : public ISystem
+class ECS final : public ISystem
 {
 public:
     static ECS& Instance();
