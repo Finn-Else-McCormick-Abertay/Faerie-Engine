@@ -48,8 +48,10 @@ private:
 template<> std::string ResourceManager::ReadFile<std::string>(const std::string& virtualPath);
 template<> const char* ResourceManager::ReadFile<const char*>(const std::string& virtualPath);
 
+// Defined in resources/texture.cpp
 template<> ResourceIdentifier ResourceManager::Load<Texture>(const ResourceInfo<Texture>&);
 template<> Texture ResourceManager::Get<Texture>(ResourceIdentifier);
 
+// Defined in resources/shader.cpp
 template<> ResourceIdentifier ResourceManager::Load<Shader>(const ResourceInfo<Shader>&);
 template<> Shader ResourceManager::Get<Shader>(ResourceIdentifier);
