@@ -27,8 +27,9 @@ int main(int argc, char *argv[]) {
 	auto ent = registry.create();
 	registry.emplace<Components::Transform>(ent);
 	auto& model = registry.emplace<Components::Model>(ent);
-    model.shaderId = ResourceManager::Load(ResourceInfo<Shader>("resources/shaders/vert.glsl", "resources/shaders/frag.glsl"));
+    model.shaderId = ResourceManager::Load(ResourceInfo<Shader>("/resources/shaders/vert.glsl", "/resources/shaders/frag.glsl"));
 
+/*
     std::ifstream watFile;
     watFile.open(ResourceManager::Instance().RootPath() + "resources/hello.wat");
     std::stringstream strStream;
@@ -53,6 +54,7 @@ int main(int argc, char *argv[]) {
 
     printf("Calling export\n");
     run.call(store, {}).unwrap();
+*/
 
     // Main loop
     while (!windowSystem.ShouldClose()) {

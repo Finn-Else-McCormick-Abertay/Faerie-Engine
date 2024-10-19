@@ -15,5 +15,5 @@ ResourceIdentifier ResourceInfo<Shader>::Identifier() const {
     return hash;
 }
 
-std::string ResourceInfo<Shader>::VertPath() const { return m_vert; }
-std::string ResourceInfo<Shader>::FragPath() const { return m_frag; }
+const std::string& ResourceInfo<Shader>::VertPath() const { return m_vert; }
+const std::string& ResourceInfo<Shader>::FragPath() const { return m_frag; }

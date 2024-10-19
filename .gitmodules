@@ -1,3 +1,8 @@
-[submodule "imgui"]
+[submodule "vendor/imgui"]
 	path = vendor/imgui
 	url = https://github.com/ocornut/imgui.git
+	branch = docking
+[submodule "subprojects/vfspp"]
+	path = subprojects/vfspp
+	url = https://github.com/Finn-Else-McCormick-Abertay/vfspp.git
+	branch = normalise-paths

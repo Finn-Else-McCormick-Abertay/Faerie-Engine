@@ -4,10 +4,14 @@
 #include <GL/glew.h>
 #include <SDL_opengl.h>
 
-#include <string.h>
-#include <fstream>
+// ZipFileSystem includes miniz-cpp, which is a bit skittish.
+// It needs cstring to be included before it for some reason, and it will cause multiple-definition errors if
+// included in more than one cpp file, so we can only interact with it from outside via the virtual file system.
+#include <cstring>
+#include <vfspp/ZipFileSystem.hpp>
+#include <vfspp/NativeFileSystem.hpp>
+
 #include <sstream>
-#include <vector>
 
 ResourceManager& ResourceManager::Instance() {
     static ResourceManager instance;
@@ -15,18 +19,44 @@ ResourceManager& ResourceManager::Instance() {
 }
 
 bool ResourceManager::InitImpl() {
-    char* pathBuf = SDL_GetBasePath();
-    m_appPath = std::string(pathBuf);
-    SDL_free(pathBuf);
+	std::string appPath;
+	{
+		char* pathBuf = SDL_GetBasePath();
+		appPath = std::string(pathBuf);
+		SDL_free(pathBuf);
+	}
+
+	pm_vfs = std::make_unique<vfspp::VirtualFileSystem>();
+
+	auto rootFs = std::make_unique<vfspp::NativeFileSystem>(appPath);
+	rootFs->Initialize();
+
+	pm_vfs->AddFileSystem("/", std::move(rootFs));
 
     return true;
 }
 
 void ResourceManager::ShutdownImpl() {
+	pm_vfs = nullptr;
 }
 
 
-const std::string& ResourceManager::RootPath() const { return m_appPath; }
+vfspp::VirtualFileSystem& ResourceManager::FileSystem() { return *Instance().pm_vfs; }
+
+template<>
+std::string ResourceManager::ReadFile(const std::string& path) {
+	if (auto file = FileSystem().OpenFile(vfspp::FileInfo(path), vfspp::IFile::FileMode::Read); file && file->IsOpened()) {
+		std::stringstream sstr;
+		file->Read(sstr, file->Size());
+		return sstr.str();
+	}
+	return "";
+}
+
+template<>
+const char* ResourceManager::ReadFile(const std::string& path) {
+	return ReadFile<std::string>(path).c_str();
+}
 
 
 template<>
@@ -53,64 +83,47 @@ Shader ResourceManager::Get<Shader>(ResourceIdentifier id) {
 
 template<>
 ResourceIdentifier ResourceManager::Load<Shader>(const ResourceInfo<Shader>& info) {
-    auto& inst = Instance();
+	auto glStatus = [](GLuint id, GLenum name, GLenum type = GL_SHADER){
+		GLint result;
+		switch (type) {
+			case GL_SHADER:  { glGetShaderiv(id, name, &result); }  break;
+			case GL_PROGRAM: { glGetProgramiv(id, name, &result); } break;
+			default: return false;
+		}
+		return (bool)result;
+	};
 
-    std::string vertPath = inst.m_appPath + info.VertPath(), fragPath = inst.m_appPath + info.FragPath();
+	auto glOutputError = [](GLuint id, GLenum type = GL_SHADER) {
+		int logLength = 0;
+		switch (type) {
+			case GL_SHADER:  { glGetShaderiv(id, GL_INFO_LOG_LENGTH, &logLength); }  break;
+			case GL_PROGRAM: { glGetProgramiv(id, GL_INFO_LOG_LENGTH, &logLength); } break;
+		}
+		if (logLength > 0) {
+			std::vector<char> errorMessage(logLength+1);
+			switch (type) {
+				case GL_SHADER:  { glGetShaderInfoLog(id, logLength, NULL, &errorMessage[0]); }  break;
+				case GL_PROGRAM: { glGetProgramInfoLog(id, logLength, NULL, &errorMessage[0]); } break;
+			}
+			printf("%s\n", &errorMessage[0]);
+		}
+	};
+	
+	auto compile = [&](GLuint id, const std::string& code){
+		const char* sourcePtr = code.c_str();
+		glShaderSource(id, 1, &sourcePtr, NULL);
+		glCompileShader(id);
+
+		glOutputError(id);
+		return glStatus(id, GL_COMPILE_STATUS);
+	};
     
-	// Create the shaders
+	// Load and compile shaders
 	GLuint vertShaderId = glCreateShader(GL_VERTEX_SHADER);
+	compile(vertShaderId, ReadFile<std::string>(info.VertPath()));
+
 	GLuint fragShaderId = glCreateShader(GL_FRAGMENT_SHADER);
-
-	// Read the Vertex Shader code from the file
-	std::string vertShaderCode;
-	std::ifstream vertShaderStream(vertPath.c_str(), std::ios::in);
-	if(vertShaderStream.is_open()){
-		std::stringstream sstr;
-		sstr << vertShaderStream.rdbuf();
-		vertShaderCode = sstr.str();
-		vertShaderStream.close();
-	}
-
-	// Read the Fragment Shader code from the file
-	std::string fragShaderCode;
-	std::ifstream fragShaderStream(fragPath.c_str(), std::ios::in);
-	if(fragShaderStream.is_open()){
-		std::stringstream sstr;
-		sstr << fragShaderStream.rdbuf();
-		fragShaderCode = sstr.str();
-		fragShaderStream.close();
-	}
-
-	GLint result = GL_FALSE;
-	int logLength;
-
-	// Compile Vertex Shader
-	char const * vertSourcePtr = vertShaderCode.c_str();
-	glShaderSource(vertShaderId, 1, &vertSourcePtr, NULL);
-	glCompileShader(vertShaderId);
-
-	// Check Vertex Shader
-	glGetShaderiv(vertShaderId, GL_COMPILE_STATUS, &result);
-	glGetShaderiv(vertShaderId, GL_INFO_LOG_LENGTH, &logLength);
-	if (logLength > 0){
-		std::vector<char> vertShaderErrorMessage(logLength+1);
-		glGetShaderInfoLog(vertShaderId, logLength, NULL, &vertShaderErrorMessage[0]);
-		printf("%s\n", &vertShaderErrorMessage[0]);
-	}
-
-	// Compile Fragment Shader
-	char const * fragSourcePtr = fragShaderCode.c_str();
-	glShaderSource(fragShaderId, 1, &fragSourcePtr , NULL);
-	glCompileShader(fragShaderId);
-
-	// Check Fragment Shader
-	glGetShaderiv(fragShaderId, GL_COMPILE_STATUS, &result);
-	glGetShaderiv(fragShaderId, GL_INFO_LOG_LENGTH, &logLength);
-	if (logLength > 0){
-		std::vector<char> fragShaderErrorMessage(logLength+1);
-		glGetShaderInfoLog(fragShaderId, logLength, NULL, &fragShaderErrorMessage[0]);
-		printf("%s\n", &fragShaderErrorMessage[0]);
-	}
+	compile(fragShaderId, ReadFile<std::string>(info.FragPath()));
 
 	// Link the program
 	GLuint programId = glCreateProgram();
@@ -118,13 +131,9 @@ ResourceIdentifier ResourceManager::Load<Shader>(const ResourceInfo<Shader>& inf
 	glAttachShader(programId, fragShaderId);
 	glLinkProgram(programId);
 
-	// Check the program
-	glGetProgramiv(programId, GL_LINK_STATUS, &result);
-	glGetProgramiv(programId, GL_INFO_LOG_LENGTH, &logLength);
-	if (logLength > 0){
-		std::vector<char> programErrorMessage(logLength+1);
-		glGetProgramInfoLog(programId, logLength, NULL, &programErrorMessage[0]);
-		printf("%s\n", &programErrorMessage[0]);
+	if (!glStatus(programId, GL_LINK_STATUS, GL_PROGRAM)) {
+		glOutputError(programId, GL_PROGRAM);
+		// Maybe do something if fail, like replace with default shader or throw error? idk
 	}
 	
 	glDetachShader(programId, vertShaderId);
@@ -133,9 +142,10 @@ ResourceIdentifier ResourceManager::Load<Shader>(const ResourceInfo<Shader>& inf
 	glDeleteShader(vertShaderId);
 	glDeleteShader(fragShaderId);
 
+	// Create resource object
 	Shader shader = Shader(programId);
 	ResourceIdentifier id = info.Identifier();
 
-    inst.m_shaders.emplace(id, shader);
+    Instance().m_shaders.emplace(id, shader);
     return id;
 }

@@ -10,6 +10,7 @@
 #include <unordered_map>
 #include <memory>
 
+#include <vfspp/VirtualFileSystem.hpp>
 
 // Must be initialised after the window
 class ResourceManager : public ISystem
@@ -28,18 +29,24 @@ public:
         return Get<T>(info.Identifier());
     }
 
-    const std::string& RootPath() const;
-
 private:
     ResourceManager() = default;
     virtual bool InitImpl() override;
     virtual void ShutdownImpl() override;
 
-    std::string m_appPath;
+    static vfspp::VirtualFileSystem& FileSystem();
+
+    template<typename T>
+    static T ReadFile(const std::string& virtualPath);
+
+    std::unique_ptr<vfspp::VirtualFileSystem> pm_vfs;
 
     std::unordered_map<ResourceIdentifier, Texture> m_textures;
     std::unordered_map<ResourceIdentifier, Shader> m_shaders;
 };
+
+template<> std::string ResourceManager::ReadFile<std::string>(const std::string& virtualPath);
+template<> const char* ResourceManager::ReadFile<const char*>(const std::string& virtualPath);
 
 template<> ResourceIdentifier ResourceManager::Load<Texture>(const ResourceInfo<Texture>&);
 template<> Texture ResourceManager::Get<Texture>(ResourceIdentifier);

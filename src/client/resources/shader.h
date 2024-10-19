@@ -22,8 +22,8 @@ public:
 
     ResourceIdentifier Identifier() const;
 
-    std::string VertPath() const;
-    std::string FragPath() const;
+    const std::string& VertPath() const;
+    const std::string& FragPath() const;
 private:
     std::string m_vert, m_frag;
 };
