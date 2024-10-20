@@ -2,12 +2,14 @@
 
 #include <memory>
 #ifdef WASMTIME
-#include <systems/impl/scripting_system_impl_wasmtime.h>
+#include <platform/wasmtime/scripting_system_wasmtime.h>
 #endif // WASMTIME
 
 ScriptingSystem& ScriptingSystem::Instance() {
+    static std::unique_ptr<ScriptingSystem> inst = std::unique_ptr<ScriptingSystem>(
 #ifdef WASMTIME
-    static std::unique_ptr<ScriptingSystem> inst = std::unique_ptr<ScriptingSystem>(new ScriptingSystemImplWasmtime());
+        new ScriptingSystemWasmtime()
 #endif // WASMTIME
+    );
     return *inst;
 }

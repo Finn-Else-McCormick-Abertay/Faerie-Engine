@@ -1,7 +1,7 @@
 #include "window_system.h"
 
 #ifdef OPENGL3
-#include <systems/impl/render_system_impl_opengl3.h>
+#include <platform/render_system_opengl3.h>
 #endif // OPENGL3
 
 #include <stdio.h>
@@ -23,7 +23,7 @@ bool WindowSystem::InitImpl() {
     SDL_WindowFlags windowFlags = (SDL_WindowFlags)(SDL_WINDOW_RESIZABLE | SDL_WINDOW_ALLOW_HIGHDPI);
 
 #ifdef OPENGL3
-    m_renderSystem = std::make_unique<RenderSystemImplOpenGl3>();
+    m_renderSystem = std::make_unique<RenderSystemOpenGl3>();
     windowFlags = (SDL_WindowFlags)(SDL_WINDOW_OPENGL | windowFlags);
 #endif // OPENGL3
 

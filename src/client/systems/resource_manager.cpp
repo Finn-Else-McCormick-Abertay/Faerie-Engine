@@ -10,6 +10,7 @@
 #include <vfspp/NativeFileSystem.hpp>
 
 #include <sstream>
+#include <vector>
 
 ResourceManager& ResourceManager::Instance() {
     static ResourceManager instance;
@@ -43,6 +44,7 @@ void ResourceManager::ShutdownImpl() {
 
 template<> std::unordered_map<ResourceIdentifier, Texture>& ResourceManager::__Map() { return Instance().m_textures; }
 template<> std::unordered_map<ResourceIdentifier, Shader>& ResourceManager::__Map() { return Instance().m_shaders; }
+template<> std::unordered_map<ResourceIdentifier, Script>& ResourceManager::__Map() { return Instance().m_scripts; }
 
 vfspp::VirtualFileSystem& ResourceManager::FileSystem() { return *Instance().pm_vfs; }
 
@@ -53,4 +55,13 @@ std::string ResourceManager::ReadTextFile(const std::string& path) {
 		return sstr.str();
 	}
 	return "";
+}
+
+std::span<uint8_t> ResourceManager::ReadBinaryFile(const std::string& path) {
+	if (auto file = FileSystem().OpenFile(vfspp::FileInfo(path), vfspp::IFile::FileMode::Read); file && file->IsOpened()) {
+		std::vector<uint8_t> vec; vec.reserve(file->Size());
+		file->Read(vec, file->Size());
+		return std::span<uint8_t>(vec);
+	}
+	return std::span<uint8_t>();
 }

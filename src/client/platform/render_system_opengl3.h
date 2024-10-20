@@ -8,7 +8,7 @@
 
 #include <string>
 
-class RenderSystemImplOpenGl3 : public IRenderSystem
+class RenderSystemOpenGl3 : public IRenderSystem
 {
 public:
     void CreateContext(SDL_Window* window);

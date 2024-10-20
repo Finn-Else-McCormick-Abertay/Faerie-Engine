@@ -15,17 +15,18 @@ client_src = [
     cl_rt/'systems/system.cpp',
     cl_rt/'systems/window_system.cpp',
     cl_rt/'systems/render_system.cpp',
+    cl_rt/'platform/render_system_opengl3.cpp',
     cl_rt/'systems/resource_manager.cpp',
     cl_rt/'systems/scripting_system.cpp',
+    cl_rt/'platform/wasmtime/scripting_system_wasmtime.cpp',
     cl_rt/'systems/ecs.cpp',
-    cl_rt/'systems/impl/render_system_impl_opengl3.cpp',
-    cl_rt/'systems/impl/scripting_system_impl_wasmtime.cpp',
-    cl_rt/'components/transform.cpp',
-    cl_rt/'components/model.cpp',
-    cl_rt/'components/sprite.cpp',
+    cl_rt/'util/stb.cpp',
     cl_rt/'resources/shader.cpp',
     cl_rt/'resources/texture.cpp',
-    cl_rt/'util/stb.cpp'
+    cl_rt/'resources/script.cpp',
+    cl_rt/'components/transform.cpp',
+    cl_rt/'components/model.cpp',
+    cl_rt/'components/sprite.cpp'
 ]
 client_include = [ cl_rt ]
 client_pch = 'pch/client_pch.h'

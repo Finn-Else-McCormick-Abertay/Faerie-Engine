@@ -1,4 +1,4 @@
-#include "render_system_impl_opengl3.h"
+#include "render_system_opengl3.h"
 
 #include <imgui.h>
 #include <imgui_impl_sdl2.h>
@@ -11,7 +11,7 @@
 
 #include <stdio.h>
 
-bool RenderSystemImplOpenGl3::InitImpl() {
+bool RenderSystemOpenGl3::InitImpl() {
     // GL 3.0 + GLSL 130
     m_glslVersion = "#version 130";
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, 0);
@@ -26,7 +26,7 @@ bool RenderSystemImplOpenGl3::InitImpl() {
     return true;
 }
 
-void RenderSystemImplOpenGl3::ShutdownImpl() {
+void RenderSystemOpenGl3::ShutdownImpl() {
     if (ImGui::GetCurrentContext()) {
         ImGui_ImplOpenGL3_Shutdown();
         ImGui_ImplSDL2_Shutdown();
@@ -34,7 +34,7 @@ void RenderSystemImplOpenGl3::ShutdownImpl() {
     }
 }
 
-void RenderSystemImplOpenGl3::CreateContext(SDL_Window* window) {
+void RenderSystemOpenGl3::CreateContext(SDL_Window* window) {
     p_window = window;
 
     m_glContext = SDL_GL_CreateContext(p_window);
@@ -79,13 +79,13 @@ void RenderSystemImplOpenGl3::CreateContext(SDL_Window* window) {
     glBufferData(GL_ARRAY_BUFFER, sizeof(g_vertex_buffer_data), g_vertex_buffer_data, GL_STATIC_DRAW);
 }
 
-void RenderSystemImplOpenGl3::BeginImGuiFrame() {
+void RenderSystemOpenGl3::BeginImGuiFrame() {
     ImGui_ImplOpenGL3_NewFrame();
     ImGui_ImplSDL2_NewFrame();
     ImGui::NewFrame();
 }
 
-void RenderSystemImplOpenGl3::Render() {
+void RenderSystemOpenGl3::Render() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     glm::mat4 projectionMat = glm::ortho(-10.0f,10.0f,-10.0f,10.0f,0.1f,100.0f); // In world coordinates
