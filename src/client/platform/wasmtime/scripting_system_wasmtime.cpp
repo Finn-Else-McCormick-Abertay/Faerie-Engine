@@ -7,7 +7,12 @@
 bool ScriptingSystemWasmtime::InitImpl() {
     wasmtime::Config config;
     pm_engine = std::make_unique<wasmtime::Engine>(std::move(config));
+    pm_linker = std::make_unique<wasmtime::Linker>(*pm_engine);
+    //pm_linker->define_wasi().unwrap();
+
     pm_store = std::make_unique<wasmtime::Store>(*pm_engine);
+    //wasmtime::WasiConfig wasiConfig;
+    //pm_store->context().set_wasi(std::move(wasiConfig)).unwrap();
 
     return true;
 };

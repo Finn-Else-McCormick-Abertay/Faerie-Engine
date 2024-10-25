@@ -21,19 +21,26 @@ template<> Script ResourceManager::__LoadInternal(const ResourceInfo<Script>& in
         //return Script();
     }
 
-    bool isBinary = fileInfo.Extension() == "wasm";
-
     std::unique_ptr<wasmtime::Module> module;
 
     // File is .wasm binary file
-    if (isBinary) {
+    if (fileInfo.Extension() == ".wasm") {
         std::span<uint8_t> srcBytes = ReadBinaryFile(info.Path());
-        module = std::make_unique<wasmtime::Module>(std::move(wasmtime::Module::compile(ScriptingSystemWasmtime::Engine(), srcBytes).unwrap()));
+        auto result = wasmtime::Module::compile(ScriptingSystemWasmtime::Engine(), srcBytes);
+        if (result) {
+            module = std::make_unique<wasmtime::Module>(std::move(result.ok()));
+        }
+        else {
+            module = nullptr;
+        }
     }
     // File is .wat text file
-    else {
+    else if (fileInfo.Extension() == ".wat") {
         std::string srcText = ReadTextFile(info.Path());
         module = std::make_unique<wasmtime::Module>(std::move(wasmtime::Module::compile(ScriptingSystemWasmtime::Engine(), srcText).unwrap()));
+    }
+    else {
+        // Fail in some kind of way
     }
 
     auto instance = ScriptingSystemWasmtime::CreateInstance(*module);

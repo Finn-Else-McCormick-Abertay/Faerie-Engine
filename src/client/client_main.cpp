@@ -23,7 +23,7 @@ int main(int argc, char *argv[]) {
 	auto& model = registry.emplace<Components::Model>(ent);
     model.shaderId = ResourceManager::Load(ResourceInfo<Shader>("/resources/shaders/vert.glsl", "/resources/shaders/frag.glsl"));
 
-    auto scriptId = ResourceManager::Load<Script>("/resources/hello.wat");
+    auto scriptId = ResourceManager::Load<Script>("/resources/rust_module_example.wasm");
     auto& script = ResourceManager::Get<Script>(scriptId);
     script.Call("run", {});
 

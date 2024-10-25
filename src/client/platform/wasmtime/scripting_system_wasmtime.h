@@ -30,5 +30,6 @@ protected:
 
 private:
     std::unique_ptr<wasmtime::Engine> pm_engine;
+    std::unique_ptr<wasmtime::Linker> pm_linker;
     std::unique_ptr<wasmtime::Store> pm_store;
 };
