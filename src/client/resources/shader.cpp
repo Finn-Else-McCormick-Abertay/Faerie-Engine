@@ -2,6 +2,7 @@
 
 #include <util/hash.h>
 #include <systems/resource_manager.h>
+#include <systems/logger.h>
 
 #include <SDL.h>
 #include <GL/glew.h>
@@ -36,7 +37,7 @@ Shader ResourceManager::__LoadInternal(const ResourceInfo<Shader>& info) {
 		return (bool)result;
 	};
 
-	auto glOutputError = [](GLuint id, GLenum type = GL_SHADER) {
+	auto glOutputError = [&info](GLuint id, GLenum type = GL_SHADER) {
 		int logLength = 0;
 		switch (type) {
 			case GL_SHADER:  { glGetShaderiv(id, GL_INFO_LOG_LENGTH, &logLength); }  break;
@@ -48,7 +49,7 @@ Shader ResourceManager::__LoadInternal(const ResourceInfo<Shader>& info) {
 				case GL_SHADER:  { glGetShaderInfoLog(id, logLength, NULL, &errorMessage[0]); }  break;
 				case GL_PROGRAM: { glGetProgramInfoLog(id, logLength, NULL, &errorMessage[0]); } break;
 			}
-			printf("%s\n", &errorMessage[0]);
+			Logger::Error("Shader", info, ": ", errorMessage.data());
 		}
 	};
 	
@@ -76,6 +77,7 @@ Shader ResourceManager::__LoadInternal(const ResourceInfo<Shader>& info) {
 
 	if (!glStatus(programId, GL_LINK_STATUS, GL_PROGRAM)) {
 		glOutputError(programId, GL_PROGRAM);
+		Logger::Error("Shader", "Failed to load from ", info, ": shader program does not compile.");
 		// Maybe do something if fail, like replace with default shader or throw error? idk
 	}
 	

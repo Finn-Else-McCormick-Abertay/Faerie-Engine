@@ -7,6 +7,8 @@
 class ECS final : public ISystem
 {
 public:
+    SYSTEM_LOGGER_NAME(ECS)
+
     static ECS& Instance();
 
     static entt::registry& Registry();

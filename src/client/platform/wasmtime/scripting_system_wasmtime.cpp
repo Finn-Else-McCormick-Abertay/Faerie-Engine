@@ -3,6 +3,7 @@
 #include <systems/resource_manager.h>
 
 #include <stdio.h>
+#include <systems/Logger.h>
 
 bool ScriptingSystemWasmtime::InitImpl() {
     wasmtime::Config config;
@@ -14,6 +15,7 @@ bool ScriptingSystemWasmtime::InitImpl() {
     //wasmtime::WasiConfig wasiConfig;
     //pm_store->context().set_wasi(std::move(wasiConfig)).unwrap();
 
+    Logger::Info(*this, "Initialised");
     return true;
 };
 

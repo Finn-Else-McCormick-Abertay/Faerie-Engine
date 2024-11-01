@@ -2,11 +2,14 @@
 #include <systems/resource_manager.h>
 #include <systems/scripting_system.h>
 #include <systems/ecs.h>
+#include <systems/logger.h>
 
 #include <components/model.h>
 #include <components/transform.h>
 
 int main(int argc, char *argv[]) {
+
+    if (!Logger::Instance().Init()) { return -1; }
 
     WindowSystem windowSystem;
     if (!windowSystem.Init()) { return -1; }
@@ -36,6 +39,7 @@ int main(int argc, char *argv[]) {
     ECS::Instance().Shutdown();
     ScriptingSystem::Instance().Shutdown();
     ResourceManager::Instance().Shutdown();
+    Logger::Instance().Shutdown();
 
     return 0;
 }

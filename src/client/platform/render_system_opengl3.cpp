@@ -9,7 +9,7 @@
 #include <components/model.h>
 #include <components/transform.h>
 
-#include <stdio.h>
+#include <systems/Logger.h>
 
 bool RenderSystemOpenGl3::InitImpl() {
     // GL 3.0 + GLSL 130
@@ -23,6 +23,7 @@ bool RenderSystemOpenGl3::InitImpl() {
     SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
     SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 8);
 
+    Logger::Info(*this, "Initialised OpenGL3");
     return true;
 }
 
@@ -43,7 +44,7 @@ void RenderSystemOpenGl3::CreateContext(SDL_Window* window) {
 
     GLenum glewErr = glewInit();
     if (glewErr != GLEW_OK) {
-        fprintf(stderr, "Error: glewInit(): %s\n", glewGetErrorString(glewErr));
+        Logger::Error(*this, "glewInit: ", (const char*)glewGetErrorString(glewErr));
     }
     
     // Setup Dear ImGui context
@@ -59,11 +60,7 @@ void RenderSystemOpenGl3::CreateContext(SDL_Window* window) {
     // Setup Platform/Renderer backends
     ImGui_ImplSDL2_InitForD3D(p_window);
     ImGui_ImplOpenGL3_Init(m_glslVersion.c_str());
-
-    // TEMP! REMOVE! USE ONE FROM WINDOW (should move shader loading out of here)
-    char* pathBuf = SDL_GetBasePath();
-    std::string appPath = std::string(pathBuf);
-    SDL_free(pathBuf);
+    Logger::Info(*this, "Initialised ImGui");
     
     glGenVertexArrays(1, &vertexArrayId);
     glBindVertexArray(vertexArrayId);

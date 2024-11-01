@@ -4,6 +4,10 @@ project(
     version: '0.0.1'
 )
 
+if get_option('buildtype').startswith('debug')
+  add_project_arguments('-DDEBUG', language : 'cpp')
+endif
+
 # -- Program source --
 sh_rt = 'src/shared'
 shared_src = []
@@ -13,6 +17,7 @@ cl_rt = 'src/client'
 client_src = [
     cl_rt/'client_main.cpp',
     cl_rt/'systems/system.cpp',
+    cl_rt/'systems/logger.cpp',
     cl_rt/'systems/window_system.cpp',
     cl_rt/'systems/render_system.cpp',
     cl_rt/'platform/render_system_opengl3.cpp',

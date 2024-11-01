@@ -8,11 +8,13 @@
 #include <imgui.h>
 #include <imgui_impl_sdl2.h>
 
+#include <systems/logger.h>
+
 bool WindowSystem::InitImpl() {
     // Setup SDL
     if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER | SDL_INIT_GAMECONTROLLER) != 0)
     {
-        printf("Error: %s\n", SDL_GetError()); 
+        Logger::Error(*this, "SDL_Init: ", SDL_GetError());
         return false;
     }
 
@@ -33,12 +35,13 @@ bool WindowSystem::InitImpl() {
 
     p_window = SDL_CreateWindow("Untitled Tabletop Engine", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 1280, 720, windowFlags);
     if (p_window == nullptr) {
-        printf("Error: SDL_CreateWindow(): %s\n", SDL_GetError());
+        Logger::Error(*this, "SDL_CreateWindow: ", SDL_GetError());
         return false;
     }
 
     m_renderSystem->CreateContext(p_window);
 
+    Logger::Info(*this, "Initialised");
     return true;
 }
 

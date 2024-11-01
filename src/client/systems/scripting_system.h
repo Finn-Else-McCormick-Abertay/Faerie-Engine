@@ -9,6 +9,8 @@
 class ScriptingSystem : public ISystem
 {
 public:
+    SYSTEM_LOGGER_NAME(ScriptingSystem)
+    
     static ScriptingSystem& Instance();
 
 protected:

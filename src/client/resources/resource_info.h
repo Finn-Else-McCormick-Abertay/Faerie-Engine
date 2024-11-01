@@ -24,4 +24,9 @@ public:
 
 private:
     std::string m_path;
+    
+    friend std::ostream& operator<<(std::ostream& os, const ResourceInfo<T>& info) {
+        os << info.Path();
+        return os;
+    }
 };

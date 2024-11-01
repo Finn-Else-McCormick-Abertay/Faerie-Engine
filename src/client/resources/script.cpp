@@ -2,6 +2,7 @@
 
 #include <systems/resource_manager.h>
 #include <systems/scripting_system.h>
+#include <systems/logger.h>
 
 #ifdef WASMTIME
 #include <platform/wasmtime/scripting_system_wasmtime.h>
@@ -17,7 +18,7 @@ std::vector<wasmtime::Val> Script::Call(const std::string& func, const std::vect
 template<> Script ResourceManager::__LoadInternal(const ResourceInfo<Script>& info) {
     auto fileInfo = vfspp::FileInfo(info.Path());
     if (!fileInfo.IsValid()) {
-        // do something???
+        Logger::Error("Script", "Failed to load from ", info, ": path is invalid.");
         //return Script();
     }
 
@@ -29,6 +30,7 @@ template<> Script ResourceManager::__LoadInternal(const ResourceInfo<Script>& in
         if (auto result = wasmtime::Module::compile(ScriptingSystemWasmtime::Engine(), srcBytes)) {
             module = std::make_unique<wasmtime::Module>(std::move(result.ok()));
         }
+        else { Logger::Error("Script", "Failed to load from ", info, ": script does not compile."); }
     }
     // File is .wat text file
     else if (fileInfo.Extension() == ".wat") {
@@ -36,9 +38,14 @@ template<> Script ResourceManager::__LoadInternal(const ResourceInfo<Script>& in
         if (auto result = wasmtime::Module::compile(ScriptingSystemWasmtime::Engine(), srcText)) {
             module = std::make_unique<wasmtime::Module>(std::move(result.ok()));
         }
+        else { Logger::Error("Script", "Failed to load from ", info, ": script does not compile."); }
     }
     else {
-        // Fail in some kind of way
+        Logger::Error("Script", "Failed to load from ", info, ": ", fileInfo.Extension(), " is not a valid WebAssembly script type.");
+    }
+
+    if (!module) {
+        //return Script();
     }
 
     auto instance = ScriptingSystemWasmtime::CreateInstance(*module);

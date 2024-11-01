@@ -1,6 +1,7 @@
 #include "texture.h"
 
 #include <systems/resource_manager.h>
+#include <systems/logger.h>
 
 template<>
 Texture ResourceManager::__LoadInternal(const ResourceInfo<Texture>& info) {

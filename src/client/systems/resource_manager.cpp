@@ -12,6 +12,8 @@
 #include <sstream>
 #include <vector>
 
+#include <systems/Logger.h>
+
 ResourceManager& ResourceManager::Instance() {
     static ResourceManager instance;
     return instance;
@@ -32,6 +34,8 @@ bool ResourceManager::InitImpl() {
 
 	pm_vfs->AddFileSystem("/", std::move(rootFs));
 
+	Logger::Info(*this, "Initialised");
+	Logger::Debug(*this, "Root path: ", appPath);
     return true;
 }
 
@@ -54,6 +58,7 @@ std::string ResourceManager::ReadTextFile(const std::string& path) {
 		file->Read(sstr, file->Size());
 		return sstr.str();
 	}
+	Logger::Error(Instance(), "Failed to open text file ", path);
 	return "";
 }
 
@@ -63,5 +68,6 @@ std::vector<uint8_t> ResourceManager::ReadBinaryFile(const std::string& path) {
 		file->Read(vec, file->Size());
 		return vec;
 	}
+	Logger::Error(Instance(), "Failed to open binary file ", path);
 	return std::vector<uint8_t>();
 }

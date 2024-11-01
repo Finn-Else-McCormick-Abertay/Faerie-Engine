@@ -1,6 +1,7 @@
 #pragma once
 
 #include <resources/resource_info.h>
+#include <iostream>
 
 class Shader
 {
@@ -26,4 +27,9 @@ public:
     const std::string& FragPath() const;
 private:
     std::string m_vert, m_frag;
+
+    friend std::ostream& operator<<(std::ostream& os, const ResourceInfo<Shader>& shader) {
+        os << "Frag: " << shader.FragPath() << ", Vert" << shader.VertPath();
+        return os;
+    }
 };
