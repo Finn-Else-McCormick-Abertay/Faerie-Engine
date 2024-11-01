@@ -57,11 +57,11 @@ std::string ResourceManager::ReadTextFile(const std::string& path) {
 	return "";
 }
 
-std::span<uint8_t> ResourceManager::ReadBinaryFile(const std::string& path) {
+std::vector<uint8_t> ResourceManager::ReadBinaryFile(const std::string& path) {
 	if (auto file = FileSystem().OpenFile(vfspp::FileInfo(path), vfspp::IFile::FileMode::Read); file && file->IsOpened()) {
 		std::vector<uint8_t> vec; vec.reserve(file->Size());
 		file->Read(vec, file->Size());
-		return std::span<uint8_t>(vec);
+		return vec;
 	}
-	return std::span<uint8_t>();
+	return std::vector<uint8_t>();
 }

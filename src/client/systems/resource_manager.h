@@ -10,7 +10,7 @@
 #include <string>
 #include <unordered_map>
 #include <memory>
-#include <span>
+#include <vector>
 #include <cstddef>
 
 #include <vfspp/VirtualFileSystem.hpp>
@@ -57,7 +57,7 @@ protected:
     static vfspp::VirtualFileSystem& FileSystem();
 
     static std::string ReadTextFile(const std::string& virtualPath);
-    static std::span<uint8_t> ReadBinaryFile(const std::string& virtualPath);
+    static std::vector<uint8_t> ReadBinaryFile(const std::string& virtualPath);
 
 private:
     ResourceManager() = default;
