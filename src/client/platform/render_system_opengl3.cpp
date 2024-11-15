@@ -103,7 +103,7 @@ void RenderSystemOpenGl3::Render() {
         glUseProgram(shader.ProgramId());
         GLuint matrixId = glGetUniformLocation(shader.ProgramId(), "MVP");
 
-        glm::mat4 worldMat = trans.AsMatrix();
+        glm::mat4 worldMat = trans.GlobalMatrix();
 
         glm::mat4 mvp = projectionMat * viewMat * worldMat;
 
