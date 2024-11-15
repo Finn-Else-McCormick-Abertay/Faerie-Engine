@@ -29,6 +29,7 @@ client_src = [
     cl_rt/'resources/shader.cpp',
     cl_rt/'resources/texture.cpp',
     cl_rt/'resources/script.cpp',
+    cl_rt/'components/uuid_comp.cpp',
     cl_rt/'components/transform.cpp',
     cl_rt/'components/model.cpp',
     cl_rt/'components/sprite.cpp'
@@ -87,6 +88,9 @@ vfspp_subproj = cmake.subproject('vfspp', options: vfspp_opt)
 
 vfspp = vfspp_subproj.dependency('vfspp')
 
+# stduuid - header only library, provided locally
+stduuid = declare_dependency(include_directories: 'vendor/stduuid')
+
 
 # -- Targets --
 
@@ -97,5 +101,5 @@ run_target('resources', command: ['buildscripts/copy_resources.cmd'])
 executable('client',
     sources: shared_src + client_src, include_directories: shared_include + client_include,
     cpp_pch: client_pch, cpp_args: client_args,
-    dependencies: [ sdl2, opengl, glew, glm, imgui, wasmtime, vfspp, enet, entt ]
+    dependencies: [ sdl2, opengl, glew, glm, imgui, wasmtime, vfspp, enet, entt, stduuid ]
 )
