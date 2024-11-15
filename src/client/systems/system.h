@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <iostream>
 
 #define SYSTEM_LOGGER_NAME(name) virtual std::string Name() const override { return #name; }
 
@@ -21,3 +22,5 @@ protected:
 private:
     bool m_initialised = false;
 };
+
+inline std::ostream& operator <<(std::ostream &os, const ISystem &v) { os << v.Name(); return os; }

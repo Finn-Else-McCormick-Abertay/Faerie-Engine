@@ -6,16 +6,16 @@
 #include <sstream>
 
 #define _LOGGER_FUNCTION(FuncName)\
-static void FuncName (const std::string& identifier, const std::string& message) { Instance().Output(identifier, message, OutputMode::FuncName); }\
-static void FuncName (const ISystem& system, const std::string& message) { FuncName (system.Name(), message); }\
-template<typename... Args> static void FuncName (const std::string& identifier, Args... args) { std::stringstream ss; ((ss << args), ...); FuncName (identifier, ss.str()); }\
-template<typename... Args> static void FuncName (const ISystem& system, Args... args) { std::stringstream ss; ((ss << args), ...); FuncName (system, ss.str()); }
+static void FuncName (const std::string& id, const std::string& message) { Instance().Output(id, message, OutputMode::FuncName); }\
+template<typename T> static void FuncName (const T& id, const std::string& message) { std::stringstream ss; ss << id; FuncName (ss.str(), message); }\
+template<typename... Args> static void FuncName (const std::string& id, Args... args) { std::stringstream ss; ((ss << args), ...); FuncName (id, ss.str()); }\
+template<typename T, typename... Args> static void FuncName (const T& id, Args... args) { std::stringstream ss; ((ss << args), ...); FuncName (id, ss.str()); }
 
 #define _LOGGER_FUNCTION_EMPTY(FuncName)\
-static void FuncName (const std::string& identifier, const std::string& message) {}\
-static void FuncName (const ISystem& system, const std::string& message) {}\
-template<typename... Args> static void FuncName (const std::string& identifier, Args... args) {}\
-template<typename... Args> static void FuncName (const ISystem& system, Args... args) {}
+static void FuncName (const std::string& id, const std::string& message) {}\
+template<typename T> static void FuncName (const T& id, const std::string& message) {}\
+template<typename... Args> static void FuncName (const std::string& id, Args... args) {}\
+template<typename T, typename... Args> static void FuncName (const T& id, Args... args) {}
 
 class Logger final : public ISystem
 {

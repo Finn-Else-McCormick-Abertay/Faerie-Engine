@@ -6,6 +6,7 @@
 
 #include <components/model.h>
 #include <components/transform.h>
+#include <components/hierarchy.h>
 
 int main(int argc, char *argv[]) {
 
@@ -20,10 +21,10 @@ int main(int argc, char *argv[]) {
 
     if (!ScriptingSystem::Instance().Init()) { return -1; }
 
-	auto& registry = ECS::Registry();
-	auto ent = registry.create();
-	registry.emplace<Components::Transform>(ent);
-	auto& model = registry.emplace<Components::Model>(ent);
+	auto entity = ECS::Create();
+    entity.Add<Components::Transform>();
+    entity.Add<Components::Hierarchy>();
+	auto& model = entity.Add<Components::Model>();
     model.shaderId = ResourceManager::Load(ResourceInfo<Shader>("/resources/shaders/vert.glsl", "/resources/shaders/frag.glsl"));
 
     auto scriptId = ResourceManager::Load<Script>("/resources/rust_module_example.wasm");

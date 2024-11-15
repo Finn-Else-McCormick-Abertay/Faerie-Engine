@@ -30,6 +30,7 @@ client_src = [
     cl_rt/'resources/texture.cpp',
     cl_rt/'resources/script.cpp',
     cl_rt/'components/uuid_comp.cpp',
+    cl_rt/'components/hierarchy.cpp',
     cl_rt/'components/transform.cpp',
     cl_rt/'components/model.cpp',
     cl_rt/'components/sprite.cpp'

@@ -1,5 +1,6 @@
 #include "ecs.h"
 
+#include <entity_wrapper.h>
 #include <systems/logger.h>
 
 ECS& ECS::Instance() {
@@ -18,4 +19,8 @@ void ECS::ShutdownImpl() {
 
 entt::registry& ECS::Registry() {
     return Instance().m_registry;
+}
+
+Entity ECS::Create() {
+    return Entity(Registry().create());
 }
