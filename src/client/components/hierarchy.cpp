@@ -39,7 +39,7 @@ void Components::Hierarchy::__Internal_SetParent(Entity newParent) {
 
     if (m_self) {
         if (m_parent) {
-            Logger::Warning("Hierarchy Component", "Reparenting non-orphan entity.");
+            Logger::Warning(*this, "Reparenting non-orphan entity.");
             m_parent.Get<Hierarchy>().RemoveChild(m_self);
         }
         m_parent = newParent;

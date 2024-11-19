@@ -10,8 +10,6 @@
 class WindowSystem final : public ISystem
 {
 public:
-    SYSTEM_LOGGER_NAME(WindowSystem)
-
     void Update();
 
     bool ShouldClose();

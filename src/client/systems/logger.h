@@ -3,25 +3,24 @@
 #include <systems/system.h>
 
 #include <string>
+#include <util/type_name.h>
 #include <sstream>
 
 #define _LOGGER_FUNCTION(FuncName)\
-static void FuncName (const std::string& id, const std::string& message) { Instance().Output(id, message, OutputMode::FuncName); }\
-template<typename T> static void FuncName (const T& id, const std::string& message) { std::stringstream ss; ss << id; FuncName (ss.str(), message); }\
-template<typename... Args> static void FuncName (const std::string& id, Args... args) { std::stringstream ss; ((ss << args), ...); FuncName (id, ss.str()); }\
-template<typename T, typename... Args> static void FuncName (const T& id, Args... args) { std::stringstream ss; ((ss << args), ...); FuncName (id, ss.str()); }
+template<typename T> static void FuncName(const std::string& message) { Instance().Output(type_name<T>(), message, OutputMode::FuncName); }\
+template<typename T> static void FuncName(const T& id, const std::string& message) { FuncName(type_name<T>(), message); }\
+template<typename T, typename... Args> static void FuncName(Args... args) { std::stringstream ss; ((ss << args), ...); FuncName<T>(ss.str()); }\
+template<typename T, typename... Args> static void FuncName(const T& id, Args... args) { FuncName<T>(args...); }
 
 #define _LOGGER_FUNCTION_EMPTY(FuncName)\
-static void FuncName (const std::string& id, const std::string& message) {}\
-template<typename T> static void FuncName (const T& id, const std::string& message) {}\
-template<typename... Args> static void FuncName (const std::string& id, Args... args) {}\
-template<typename T, typename... Args> static void FuncName (const T& id, Args... args) {}
+template<typename T> static void FuncName(const std::string& message) {}\
+template<typename T> static void FuncName(const T& id, const std::string& message) {}\
+template<typename T, typename... Args> static void FuncName(Args... args) {}\
+template<typename T, typename... Args> static void FuncName(const T& id, Args... args) {}
 
 class Logger final : public ISystem
 {
 public:
-    SYSTEM_LOGGER_NAME(Logger)
-
     static Logger& Instance();
 
     _LOGGER_FUNCTION(Info)

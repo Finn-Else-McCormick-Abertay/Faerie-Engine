@@ -19,8 +19,6 @@
 class ResourceManager final : public ISystem
 {
 public:
-    SYSTEM_LOGGER_NAME(ResourceManager)
-
     static ResourceManager& Instance();
     
     template<typename T> static T& Get(ResourceIdentifier id) {

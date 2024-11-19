@@ -76,6 +76,7 @@
         "typeindex": "cpp",
         "bitset": "cpp",
         "forward_list": "cpp",
-        "chrono": "cpp"
+        "chrono": "cpp",
+        "coroutine": "cpp"
     }
 }

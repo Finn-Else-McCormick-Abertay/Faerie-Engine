@@ -7,8 +7,6 @@
 class IRenderSystem : public ISystem
 {
 public:
-    SYSTEM_LOGGER_NAME(RenderSystem)
-
     virtual void Render() = 0;
     void ImGuiRender();
 

@@ -77,7 +77,7 @@ Shader ResourceManager::__LoadInternal(const ResourceInfo<Shader>& info) {
 
 	if (!glStatus(programId, GL_LINK_STATUS, GL_PROGRAM)) {
 		glOutputError(programId, GL_PROGRAM);
-		Logger::Error("Shader", "Failed to load from ", info, ": shader program does not compile.");
+		Logger::Error<Shader>("Failed to load from ", info, ": shader program does not compile.");
 		// Maybe do something if fail, like replace with default shader or throw error? idk
 	}
 	
