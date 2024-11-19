@@ -21,9 +21,13 @@ int main(int argc, char *argv[]) {
 
     if (!ScriptingSystem::Instance().Init()) { return -1; }
 
+    auto parentEnt = ECS::Create();
+    parentEnt.Add<Components::Transform, Components::Hierarchy>();
+
 	auto entity = ECS::Create();
-    entity.Add<Components::Transform>();
-    entity.Add<Components::Hierarchy>();
+    auto [trans, hier] = entity.Add<Components::Transform, Components::Hierarchy>();
+    hier.SetParent(parentEnt);
+    trans.Move(glm::vec3(2.f, 0.f, 0.f));
 	auto& model = entity.Add<Components::Model>();
     model.shaderId = ResourceManager::Load(ResourceInfo<Shader>("/resources/shaders/vert.glsl", "/resources/shaders/frag.glsl"));
 

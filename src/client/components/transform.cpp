@@ -3,7 +3,10 @@
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtx/transform.hpp>
 
-Components::Transform::Transform() : m_position(0,0,0), m_scale(1,1,1), m_rotation(1,0,0,0) {
+#include <components/hierarchy.h>
+#include <util/locate_component.h>
+
+Components::Transform::Transform() : m_position(0,0,0), m_scale(1,1,1), m_rotation(1,0,0,0), m_self(FindOwningEntity(*this)) {
     UpdateMatrices();
 }
 
@@ -33,5 +36,21 @@ void Components::Transform::Move(const vec3& v) {
 
 void Components::Transform::UpdateMatrices() {
     m_localTransform = glm::translate(m_position) * glm::mat4_cast(m_rotation) * glm::scale(m_scale);
-    m_globalTransform = m_localTransform;
+    if (!m_self.Has<Hierarchy>()) {
+        m_globalTransform = m_localTransform;
+    }
+    else {
+        auto& hierarchy = m_self.Get<Hierarchy>();
+        if (hierarchy.Parent().Has<Transform>()) {
+            auto& parentTrans = hierarchy.Parent().Get<Transform>();
+            m_globalTransform = parentTrans.m_globalTransform * m_localTransform;
+        }
+        else { m_globalTransform = m_localTransform; }
+        hierarchy.ForEachChild([](Entity child){
+            if (child.Has<Transform>()) {
+                auto& childTrans = child.Get<Transform>();
+                childTrans.UpdateMatrices();
+            }
+        });
+    }
 }

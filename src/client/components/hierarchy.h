@@ -8,8 +8,8 @@ namespace Components
     class Hierarchy
     {
     public:
-        Hierarchy() = default;
-        
+        Hierarchy();
+
         Entity Parent() const;
 
         void ForEachChild(std::function<void(Entity)>);
@@ -25,8 +25,8 @@ namespace Components
     private:
         void __Internal_AddChild(Entity);
         void __Internal_SetParent(Entity);
-        Entity FindSelf() const;
 
+        Entity m_self;
         Entity m_parent, m_childRoot;
         Entity m_prevSibling, m_nextSibling;
     };

@@ -3,6 +3,10 @@
 #include <systems/logger.h>
 #include <systems/ecs.h>
 
+#include <util/locate_component.h>
+
+Components::Hierarchy::Hierarchy() : m_self(FindOwningEntity(*this)) {}
+
 Entity Components::Hierarchy::Parent() const { return m_parent; }
 
 void Components::Hierarchy::ClearParent() {
@@ -13,8 +17,7 @@ void Components::Hierarchy::SetParent(Entity newParent) {
 
     __Internal_SetParent(newParent);
     if (m_parent) {
-        Entity self = FindSelf();
-        if (self) { m_parent.Get<Hierarchy>().__Internal_AddChild(self); }
+        if (m_self) { m_parent.Get<Hierarchy>().__Internal_AddChild(m_self); }
     }
 }
 
@@ -28,18 +31,16 @@ void Components::Hierarchy::AddChild(Entity ent, bool force) {
         hierarchy.Parent().Get<Hierarchy>().RemoveChild(ent);
     }
     __Internal_AddChild(ent);
-    Entity self = FindSelf();
-    if (self) { ent.Get<Hierarchy>().__Internal_SetParent(self); }
+    if (m_self) { ent.Get<Hierarchy>().__Internal_SetParent(m_self); }
 }
 
 void Components::Hierarchy::__Internal_SetParent(Entity newParent) {
     if (m_parent == newParent) { return; }
 
-    Entity self = FindSelf();
-    if (self) {
+    if (m_self) {
         if (m_parent) {
             Logger::Warning("Hierarchy Component", "Reparenting non-orphan entity.");
-            m_parent.Get<Hierarchy>().RemoveChild(self);
+            m_parent.Get<Hierarchy>().RemoveChild(m_self);
         }
         m_parent = newParent;
     }
@@ -105,21 +106,6 @@ void Components::Hierarchy::RemoveChild(Entity ent) {
 
     if (found) { ent.Get<Hierarchy>().m_parent = Entity(); }
 }
-
-Entity Components::Hierarchy::FindSelf() const {
-    Entity thisEntity;
-    auto view = ECS::Registry().view<Components::Hierarchy>();
-    for (auto& entity : view) {
-        auto& component = view.get<Components::Hierarchy>(entity);
-        if (&component == this) {
-            thisEntity = Entity(entity);
-            break;
-        }
-    }
-    if (!thisEntity) { Logger::Warning("Hierarchy Component", "Couldn't find this component's corresponding entity."); }
-    return thisEntity;
-}
-
 
 void Components::Hierarchy::ForEachChild(std::function<void(Entity)> callback) {
     Entity current = m_childRoot;

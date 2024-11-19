@@ -1,11 +1,13 @@
 #pragma once
 
 #include <maths_types.h>
+#include <entity_wrapper.h>
 
 namespace Components
 {
     class Transform
     {
+
     public:
         Transform();
         
@@ -22,10 +24,10 @@ namespace Components
 
         void Move(const vec3&);
     private:
-        vec3 m_position;
-        vec3 m_scale;
-        quat m_rotation;
+        vec3 m_position; vec3 m_scale; quat m_rotation;
         mat4 m_localTransform, m_globalTransform;
+
+        Entity m_self;
 
         void UpdateMatrices();
     };
