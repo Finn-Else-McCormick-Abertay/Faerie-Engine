@@ -7,13 +7,13 @@
 #include <components/model.h>
 #include <components/transform.h>
 #include <components/hierarchy.h>
+#include <components/camera.h>
 
 int main(int argc, char *argv[]) {
 
     if (!Logger::Instance().Init()) { return -1; }
 
-    WindowSystem windowSystem;
-    if (!windowSystem.Init()) { return -1; }
+    if (!WindowSystem::Instance().Init()) { return -1; }
     
     if (!ResourceManager::Instance().Init()) { return -1; }
     
@@ -22,7 +22,7 @@ int main(int argc, char *argv[]) {
     if (!ScriptingSystem::Instance().Init()) { return -1; }
 
     auto parentEnt = ECS::Create();
-    parentEnt.Add<Components::Transform, Components::Hierarchy>();
+    parentEnt.Add<Components::Hierarchy>();
 
 	auto entity = ECS::Create();
     auto [trans, hier] = entity.Add<Components::Transform, Components::Hierarchy>();
@@ -35,12 +35,15 @@ int main(int argc, char *argv[]) {
     auto& script = ResourceManager::Get<Script>(scriptId);
     script.Call("run", {});
 
-    // Main loop
-    while (!windowSystem.ShouldClose()) {
-        windowSystem.Update();
-    }
+    auto cameraEntity = ECS::Create();
+    cameraEntity.Add<Components::PerspectiveCamera, Components::Transform>();
 
-    windowSystem.Shutdown();
+    WindowSystem::Instance().RenderSystem()->SetActiveCamera(cameraEntity);
+
+    WindowSystem::MainLoop();
+
+    // Cleanup
+    WindowSystem::Instance().Shutdown();
     ECS::Instance().Shutdown();
     ScriptingSystem::Instance().Shutdown();
     ResourceManager::Instance().Shutdown();

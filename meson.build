@@ -32,6 +32,7 @@ client_src = [
     cl_rt/'components/uuid_comp.cpp',
     cl_rt/'components/hierarchy.cpp',
     cl_rt/'components/transform.cpp',
+    cl_rt/'components/camera.cpp',
     cl_rt/'components/model.cpp',
     cl_rt/'components/sprite.cpp'
 ]
@@ -91,7 +92,6 @@ vfspp = vfspp_subproj.dependency('vfspp')
 
 # stduuid - header only library, provided locally
 stduuid = declare_dependency(include_directories: 'vendor/stduuid')
-
 
 # -- Targets --
 

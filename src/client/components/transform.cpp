@@ -14,6 +14,16 @@ vec3 Components::Transform::Position() const { return m_position; }
 vec3 Components::Transform::Scale() const { return m_scale; }
 quat Components::Transform::Rotation() const { return m_rotation; }
 
+vec3 Components::Transform::GlobalPosition() const {
+    if (auto hier = m_self.TryGet<Hierarchy>(); hier) {
+        if (auto parentTrans = hier->Parent().TryGet<Transform>(); parentTrans) {
+            vec4 globalPos = parentTrans->GlobalMatrix() * glm::vec4(Position(), 1.f);
+            return vec3(globalPos);
+        }
+    }
+    return Position();
+}
+
 mat4 Components::Transform::LocalMatrix() const { return m_localTransform; }
 mat4 Components::Transform::GlobalMatrix() const { return m_globalTransform; }
 
@@ -36,21 +46,16 @@ void Components::Transform::Move(const vec3& v) {
 
 void Components::Transform::UpdateMatrices() {
     m_localTransform = glm::translate(m_position) * glm::mat4_cast(m_rotation) * glm::scale(m_scale);
-    if (!m_self.Has<Hierarchy>()) {
-        m_globalTransform = m_localTransform;
-    }
-    else {
-        auto& hierarchy = m_self.Get<Hierarchy>();
-        if (hierarchy.Parent().Has<Transform>()) {
-            auto& parentTrans = hierarchy.Parent().Get<Transform>();
-            m_globalTransform = parentTrans.m_globalTransform * m_localTransform;
+    if (auto hier = m_self.TryGet<Hierarchy>(); hier) {
+        if (auto parentTrans = hier->Parent().TryGet<Transform>(); parentTrans) {
+            m_globalTransform = parentTrans->m_globalTransform * m_localTransform;
         }
         else { m_globalTransform = m_localTransform; }
-        hierarchy.ForEachChild([](Entity child){
-            if (child.Has<Transform>()) {
-                auto& childTrans = child.Get<Transform>();
-                childTrans.UpdateMatrices();
+        hier->ForEachChild([](Entity child){
+            if (auto childTrans = child.TryGet<Transform>(); childTrans) {
+                childTrans->UpdateMatrices();
             }
         });
     }
+    else { m_globalTransform = m_localTransform; }
 }

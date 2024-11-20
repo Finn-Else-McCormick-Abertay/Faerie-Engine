@@ -7,7 +7,6 @@ namespace Components
 {
     class Transform
     {
-
     public:
         Transform();
         
@@ -17,6 +16,8 @@ namespace Components
         vec3 Position() const;
         vec3 Scale() const;
         quat Rotation() const;
+
+        vec3 GlobalPosition() const;
 
         void SetPosition(const vec3&);
         void SetScale(const vec3&);

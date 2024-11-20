@@ -2,10 +2,15 @@
 
 #include <systems/logger.h>
 #include <systems/ecs.h>
+#include <components/transform.h>
 
 #include <util/locate_component.h>
 
 Components::Hierarchy::Hierarchy() : m_self(FindOwningEntity(*this)) {}
+
+void Components::Hierarchy::__OnAdded(Entity ent) {
+    ent.GetOrAdd<Transform>();
+}
 
 Entity Components::Hierarchy::Parent() const { return m_parent; }
 

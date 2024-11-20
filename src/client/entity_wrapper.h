@@ -4,6 +4,8 @@
 #include <systems/logger.h>
 #include <typeinfo>
 #include <iostream>
+#include <components/component_lifecycle.h>
+#include <util/type_name.h>
 
 class Entity
 {
@@ -26,10 +28,27 @@ public:
     template<typename... Components> decltype(auto) Get() const {
         if constexpr(sizeof...(Components) == 1) {
             auto component = ECS::Registry().try_get<Components...>(m_entity);
-            if (!component) { Logger::Error("Entity", "Failed to get component ", typeid(Components).name()..., " on ", *this, "; entity has no component of this type."); }
+            if (!component) { Logger::Error(*this, "Failed to get ", type_name<Components>()..., " on ", *this, "; entity has no component of this type."); }
             return *component;
         }
         else { return std::forward_as_tuple(Get<Components>()...); }
+    }
+
+    template<typename... Components> decltype(auto) TryGet() const {
+        if constexpr(sizeof...(Components) == 1) {
+            auto component = ECS::Registry().try_get<Components...>(m_entity);
+            return component;
+        }
+        else { return std::forward_as_tuple(TryGet<Components>()...); }
+    }
+
+    template<typename... Components> decltype(auto) GetOrAdd() {
+        if constexpr(sizeof...(Components) == 1) {
+            auto component = ECS::Registry().try_get<Components...>(m_entity);
+            if (component) { return *component; }
+            else { return __Internal_Add<Components...>(); }
+        }
+        else { return std::forward_as_tuple(GetOrAdd<Components>()...); }
     }
 
     template<typename Component, typename... Args> Component& Add(Args&&... args) {
@@ -48,15 +67,17 @@ public:
             if (Has<Components...>()) {
                 ECS::Registry().erase<Components...>(m_entity);
             }
-            else { Logger::Warning("Entity", "Attempted to erase component ", typeid(Components).name()..., " from ", *this, ", which has no such component."); }
+            else { Logger::Warning(*this, "Attempted to erase ", type_name<Components>()..., " from ", *this, ", which has no such component."); }
         }
         else { (Erase<Components>(), ...); }
     }
 
 private:
     template<typename Component, typename... Args> Component& __Internal_Add(Args&&... args) {
-        if (Has<Component>()) { Logger::Warning("Entity", "Adding component ", typeid(Component).name(), " to ", *this, ", which already has an instance of this component. Will be replaced."); }
-        return ECS::Registry().emplace_or_replace<Component>(m_entity, std::forward<Args>(args)...);
+        if (Has<Component>()) { Logger::Warning(*this, "Adding ", type_name<Component>(), " to ", *this, ", which already has an instance of this component. Will be replaced."); }
+        auto& comp = ECS::Registry().emplace_or_replace<Component>(m_entity, std::forward<Args>(args)...);
+        if constexpr (has_onadded<Component>::value) { comp.__OnAdded(m_entity); }
+        return comp;
     }
 
 private:

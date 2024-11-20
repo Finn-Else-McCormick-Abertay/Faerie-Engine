@@ -8,6 +8,7 @@
 #include <systems/ecs.h>
 #include <components/model.h>
 #include <components/transform.h>
+#include <components/camera.h>
 
 #include <systems/Logger.h>
 
@@ -85,15 +86,27 @@ void RenderSystemOpenGl3::BeginImGuiFrame() {
 void RenderSystemOpenGl3::Render() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    glm::mat4 projectionMat = glm::ortho(-10.0f,10.0f,-10.0f,10.0f,0.1f,100.0f); // In world coordinates
+    DrawGameScene();
 
-    // Camera matrix
-    glm::mat4 viewMat = glm::lookAt(
-        glm::vec3(4,3,3), // Camera is at (4,3,3), in World Space
-        glm::vec3(0,0,0), // and looks at the origin
-        glm::vec3(0,1,0)  // Head is up (set to 0,-1,0 to look upside-down)
-    );
+    ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+    SDL_GL_SwapWindow(p_window);
+}
 
+void RenderSystemOpenGl3::DrawGameScene() {
+    mat4 projMat;
+    if (auto camPtr = ActiveCamera().TryGet<Components::PerspectiveCamera>(); camPtr) { projMat = camPtr->ProjectionMatrix(); }
+    else if (auto camPtr = ActiveCamera().TryGet<Components::OrthoCamera>(); camPtr)  { projMat = camPtr->ProjectionMatrix(); }
+    else { return; }
+
+    mat4 viewMat;
+    if (auto transPtr = ActiveCamera().TryGet<Components::Transform>(); transPtr) {
+        auto& trans = *transPtr;
+        vec3 pos = trans.GlobalPosition();
+        vec3 forward = trans.Rotation() * vec3(0.f, 0.f, 1.f);
+        vec3 up = vec3(0.f, 1.f, 0.f);
+        viewMat = glm::lookAt( pos, pos + forward, up );
+    }
+    else { return; }
 
     auto view = ECS::Registry().view<const Components::Model, const Components::Transform>();
     for (auto entity : view) {
@@ -105,7 +118,7 @@ void RenderSystemOpenGl3::Render() {
 
         glm::mat4 worldMat = trans.GlobalMatrix();
 
-        glm::mat4 mvp = projectionMat * viewMat * worldMat;
+        glm::mat4 mvp = projMat * viewMat * worldMat;
 
         glUniformMatrix4fv(matrixId, 1, GL_FALSE, &mvp[0][0]);
 
@@ -124,7 +137,4 @@ void RenderSystemOpenGl3::Render() {
         glDrawArrays(GL_TRIANGLES, 0, 3); // Starting from vertex 0; 3 vertices total -> 1 triangle
         glDisableVertexAttribArray(0);
     }
-
-    ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-    SDL_GL_SwapWindow(p_window);
 }

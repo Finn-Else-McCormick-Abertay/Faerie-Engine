@@ -22,6 +22,8 @@ namespace Components
         void AddChild(Entity, bool force = false);
         void RemoveChild(Entity);
 
+        void __OnAdded(Entity);
+
     private:
         void __Internal_AddChild(Entity);
         void __Internal_SetParent(Entity);

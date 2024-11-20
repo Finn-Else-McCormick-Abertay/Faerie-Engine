@@ -9,6 +9,13 @@
 #include <imgui_impl_sdl2.h>
 
 #include <systems/logger.h>
+#include <systems/ecs.h>
+#include <components/camera.h>
+
+WindowSystem& WindowSystem::Instance() {
+    static WindowSystem windowSystem;
+    return windowSystem;
+}
 
 bool WindowSystem::InitImpl() {
     // Setup SDL
@@ -30,6 +37,7 @@ bool WindowSystem::InitImpl() {
 #endif // OPENGL3
 
     if (!m_renderSystem->Init()) {
+        Logger::Error(*this, "Failed to initialise RenderSystem");
         return false;
     }
 
@@ -41,6 +49,10 @@ bool WindowSystem::InitImpl() {
 
     m_renderSystem->CreateContext(p_window);
 
+    int width, height;
+    SDL_GetWindowSize(p_window, &width, &height);
+    m_windowSize = int2(width, height);
+
     Logger::Info(*this, "Initialised");
     return true;
 }
@@ -51,46 +63,67 @@ void WindowSystem::ShutdownImpl() {
     SDL_Quit();
 }
 
+void WindowSystem::MainLoop() {
+    auto& inst = Instance();
+    while (!inst.m_shouldClose) { inst.Update(); }
+}
+
 void WindowSystem::Update() {
+    auto windowFlags = SDL_GetWindowFlags(p_window);
     ImGuiIO& io = ImGui::GetIO();
     SDL_Event event;
     while (SDL_PollEvent(&event))
     {
         ImGui_ImplSDL2_ProcessEvent(&event);
-        if (event.type == SDL_QUIT)
-            m_shouldClose = true;
-        if (event.type == SDL_WINDOWEVENT && event.window.event == SDL_WINDOWEVENT_CLOSE && event.window.windowID == SDL_GetWindowID(p_window))
-            m_shouldClose = true;
-
-        if (!io.WantCaptureKeyboard) {
-            if (event.type == SDL_KEYDOWN) {
-
-            }
-            if (event.type == SDL_KEYUP) {
-
-            }
-            if (event.type == SDL_TEXTINPUT) {
-
+        if (event.type == SDL_QUIT) { m_shouldClose = true; }
+        if (event.type == SDL_WINDOWEVENT && event.window.event == SDL_WINDOWEVENT_CLOSE && event.window.windowID == SDL_GetWindowID(p_window)) {
+            switch (event.window.event) {
+                case SDL_WINDOWEVENT_CLOSE: {
+                    m_shouldClose = true;
+                } break;
+                case SDL_WINDOWEVENT_SIZE_CHANGED: {
+                    m_windowSize = int2(event.window.data1, event.window.data2);
+                    auto view = ECS::Registry().view<Components::PerspectiveCamera>();
+                    for (auto& entity : view) {
+                        auto& camera = view.get<Components::PerspectiveCamera>(entity);
+                        camera.SetAspect(WindowAspect());
+                    }
+                } break;
             }
         }
 
-        if (!io.WantCaptureMouse) {
-            if (event.type == SDL_MOUSEBUTTONDOWN) {
+        if ((windowFlags & SDL_WINDOW_INPUT_FOCUS) && !io.WantCaptureKeyboard) {
+            switch (event.type) {
+                case SDL_KEYDOWN: {
+                    
+                } break;
+                case SDL_KEYUP: {
+                    
+                } break;
+                case SDL_TEXTINPUT: {
 
+                } break;
             }
-            if (event.type == SDL_MOUSEBUTTONUP) {
-                
-            }
-            if (event.type == SDL_MOUSEMOTION) {
-                
-            }
-            if (event.type == SDL_MOUSEWHEEL) {
-                
+        }
+
+        if ((windowFlags & SDL_WINDOW_MOUSE_FOCUS) && !io.WantCaptureMouse) {
+            switch (event.type) {
+                case SDL_MOUSEBUTTONDOWN: {
+                    
+                } break;
+                case SDL_MOUSEBUTTONUP: {
+                    
+                } break;
+                case SDL_MOUSEMOTION: {
+                    
+                } break;
+                case SDL_MOUSEWHEEL: {
+                    
+                } break;
             }
         }
     }
-    if (SDL_GetWindowFlags(p_window) & SDL_WINDOW_MINIMIZED)
-    {
+    if (windowFlags & SDL_WINDOW_MINIMIZED) {
         SDL_Delay(10);
         return;
     }
@@ -99,10 +132,15 @@ void WindowSystem::Update() {
     m_renderSystem->Render();
 }
 
-bool WindowSystem::ShouldClose() {
-    return m_shouldClose;
-}
-
 IRenderSystem* WindowSystem::RenderSystem() {
     return m_renderSystem.get();
+}
+
+int2 WindowSystem::WindowSize() {
+    return Instance().m_windowSize;
+}
+
+float WindowSystem::WindowAspect() {
+    auto& inst = Instance();
+    return static_cast<float>(inst.m_windowSize.x) / static_cast<float>(inst.m_windowSize.y);
 }
