@@ -5,7 +5,7 @@
 #include <systems/logger.h>
 
 #ifdef WASMTIME
-#include <platform/wasmtime/scripting_system_wasmtime.h>
+#include <systems/platform/wasmtime/scripting_system_wasmtime.h>
 
 Script::Script(wasmtime::Instance&& instance) : m_instance(std::move(instance)) {}
 

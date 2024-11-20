@@ -25,7 +25,7 @@ int main(int argc, char *argv[]) {
     parentEnt.Add<Components::Hierarchy>();
 
 	auto entity = ECS::Create();
-    auto [trans, hier] = entity.Add<Components::Transform, Components::Hierarchy>();
+    auto [hier, trans] = entity.Add<Components::Hierarchy, Components::Transform>();
     hier.SetParent(parentEnt);
     trans.Move(glm::vec3(2.f, 0.f, 0.f));
 	auto& model = entity.Add<Components::Model>();

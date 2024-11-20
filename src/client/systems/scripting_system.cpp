@@ -2,7 +2,7 @@
 
 #include <memory>
 #ifdef WASMTIME
-#include <platform/wasmtime/scripting_system_wasmtime.h>
+#include <systems/platform/wasmtime/scripting_system_wasmtime.h>
 #endif // WASMTIME
 
 ScriptingSystem& ScriptingSystem::Instance() {

@@ -1,7 +1,7 @@
 #include "window_system.h"
 
 #ifdef OPENGL3
-#include <platform/render_system_opengl3.h>
+#include <systems/platform/render_system_opengl3.h>
 #endif // OPENGL3
 
 #include <stdio.h>
