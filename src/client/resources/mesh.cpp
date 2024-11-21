@@ -47,3 +47,16 @@ GLuint faerie::Mesh::VertexArray() const { return m_vertexArray; }
 #endif // OPENGL3
 
 unsigned int faerie::Mesh::NumIndices() const { return m_numIndices; }
+
+
+ResourceInfo<faerie::Mesh>::ResourceInfo(const std::string& modelPath, unsigned int meshIndex) : m_path(modelPath), m_index(meshIndex) {}
+
+ResourceIdentifier ResourceInfo<faerie::Mesh>::Identifier() const {
+    size_t hash = 0;
+    util::hash_combine(hash, typeid(faerie::Mesh).hash_code(), m_path, m_index);
+    return hash;
+}
+
+const std::string& ResourceInfo<faerie::Mesh>::Path() const { return m_path; }
+
+unsigned int ResourceInfo<faerie::Mesh>::MeshIndex() const { return m_index; }

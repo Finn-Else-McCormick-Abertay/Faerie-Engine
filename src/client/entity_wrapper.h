@@ -51,20 +51,21 @@ public:
         else { return std::forward_as_tuple(GetOrAdd<Components>()...); }
     }
 
-    template<typename Component, typename... Args> Component& Add(Args&&... args) {
-        return __Internal_Add<Component>(std::forward<Args>(args)...);
-    }
-
     template<typename... Components> decltype(auto) Add() {
         if constexpr(sizeof...(Components) == 1) {
             return __Internal_Add<Components...>();
         }
         else { return std::forward_as_tuple(Add<Components>()...); }
     }
+    
+    template<typename Component, typename... Args> Component& AddWithArgs(Args&&... args) {
+        return __Internal_Add<Component>(std::forward<Args>(args)...);
+    }
 
     template<typename... Components> void Erase() {
         if constexpr(sizeof...(Components) == 1) {
             if (Has<Components...>()) {
+                if constexpr (has_onremoved<Components...>::value) { ECS::Registry().get<Components...>(m_entity).__OnRemoved(m_entity); }
                 ECS::Registry().erase<Components...>(m_entity);
             }
             else { Logger::Warning(*this, "Attempted to erase ", type_name<Components>()..., " from ", *this, ", which has no such component."); }

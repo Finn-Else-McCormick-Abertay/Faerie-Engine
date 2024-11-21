@@ -9,6 +9,7 @@
 #include <components/mesh.h>
 #include <components/transform.h>
 #include <components/camera.h>
+#include <components/material.h>
 
 #include <systems/Logger.h>
 
@@ -95,21 +96,36 @@ void RenderSystemOpenGl3::DrawGameScene() {
     }
     else { return; }
 
-    auto view = ECS::Registry().view<const Components::Mesh, const Components::Transform>();
-    for (auto entity : view) {
-        auto [meshComp, trans] = view.get(entity);
+    auto meshView = ECS::Registry().view<Components::Mesh, Components::Transform>();
+
+    ResourceManager::ForEach<Shader>([&](ResourceIdentifier id, const Shader& shader){
+        entt::basic_view shaderView {
+            ECS::Registry().storage<Components::ShaderHandle>(),
+            ECS::Registry().storage<Components::ShaderHandle>(id)
+        };
         
-        auto& shader = ResourceManager::Get<Shader>(ResourceInfo<Shader>("/resources/shaders/vert.glsl", "/resources/shaders/frag.glsl"));
         glUseProgram(shader.ProgramId());
+
+        auto worldUniform = glGetUniformLocation(shader.ProgramId(), "world");
+        auto viewUniform = glGetUniformLocation(shader.ProgramId(), "view");
+        auto projUniform = glGetUniformLocation(shader.ProgramId(), "projection");
+
+        glUniformMatrix4fv(viewUniform, 1, GL_FALSE, &viewMat[0][0]);
+        glUniformMatrix4fv(projUniform, 1, GL_FALSE, &projMat[0][0]);
+
+        auto shaderMeshView = shaderView | meshView;
+
+        for (auto entity : shaderMeshView) {
+            auto [meshComp, trans] = shaderMeshView.get<Components::Mesh, Components::Transform>(entity);
+            
+            glUniformMatrix4fv(worldUniform, 1, GL_FALSE, &trans.GlobalMatrix()[0][0]);
+
+            auto& mesh = ResourceManager::Get<faerie::Mesh>(meshComp.MeshId());
+            glBindVertexArray(mesh.VertexArray());
+            glDrawElements(GL_TRIANGLES, mesh.NumIndices(), GL_UNSIGNED_INT, 0);
+            glBindVertexArray(0);
+        }
         
-        glUniformMatrix4fv(glGetUniformLocation(shader.ProgramId(), "world"), 1, GL_FALSE, &trans.GlobalMatrix()[0][0]);
-        glUniformMatrix4fv(glGetUniformLocation(shader.ProgramId(), "view"), 1, GL_FALSE, &viewMat[0][0]);
-        glUniformMatrix4fv(glGetUniformLocation(shader.ProgramId(), "projection"), 1, GL_FALSE, &projMat[0][0]);
-
-        auto& mesh = ResourceManager::Get<faerie::Mesh>(meshComp.meshId);
-
-        glBindVertexArray(mesh.VertexArray());
-        glDrawElements(GL_TRIANGLES, mesh.NumIndices(), GL_UNSIGNED_INT, 0);
-        glBindVertexArray(0);
-    }
+        glUseProgram(0);
+    });
 }

@@ -13,6 +13,7 @@ namespace Components
         Entity Parent() const;
 
         void ForEachChild(std::function<void(Entity)>);
+        void ForEachDescendant(std::function<void(Entity)>);
 
         bool HasChild(Entity) const;
         bool HasSibling(Entity) const;

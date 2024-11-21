@@ -8,12 +8,14 @@
 #include <resources/script.h>
 #include <resources/model.h>
 #include <resources/mesh.h>
+#include <resources/material.h>
 
 #include <string>
 #include <unordered_map>
 #include <memory>
 #include <vector>
 #include <cstddef>
+#include <functional>
 
 #include <vfspp/VirtualFileSystem.hpp>
 
@@ -31,8 +33,7 @@ public:
 
 
     template<typename T> static ResourceIdentifier Load(const ResourceInfo<T>& info) {
-        __Map<T>().emplace(info.Identifier(), __LoadInternal<T>(info));
-        return info.Identifier();
+        return Emplace(info, __LoadInternal<T>(info));
     }
     template<typename T> static ResourceIdentifier Load(const std::string& path) { return Load<T>(ResourceInfo<T>(path)); }
     
@@ -42,6 +43,19 @@ public:
     }
     template<typename T> static void Unload(const ResourceInfo<T>& info) { Unload<T>(info.Identifier()); }
     template<typename T> static void Unload(const std::string& path) { return Unload<T>(ResourceInfo<T>(path)); }
+
+    template<typename T> static void ForEach(std::function<void(ResourceIdentifier, const T&)> callback) {
+        for (auto const& [id, resource] : __Map<T>()) {
+            callback(id, resource);
+        }
+    }
+
+    // SHOULD BE PRIVATE, IS ONLY PUBLIC TEMPORARILY FOR TESTING
+    template<typename T> static ResourceIdentifier Emplace(ResourceIdentifier id, T&& resource) {
+        __Map<T>().emplace(id, std::move(resource));
+        return id;
+    }
+    template<typename T> static ResourceIdentifier Emplace(const ResourceInfo<T>& info, T&& resource) { return Emplace(info.Identifier(), std::move(resource)); }
 
 protected:
     // Get the relevent map for a given resource type
@@ -69,6 +83,7 @@ private:
     std::unordered_map<ResourceIdentifier, Script> m_scripts;
     std::unordered_map<ResourceIdentifier, faerie::Mesh> m_meshes;
     std::unordered_map<ResourceIdentifier, Model> m_models;
+    std::unordered_map<ResourceIdentifier, Material> m_materials;
 };
 
 template<> std::unordered_map<ResourceIdentifier, Texture>& ResourceManager::__Map();
@@ -76,6 +91,7 @@ template<> std::unordered_map<ResourceIdentifier, Shader>& ResourceManager::__Ma
 template<> std::unordered_map<ResourceIdentifier, Script>& ResourceManager::__Map();
 template<> std::unordered_map<ResourceIdentifier, faerie::Mesh>& ResourceManager::__Map();
 template<> std::unordered_map<ResourceIdentifier, Model>& ResourceManager::__Map();
+template<> std::unordered_map<ResourceIdentifier, Material>& ResourceManager::__Map();
 
 // __LoadInternal defined in cpp file of relevant resource
 

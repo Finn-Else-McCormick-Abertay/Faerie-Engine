@@ -18,7 +18,7 @@ Shader::~Shader() {
 	if (m_programId) { glDeleteProgram(m_programId); }
 }
 
-unsigned int Shader::ProgramId() { return m_programId; }
+unsigned int Shader::ProgramId() const { return m_programId; }
 
 
 ResourceInfo<Shader>::ResourceInfo(const std::string& vertPath, const std::string& fragPath) : m_vert(vertPath), m_frag(fragPath) {}
@@ -52,12 +52,12 @@ Shader ResourceManager::__LoadInternal(const ResourceInfo<Shader>& info) {
 			case GL_PROGRAM: { glGetProgramiv(id, GL_INFO_LOG_LENGTH, &logLength); } break;
 		}
 		if (logLength > 0) {
-			std::vector<char> errorMessage(logLength+1);
+			std::vector<char> errorMessage(logLength + 1);
 			switch (type) {
 				case GL_SHADER:  { glGetShaderInfoLog(id, logLength, NULL, &errorMessage[0]); }  break;
 				case GL_PROGRAM: { glGetProgramInfoLog(id, logLength, NULL, &errorMessage[0]); } break;
 			}
-			Logger::Error<Shader>(info, " : ", errorMessage.data());
+			Logger::Error<Shader>(info, ":\n", errorMessage.data());
 		}
 	};
 	
@@ -85,7 +85,7 @@ Shader ResourceManager::__LoadInternal(const ResourceInfo<Shader>& info) {
 
 	if (!glStatus(programId, GL_LINK_STATUS, GL_PROGRAM)) {
 		glOutputError(programId, GL_PROGRAM);
-		Logger::Error<Shader>("Failed to load from ", info, ": shader program does not compile.");
+		Logger::Error<Shader>("Failed to load from ", info, "; shader program does not compile.");
 		// Maybe do something if fail, like replace with default shader or throw error? idk
 	}
 	

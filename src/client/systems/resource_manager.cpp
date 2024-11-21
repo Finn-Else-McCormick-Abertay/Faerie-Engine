@@ -48,6 +48,7 @@ template<> std::unordered_map<ResourceIdentifier, Shader>& ResourceManager::__Ma
 template<> std::unordered_map<ResourceIdentifier, Script>& ResourceManager::__Map() { return Instance().m_scripts; }
 template<> std::unordered_map<ResourceIdentifier, faerie::Mesh>& ResourceManager::__Map() { return Instance().m_meshes; }
 template<> std::unordered_map<ResourceIdentifier, Model>& ResourceManager::__Map() { return Instance().m_models; }
+template<> std::unordered_map<ResourceIdentifier, Material>& ResourceManager::__Map() { return Instance().m_materials; }
 
 vfspp::VirtualFileSystem& ResourceManager::FileSystem() { return *Instance().pm_vfs; }
 
@@ -60,6 +61,7 @@ std::string ResourceManager::ReadTextFile(const std::string& path) {
 	if (auto file = FileSystem().OpenFile(vfspp::FileInfo(path), vfspp::IFile::FileMode::Read); file && file->IsOpened()) {
 		std::stringstream sstr;
 		file->Read(sstr, file->Size());
+		file->Close();
 		return sstr.str();
 	}
 	Logger::Error<ResourceManager>("Failed to open text file ", path);
@@ -70,6 +72,7 @@ std::vector<uint8_t> ResourceManager::ReadBinaryFile(const std::string& path) {
 	if (auto file = FileSystem().OpenFile(vfspp::FileInfo(path), vfspp::IFile::FileMode::Read); file && file->IsOpened()) {
 		std::vector<uint8_t> vec; vec.reserve(file->Size());
 		file->Read(vec, file->Size());
+		file->Close();
 		return vec;
 	}
 	Logger::Error<ResourceManager>("Failed to open binary file ", path);

@@ -120,6 +120,16 @@ void Components::Hierarchy::ForEachChild(std::function<void(Entity)> callback) {
     }
 }
 
+void Components::Hierarchy::ForEachDescendant(std::function<void(Entity)> callback) {
+    Entity current = m_childRoot;
+    while (current) {
+        callback(current);
+        auto currentHier = current.Get<Hierarchy>();
+        currentHier.ForEachDescendant(callback);
+        current = currentHier.m_nextSibling;
+    }
+}
+
 bool Components::Hierarchy::HasChild(Entity ent) const {
     Entity current = m_childRoot;
     while (current) {

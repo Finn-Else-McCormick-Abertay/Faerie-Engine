@@ -26,9 +26,10 @@ client_src = [
     cl_rt/'systems/platform/wasmtime/scripting_system_wasmtime.cpp',
     cl_rt/'systems/ecs.cpp',
     cl_rt/'util/stb.cpp',
+    cl_rt/'resources/script.cpp',
     cl_rt/'resources/shader.cpp',
     cl_rt/'resources/texture.cpp',
-    cl_rt/'resources/script.cpp',
+    cl_rt/'resources/material.cpp',
     cl_rt/'resources/model.cpp',
     cl_rt/'resources/mesh.cpp',
     cl_rt/'components/uuid_comp.cpp',
@@ -36,7 +37,8 @@ client_src = [
     cl_rt/'components/transform.cpp',
     cl_rt/'components/camera.cpp',
     cl_rt/'components/mesh.cpp',
-    cl_rt/'components/sprite.cpp'
+    cl_rt/'components/sprite.cpp',
+    cl_rt/'components/material.cpp'
 ]
 client_include = [ cl_rt ]
 client_pch = 'pch/client_pch.h'

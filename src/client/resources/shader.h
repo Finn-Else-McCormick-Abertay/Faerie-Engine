@@ -11,7 +11,7 @@ public:
     Shader(const Shader&) = delete;
     ~Shader();
 
-    unsigned int ProgramId();
+    unsigned int ProgramId() const;
 
 private:
     unsigned int m_programId;
@@ -32,7 +32,7 @@ private:
     std::string m_vert, m_frag;
 
     friend std::ostream& operator<<(std::ostream& os, const ResourceInfo<Shader>& shader) {
-        os << "Frag: " << shader.FragPath() << ", Vert" << shader.VertPath();
+        os << "Frag: " << shader.FragPath() << ", Vert: " << shader.VertPath();
         return os;
     }
 };

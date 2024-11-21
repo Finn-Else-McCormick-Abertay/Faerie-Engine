@@ -4,13 +4,15 @@
 
 namespace Components
 {
-    struct Mesh
+    class Mesh
     {
-        ResourceIdentifier shaderId;
-        ResourceIdentifier meshId;
-    
-        Mesh(ResourceIdentifier meshId);
-        Mesh();
+    public:
+        Mesh(ResourceIdentifier meshId = 0);
+
+        ResourceIdentifier MeshId() const;
+
+    private:
+        ResourceIdentifier m_meshId;
     };
 
 } // Components

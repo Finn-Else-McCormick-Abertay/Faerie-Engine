@@ -28,7 +28,7 @@ template<> Model ResourceManager::__LoadInternal(const ResourceInfo<Model>& info
     }
 
     auto meshResourceInfo = [&](unsigned int index){
-        return ResourceInfo<faerie::Mesh>(info.Path() + "::" + std::to_string(index));
+        return ResourceInfo<faerie::Mesh>(info.Path(), index);
     };
 
     auto aiNodeToFaerieNode = [&](aiNode* inode){
@@ -80,7 +80,7 @@ template<> Model ResourceManager::__LoadInternal(const ResourceInfo<Model>& info
             }
         }
         
-        __Map<faerie::Mesh>().emplace(meshResourceInfo(meshIndex).Identifier(), faerie::Mesh(vertices, indices));
+        Emplace<faerie::Mesh>(meshResourceInfo(meshIndex), faerie::Mesh(vertices, indices));
     }
 
     return model;
@@ -96,11 +96,11 @@ Entity Model::Instantiate(Entity parent) const {
                 for (auto& resourceInfo : node.meshes) {
                     auto meshEntity = ECS::Create();
                     meshEntity.Add<Components::Hierarchy>().SetParent(entity);
-                    meshEntity.Add<Components::Mesh>().meshId = resourceInfo.Identifier();
+                    meshEntity.AddWithArgs<Components::Mesh>(resourceInfo.Identifier());
                 }
             }
             else if (node.meshes.size() == 1) {
-                entity.Add<Components::Mesh>().meshId = node.meshes.at(0).Identifier();
+                entity.AddWithArgs<Components::Mesh>(node.meshes.at(0).Identifier());
             }
 
             for (auto& childNode : node.children) {
