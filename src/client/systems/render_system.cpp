@@ -5,6 +5,7 @@
 #include <systems/logger.h>
 #include <systems/ecs.h>
 #include <components/transform.h>
+#include <components/mesh.h>
 #include <components/camera.h>
 
 #include <string>
@@ -25,7 +26,7 @@ void IRenderSystem::ImGuiRender() {
         if (ImGui::DragFloat3("Position", posTemp)) { trans.SetPosition(vec3(posTemp[0], posTemp[1], posTemp[2])); }
         ImGui::End();
     }
-
+    
     // Rendering
     ImGui::Render();
 }

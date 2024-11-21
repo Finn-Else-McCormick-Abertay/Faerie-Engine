@@ -42,6 +42,8 @@ bool ResourceManager::InitImpl() {
 void ResourceManager::ShutdownImpl() {
 	__UnloadAll<Texture>();
 	__UnloadAll<Shader>();
+	__UnloadAll<Model>();
+	__UnloadAll<Script>();
 
 	pm_vfs = nullptr;
 }
@@ -49,8 +51,15 @@ void ResourceManager::ShutdownImpl() {
 template<> std::unordered_map<ResourceIdentifier, Texture>& ResourceManager::__Map() { return Instance().m_textures; }
 template<> std::unordered_map<ResourceIdentifier, Shader>& ResourceManager::__Map() { return Instance().m_shaders; }
 template<> std::unordered_map<ResourceIdentifier, Script>& ResourceManager::__Map() { return Instance().m_scripts; }
+template<> std::unordered_map<ResourceIdentifier, faerie::Mesh>& ResourceManager::__Map() { return Instance().m_meshes; }
+template<> std::unordered_map<ResourceIdentifier, Model>& ResourceManager::__Map() { return Instance().m_models; }
 
 vfspp::VirtualFileSystem& ResourceManager::FileSystem() { return *Instance().pm_vfs; }
+
+bool ResourceManager::FileExists(const std::string& path) {
+	auto file = FileSystem().OpenFile(vfspp::FileInfo(path), vfspp::IFile::FileMode::Read);
+	return file != nullptr;
+}
 
 std::string ResourceManager::ReadTextFile(const std::string& path) {
 	if (auto file = FileSystem().OpenFile(vfspp::FileInfo(path), vfspp::IFile::FileMode::Read); file && file->IsOpened()) {
@@ -58,7 +67,7 @@ std::string ResourceManager::ReadTextFile(const std::string& path) {
 		file->Read(sstr, file->Size());
 		return sstr.str();
 	}
-	Logger::Error(Instance(), "Failed to open text file ", path);
+	Logger::Error<ResourceManager>("Failed to open text file ", path);
 	return "";
 }
 
@@ -68,6 +77,6 @@ std::vector<uint8_t> ResourceManager::ReadBinaryFile(const std::string& path) {
 		file->Read(vec, file->Size());
 		return vec;
 	}
-	Logger::Error(Instance(), "Failed to open binary file ", path);
+	Logger::Error<ResourceManager>("Failed to open binary file ", path);
 	return std::vector<uint8_t>();
 }

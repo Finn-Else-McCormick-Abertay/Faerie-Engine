@@ -4,11 +4,13 @@
 
 namespace Components
 {
-    struct Model
+    struct Mesh
     {
         ResourceIdentifier shaderId;
+        ResourceIdentifier meshId;
     
-        Model();
+        Mesh(ResourceIdentifier meshId);
+        Mesh();
     };
 
 } // Components

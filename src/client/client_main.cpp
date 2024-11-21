@@ -4,10 +4,12 @@
 #include <systems/ecs.h>
 #include <systems/logger.h>
 
-#include <components/model.h>
+#include <components/mesh.h>
 #include <components/transform.h>
 #include <components/hierarchy.h>
 #include <components/camera.h>
+
+#include <resources/model.h>
 
 int main(int argc, char *argv[]) {
 
@@ -21,19 +23,23 @@ int main(int argc, char *argv[]) {
 
     if (!ScriptingSystem::Instance().Init()) { return -1; }
 
+    ResourceManager::Load(ResourceInfo<Shader>("/resources/shaders/vert.glsl", "/resources/shaders/frag.glsl"));
+
     auto parentEnt = ECS::Create();
     parentEnt.Add<Components::Hierarchy>();
 
-	auto entity = ECS::Create();
-    auto [hier, trans] = entity.Add<Components::Hierarchy, Components::Transform>();
-    hier.SetParent(parentEnt);
-    trans.Move(glm::vec3(2.f, 0.f, 0.f));
-	auto& model = entity.Add<Components::Model>();
-    model.shaderId = ResourceManager::Load(ResourceInfo<Shader>("/resources/shaders/vert.glsl", "/resources/shaders/frag.glsl"));
+    auto modelId = ResourceManager::Load<Model>("/resources/models/suzanne.fbx");
+    auto& model = ResourceManager::Get<Model>(modelId);
 
+    auto suzanne = model.Instantiate();
+
+    parentEnt.Get<Components::Hierarchy>().AddChild(suzanne);
+
+    /*
     auto scriptId = ResourceManager::Load<Script>("/resources/rust_module_example.wasm");
     auto& script = ResourceManager::Get<Script>(scriptId);
     script.Call("run", {});
+    */
 
     auto cameraEntity = ECS::Create();
     cameraEntity.Add<Components::PerspectiveCamera, Components::Transform>();

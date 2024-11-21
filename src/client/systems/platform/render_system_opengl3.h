@@ -27,8 +27,4 @@ private:
     std::string m_glslVersion;
 
     void DrawGameScene();
-
-    // TEMP! THESE SHOULDN'T BE HERE!
-    GLuint vertexBuffer;
-    GLuint vertexArrayId; 
 };

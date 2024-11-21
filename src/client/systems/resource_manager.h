@@ -6,6 +6,8 @@
 #include <resources/shader.h>
 #include <resources/texture.h>
 #include <resources/script.h>
+#include <resources/model.h>
+#include <resources/mesh.h>
 
 #include <string>
 #include <unordered_map>
@@ -55,7 +57,8 @@ protected:
 
 protected:
     static vfspp::VirtualFileSystem& FileSystem();
-
+    
+    static bool FileExists(const std::string& virtualPath);
     static std::string ReadTextFile(const std::string& virtualPath);
     static std::vector<uint8_t> ReadBinaryFile(const std::string& virtualPath);
 
@@ -69,10 +72,12 @@ private:
     std::unordered_map<ResourceIdentifier, Texture> m_textures;
     std::unordered_map<ResourceIdentifier, Shader> m_shaders;
     std::unordered_map<ResourceIdentifier, Script> m_scripts;
+    std::unordered_map<ResourceIdentifier, faerie::Mesh> m_meshes;
+    std::unordered_map<ResourceIdentifier, Model> m_models;
 
     template<typename T>
     static void __UnloadAll() {
-        for (auto [id, resource] : __Map<T>()) {
+        for (auto& [id, resource] : __Map<T>()) {
             __UnloadInternal<T>(resource);
         }
         __Map<T>().clear();
@@ -82,6 +87,8 @@ private:
 template<> std::unordered_map<ResourceIdentifier, Texture>& ResourceManager::__Map();
 template<> std::unordered_map<ResourceIdentifier, Shader>& ResourceManager::__Map();
 template<> std::unordered_map<ResourceIdentifier, Script>& ResourceManager::__Map();
+template<> std::unordered_map<ResourceIdentifier, faerie::Mesh>& ResourceManager::__Map();
+template<> std::unordered_map<ResourceIdentifier, Model>& ResourceManager::__Map();
 
 // __LoadInternal and __UnloadInternal defined in cpp file of relevant resource
 
@@ -93,3 +100,6 @@ template<> void ResourceManager::__UnloadInternal(Shader&);
 
 template<> Script ResourceManager::__LoadInternal(const ResourceInfo<Script>&);
 template<> void ResourceManager::__UnloadInternal(Script&);
+
+template<> Model ResourceManager::__LoadInternal(const ResourceInfo<Model>&);
+template<> void ResourceManager::__UnloadInternal(Model&);

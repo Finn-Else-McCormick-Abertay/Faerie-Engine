@@ -29,11 +29,13 @@ client_src = [
     cl_rt/'resources/shader.cpp',
     cl_rt/'resources/texture.cpp',
     cl_rt/'resources/script.cpp',
+    cl_rt/'resources/model.cpp',
+    cl_rt/'resources/mesh.cpp',
     cl_rt/'components/uuid_comp.cpp',
     cl_rt/'components/hierarchy.cpp',
     cl_rt/'components/transform.cpp',
     cl_rt/'components/camera.cpp',
-    cl_rt/'components/model.cpp',
+    cl_rt/'components/mesh.cpp',
     cl_rt/'components/sprite.cpp'
 ]
 client_include = [ cl_rt ]
@@ -58,6 +60,7 @@ glew = dependency('glew')
 glm = dependency('glm')
 enet = dependency('libenet')
 entt = dependency('entt')
+assimp = dependency('assimp')
 
 # Library and C api headers found in msys64/ucrt64/lib and include respectively (it doesn't have a pkg-config file)
 # but C++ api header is provided locally as the msys2 package doesn't provide it
@@ -80,9 +83,9 @@ imgui = declare_dependency(
     include_directories: imgui_include
 )
 
-# vfspp - provided locally in git submodule, built as CMake subproject
 cmake = import('cmake')
 
+# vfspp - provided locally in git submodule, built as CMake subproject
 vfspp_opt = cmake.subproject_options()
 vfspp_opt.set_override_option('cpp_std', 'c++17')
 vfspp_opt.append_compile_args('cpp', '-DVFSPP_ENABLE_MULTITHREADING')
@@ -102,5 +105,5 @@ run_target('resources', command: ['buildscripts/copy_resources.cmd'])
 executable('client',
     sources: shared_src + client_src, include_directories: shared_include + client_include,
     cpp_pch: client_pch, cpp_args: client_args,
-    dependencies: [ sdl2, opengl, glew, glm, imgui, wasmtime, vfspp, enet, entt, stduuid ]
+    dependencies: [ sdl2, opengl, glew, glm, imgui, wasmtime, vfspp, enet, entt, stduuid, assimp ]
 )

@@ -49,7 +49,7 @@ Shader ResourceManager::__LoadInternal(const ResourceInfo<Shader>& info) {
 				case GL_SHADER:  { glGetShaderInfoLog(id, logLength, NULL, &errorMessage[0]); }  break;
 				case GL_PROGRAM: { glGetProgramInfoLog(id, logLength, NULL, &errorMessage[0]); } break;
 			}
-			Logger::Error("Shader", info, ": ", errorMessage.data());
+			Logger::Error<Shader>(info, " : ", errorMessage.data());
 		}
 	};
 	
