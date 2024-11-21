@@ -55,7 +55,4 @@ template<> Script ResourceManager::__LoadInternal(const ResourceInfo<Script>& in
 
     return script;
 }
-
-template<> void ResourceManager::__UnloadInternal(Script& script) {
-}
 #endif // WASMTIME

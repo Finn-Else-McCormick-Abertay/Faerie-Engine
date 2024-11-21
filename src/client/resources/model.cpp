@@ -20,7 +20,7 @@ template<> Model ResourceManager::__LoadInternal(const ResourceInfo<Model>& info
     Assimp::Importer importer;
 
     const aiScene* scene = importer.ReadFileFromMemory(data.data(), data.size() * sizeof(uint8_t),
-        aiProcess_Triangulate | aiProcess_JoinIdenticalVertices);
+        aiProcess_Triangulate | aiProcess_JoinIdenticalVertices | aiProcess_GenUVCoords);
 
     if (!scene) {
         Logger::Error<Model>("Assimp error : ", importer.GetErrorString());
@@ -85,8 +85,6 @@ template<> Model ResourceManager::__LoadInternal(const ResourceInfo<Model>& info
 
     return model;
 }
-
-template<> void ResourceManager::__UnloadInternal(Model& model) {}
 
 Entity Model::Instantiate(Entity parent) const {
     auto instantiateNode = [](const Model::Node& node){

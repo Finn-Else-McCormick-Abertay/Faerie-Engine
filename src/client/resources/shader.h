@@ -7,6 +7,9 @@ class Shader
 {
 public:
     Shader(unsigned int programId);
+    Shader(Shader&&);
+    Shader(const Shader&) = delete;
+    ~Shader();
 
     unsigned int ProgramId();
 

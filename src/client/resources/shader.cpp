@@ -10,6 +10,14 @@
 
 Shader::Shader(unsigned int programId) : m_programId(programId) {}
 
+Shader::Shader(Shader&& rhs) : m_programId(rhs.m_programId) {
+	rhs.m_programId = 0;
+}
+
+Shader::~Shader() {
+	if (m_programId) { glDeleteProgram(m_programId); }
+}
+
 unsigned int Shader::ProgramId() { return m_programId; }
 
 
@@ -88,9 +96,4 @@ Shader ResourceManager::__LoadInternal(const ResourceInfo<Shader>& info) {
 	glDeleteShader(fragShaderId);
 
     return Shader(programId);
-}
-
-template<>
-void ResourceManager::__UnloadInternal(Shader& shader) {
-    glDeleteProgram(shader.ProgramId());
 }

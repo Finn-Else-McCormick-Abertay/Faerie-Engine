@@ -40,11 +40,6 @@ bool ResourceManager::InitImpl() {
 }
 
 void ResourceManager::ShutdownImpl() {
-	__UnloadAll<Texture>();
-	__UnloadAll<Shader>();
-	__UnloadAll<Model>();
-	__UnloadAll<Script>();
-
 	pm_vfs = nullptr;
 }
 

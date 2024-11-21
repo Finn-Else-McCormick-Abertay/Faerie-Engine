@@ -38,7 +38,6 @@ public:
     
 
     template<typename T> static void Unload(ResourceIdentifier id) {
-        __UnloadInternal<T>(__Map<T>().at(id));
         __Map<T>().erase(id);
     }
     template<typename T> static void Unload(const ResourceInfo<T>& info) { Unload<T>(info.Identifier()); }
@@ -50,10 +49,6 @@ protected:
     
     // Load resource from given resource definition
     template<typename T> static T __LoadInternal(const ResourceInfo<T>&);
-
-    // Clean up resource, ready for deletion
-    // (called by unload, but also in a loop in the destructor where we can't be erasing elements)
-    template<typename T> static void __UnloadInternal(T&);
 
 protected:
     static vfspp::VirtualFileSystem& FileSystem();
@@ -74,14 +69,6 @@ private:
     std::unordered_map<ResourceIdentifier, Script> m_scripts;
     std::unordered_map<ResourceIdentifier, faerie::Mesh> m_meshes;
     std::unordered_map<ResourceIdentifier, Model> m_models;
-
-    template<typename T>
-    static void __UnloadAll() {
-        for (auto& [id, resource] : __Map<T>()) {
-            __UnloadInternal<T>(resource);
-        }
-        __Map<T>().clear();
-    }
 };
 
 template<> std::unordered_map<ResourceIdentifier, Texture>& ResourceManager::__Map();
@@ -90,16 +77,9 @@ template<> std::unordered_map<ResourceIdentifier, Script>& ResourceManager::__Ma
 template<> std::unordered_map<ResourceIdentifier, faerie::Mesh>& ResourceManager::__Map();
 template<> std::unordered_map<ResourceIdentifier, Model>& ResourceManager::__Map();
 
-// __LoadInternal and __UnloadInternal defined in cpp file of relevant resource
+// __LoadInternal defined in cpp file of relevant resource
 
 template<> Texture ResourceManager::__LoadInternal(const ResourceInfo<Texture>&);
-template<> void ResourceManager::__UnloadInternal(Texture&);
-
 template<> Shader ResourceManager::__LoadInternal(const ResourceInfo<Shader>&);
-template<> void ResourceManager::__UnloadInternal(Shader&);
-
 template<> Script ResourceManager::__LoadInternal(const ResourceInfo<Script>&);
-template<> void ResourceManager::__UnloadInternal(Script&);
-
 template<> Model ResourceManager::__LoadInternal(const ResourceInfo<Model>&);
-template<> void ResourceManager::__UnloadInternal(Model&);

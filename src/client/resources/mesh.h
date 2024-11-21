@@ -15,8 +15,8 @@ namespace faerie {
     {
     public:
         Mesh(const std::vector<Vertex>&, const std::vector<unsigned int>&);
-        Mesh(const Mesh&) = delete;
         Mesh(Mesh&&);
+        Mesh(const Mesh&) = delete;
         ~Mesh();
 
 #ifdef OPENGL3

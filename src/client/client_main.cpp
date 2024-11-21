@@ -28,12 +28,12 @@ int main(int argc, char *argv[]) {
     auto parentEnt = ECS::Create();
     parentEnt.Add<Components::Hierarchy>();
 
+    auto textureId = ResourceManager::Load<Texture>("/resources/textures/test.png");
+
     auto modelId = ResourceManager::Load<Model>("/resources/models/suzanne.fbx");
     auto& model = ResourceManager::Get<Model>(modelId);
 
-    auto suzanne = model.Instantiate();
-
-    parentEnt.Get<Components::Hierarchy>().AddChild(suzanne);
+    auto suzanne = model.Instantiate(parentEnt);
 
     /*
     auto scriptId = ResourceManager::Load<Script>("/resources/rust_module_example.wasm");
