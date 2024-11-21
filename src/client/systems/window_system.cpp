@@ -41,7 +41,7 @@ bool WindowSystem::InitImpl() {
         return false;
     }
 
-    p_window = SDL_CreateWindow("Untitled Tabletop Engine", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 1280, 720, windowFlags);
+    p_window = SDL_CreateWindow("Faerie Engine", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 1280, 720, windowFlags);
     if (p_window == nullptr) {
         Logger::Error(*this, "SDL_CreateWindow: ", SDL_GetError());
         return false;

@@ -13,8 +13,6 @@ ResourceIdentifier Components::Material::MaterialId() const { return m_materialI
 void Components::Material::__OnAdded(Entity ent) {
     if (!m_materialId) { return; }
     auto& material = ResourceManager::Get<::Material>(m_materialId);
-    //auto& shader = ResourceManager::Get<Shader>(material.ShaderId());
-    Logger::Debug(*this, "Added ", ent, " to storage of Shader ", material.ShaderId());
     ECS::Registry().emplace<ShaderHandle>(ent.Id());
     auto&& shaderStorage = ECS::Registry().storage<ShaderHandle>(material.ShaderId());
     shaderStorage.push(ent.Id());
@@ -23,8 +21,6 @@ void Components::Material::__OnAdded(Entity ent) {
 void Components::Material::__OnRemoved(Entity ent) {
     if (!m_materialId) { return; }
     auto& material = ResourceManager::Get<::Material>(m_materialId);
-    //auto& shader = ResourceManager::Get<Shader>(material.ShaderId());
-    Logger::Debug(*this, "Removed ", ent, " from storage of Shader ", material.ShaderId());
     ECS::Registry().erase<ShaderHandle>(ent.Id());
     auto&& shaderStorage = ECS::Registry().storage<ShaderHandle>(material.ShaderId());
     shaderStorage.erase(ent.Id());
