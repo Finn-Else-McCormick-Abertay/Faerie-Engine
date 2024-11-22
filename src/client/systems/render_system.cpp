@@ -4,6 +4,8 @@
 
 #include <systems/logger.h>
 #include <systems/ecs.h>
+#include <systems/debug.h>
+
 #include <components/transform.h>
 #include <components/mesh.h>
 #include <components/camera.h>
@@ -17,15 +19,8 @@ void IRenderSystem::ImGuiRender() {
 
     ImGui::DockSpaceOverViewport(0, NULL, ImGuiDockNodeFlags_NoDockingOverCentralNode | ImGuiDockNodeFlags_PassthruCentralNode);
 
-    auto view = ECS::Registry().view<Components::Transform>();
-    for (auto entity : view) {
-        auto [trans] = view.get(entity);
-        std::stringstream ss; ss << Entity(entity);
-        ImGui::Begin(ss.str().c_str(), NULL, ImGuiWindowFlags_AlwaysAutoResize);
-        vec3 pos = trans.Position(); float posTemp[3] = { pos.x, pos.y, pos.z };
-        if (ImGui::DragFloat3("Position", posTemp)) { trans.SetPosition(vec3(posTemp[0], posTemp[1], posTemp[2])); }
-        ImGui::End();
-    }
+    auto& debug = dynamic_cast<IDebugSystemInternal&>(Debug::Instance());
+    debug.__Internal_RunImGuiCallbacks();
     
     // Rendering
     ImGui::Render();

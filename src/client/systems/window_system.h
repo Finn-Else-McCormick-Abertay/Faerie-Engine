@@ -13,7 +13,7 @@ class WindowSystem final : public ISystem
 public:
     static WindowSystem& Instance();
 
-    IRenderSystem* RenderSystem();
+    IRenderSystem& RenderSystem();
 
     static int2 WindowSize();
     static float WindowAspect();
