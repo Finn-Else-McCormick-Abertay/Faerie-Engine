@@ -184,7 +184,7 @@ void WindowSystem::Update() {
                 case SDL_MOUSEBUTTONDOWN:
                 case SDL_MOUSEBUTTONUP: {
                     input.SendMouseButtonEvent(
-                        event.button.button, event.button.state, event.button.clicks > 1,
+                        static_cast<MouseButton>(event.button.button), event.button.state, event.button.clicks > 1,
                         int2(event.button.x, event.button.y), event.button.which
                     );
                 } break;

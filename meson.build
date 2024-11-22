@@ -20,6 +20,7 @@ client_src = [
     cl_rt/'systems/logger.cpp',
     cl_rt/'systems/debug.cpp',
     cl_rt/'systems/input.cpp',
+    cl_rt/'input_action.cpp',
     cl_rt/'systems/window_system.cpp',
     cl_rt/'systems/render_system.cpp',
     cl_rt/'systems/platform/render_system_opengl3.cpp',

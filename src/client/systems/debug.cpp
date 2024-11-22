@@ -34,5 +34,5 @@ void Debug::__Internal_RunImGuiCallbacks() {
         (m_instantCallbackQueue.front())();
         m_instantCallbackQueue.pop();
     }
-    for (auto [id, callback] : m_persistentCallbacks) { callback(); }
+    for (auto& [id, callback] : m_persistentCallbacks) { callback(); }
 }
