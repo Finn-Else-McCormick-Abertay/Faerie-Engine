@@ -1,4 +1,5 @@
 #include "resource_manager.h"
+#include <systems/system_lifecycle_define.h>
 
 #include <SDL.h>
 
@@ -14,12 +15,10 @@
 
 #include <systems/Logger.h>
 
-ResourceManager& ResourceManager::Instance() {
-    static ResourceManager instance;
-    return instance;
-}
+FAERIE___SYSTEM_SINGLETON_INSTANCE_DEFINE_DEFAULT(ResourceManager)
+FAERIE___SYSTEM_SINGLETON_INIT_SHUTDOWN_DEFINE(ResourceManager)
 
-bool ResourceManager::InitImpl() {
+bool ResourceManager::__Internal_Init() {
 	std::string appPath;
 	{
 		char* pathBuf = SDL_GetBasePath();
@@ -34,14 +33,11 @@ bool ResourceManager::InitImpl() {
 
 	pm_vfs->AddFileSystem("/", std::move(rootFs));
 
-	Logger::Info(*this, "Initialised");
-	Logger::Debug(*this, "Root path: ", appPath);
+	//Logger::Debug(*this, "Root path: ", appPath);
     return true;
 }
 
-void ResourceManager::ShutdownImpl() {
-	pm_vfs = nullptr;
-}
+void ResourceManager::__Internal_Shutdown() {}
 
 template<> std::unordered_map<ResourceIdentifier, Texture>& ResourceManager::__Map() { return Instance().m_textures; }
 template<> std::unordered_map<ResourceIdentifier, Shader>& ResourceManager::__Map() { return Instance().m_shaders; }

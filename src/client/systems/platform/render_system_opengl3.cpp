@@ -13,7 +13,7 @@
 
 #include <systems/Logger.h>
 
-bool RenderSystemOpenGl3::InitImpl() {
+bool RenderSystemOpenGl3::__Internal_Init() {
     // GL 3.0 + GLSL 130
     m_glslVersion = "#version 130";
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, 0);
@@ -25,11 +25,10 @@ bool RenderSystemOpenGl3::InitImpl() {
     SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
     SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 8);
 
-    Logger::Info(*this, "Initialised OpenGL3");
     return true;
 }
 
-void RenderSystemOpenGl3::ShutdownImpl() {
+void RenderSystemOpenGl3::__Internal_Shutdown() {
     if (ImGui::GetCurrentContext()) {
         ImGui_ImplOpenGL3_Shutdown();
         ImGui_ImplSDL2_Shutdown();
@@ -64,6 +63,8 @@ void RenderSystemOpenGl3::CreateContext(SDL_Window* window) {
     ImGui_ImplOpenGL3_Init(m_glslVersion.c_str());
     Logger::Info(*this, "Initialised ImGui");
 }
+
+SDL_WindowFlags RenderSystemOpenGl3::AdditionalWindowFlags() { return SDL_WINDOW_OPENGL; }
 
 void RenderSystemOpenGl3::BeginImGuiFrame() {
     ImGui_ImplOpenGL3_NewFrame();

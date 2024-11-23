@@ -1,19 +1,17 @@
 #include "logger.h"
+#include <systems/system_lifecycle_define.h>
 
 #include <iostream>
 
-Logger& Logger::Instance() {
-    static Logger instance;
-    return instance;
-}
+FAERIE___SYSTEM_SINGLETON_INSTANCE_DEFINE_DEFAULT(Logger)
+FAERIE___SYSTEM_SINGLETON_INIT_SHUTDOWN_DEFINE(Logger)
 
-bool Logger::InitImpl() {
+bool Logger::__Internal_Init() {
     Flush();
-    Info(*this, "Initialised");
     return true;
 }
 
-void Logger::ShutdownImpl() {}
+void Logger::__Internal_Shutdown() {}
 
 #define ANSI_RESET "\033[0m"
 #define ANSI_RED "\033[31m"

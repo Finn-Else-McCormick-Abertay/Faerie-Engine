@@ -1,18 +1,17 @@
 #include "debug.h"
+#include <systems/system_lifecycle_define.h>
 
 #include <systems/window_system.h>
 #include <systems/logger.h>
 
-Debug& Debug::Instance() {
-    static Debug debug;
-    return debug;
-}
+FAERIE___SYSTEM_SINGLETON_INSTANCE_DEFINE_DEFAULT(Debug)
+FAERIE___SYSTEM_SINGLETON_INIT_SHUTDOWN_DEFINE(Debug)
 
-bool Debug::InitImpl() {
+bool Debug::__Internal_Init() {
     return true;
 }
 
-void Debug::ShutdownImpl() {}
+void Debug::__Internal_Shutdown() {}
 
 void Debug::SetPersistent(const std::string& identifier, std::function<void()>&& callback) {
     if (Instance().m_persistentCallbacks.contains(identifier)) {

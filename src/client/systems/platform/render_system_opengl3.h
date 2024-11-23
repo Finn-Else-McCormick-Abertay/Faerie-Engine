@@ -8,17 +8,15 @@
 
 #include <string>
 
-class RenderSystemOpenGl3 : public IRenderSystem
-{
+class RenderSystemOpenGl3 : public RenderSystem {
+    FAERIE___SYSTEM_POLYMORPHIC_LIFECYCLE_DECLARE(RenderSystemOpenGl3, RenderSystem)
 public:
-    void CreateContext(SDL_Window* window);
+    virtual void CreateContext(SDL_Window* window) override;
+    virtual SDL_WindowFlags AdditionalWindowFlags() override;
 
     virtual void Render() override;
 
 protected:
-    virtual bool InitImpl() override;
-    virtual void ShutdownImpl() override;
-
     virtual void BeginImGuiFrame() override;
 
 private:

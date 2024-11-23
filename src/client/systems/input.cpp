@@ -1,15 +1,14 @@
 #include "input.h"
+#include <systems/system_lifecycle_define.h>
 
-Input& Input::Instance() {
-    static Input input;
-    return input;
-}
+FAERIE___SYSTEM_SINGLETON_INSTANCE_DEFINE_DEFAULT(Input)
+FAERIE___SYSTEM_SINGLETON_INIT_SHUTDOWN_DEFINE(Input)
 
-bool Input::InitImpl() {
+bool Input::__Internal_Init() {
     return true;
 }
 
-void Input::ShutdownImpl() {}
+void Input::__Internal_Shutdown() {}
 
 const ActionBinding& Input::GetBinding(const ActionIdentifier& id) {
     // Will create a binding if none exists. Not sure if desirable but otherwise returning a const ref doesnt work
@@ -41,7 +40,6 @@ void Input::UpdateBindingReflectionMaps() {
         for (auto button : binding.m_mouseButtons) { m_mouseButtonsToActions[button].insert(id); }
         for (auto source : binding.m_mouseMotionSources) { m_mouseMotionSourcesToActions[source].insert(id); }
         for (auto stick : binding.m_controllerSticks) {
-            SDL_GameControllerAxis axisX, axisY;
             switch (stick) {
                 case ControllerStick::LEFT: {
                     m_controllerAxesToActions[SDL_CONTROLLER_AXIS_LEFTX].insert(id);

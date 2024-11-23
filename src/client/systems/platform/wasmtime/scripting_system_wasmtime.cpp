@@ -5,7 +5,7 @@
 #include <stdio.h>
 #include <systems/Logger.h>
 
-bool ScriptingSystemWasmtime::InitImpl() {
+bool ScriptingSystemWasmtime::__Internal_Init() {
     wasmtime::Config config;
     pm_engine = std::make_unique<wasmtime::Engine>(std::move(config));
     pm_linker = std::make_unique<wasmtime::Linker>(*pm_engine);
@@ -15,14 +15,10 @@ bool ScriptingSystemWasmtime::InitImpl() {
     //wasmtime::WasiConfig wasiConfig;
     //pm_store->context().set_wasi(std::move(wasiConfig)).unwrap();
 
-    Logger::Info(*this, "Initialised");
     return true;
 };
 
-void ScriptingSystemWasmtime::ShutdownImpl() {
-    pm_engine = nullptr;
-    pm_store = nullptr;
-};
+void ScriptingSystemWasmtime::__Internal_Shutdown() {};
 
 wasmtime::Engine& ScriptingSystemWasmtime::Engine() {
     auto& inst = dynamic_cast<ScriptingSystemWasmtime&>(Instance());

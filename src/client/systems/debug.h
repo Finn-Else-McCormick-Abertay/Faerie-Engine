@@ -1,6 +1,6 @@
 #pragma once
 
-#include <systems/system.h>
+#include <systems/system_lifecycle_declare.h>
 #include <functional>
 #include <queue>
 #include <map>
@@ -10,16 +10,13 @@
 class IDebugSystemInternal
 {
 protected:
-    friend class IRenderSystem;
-
+    friend class RenderSystem;
     virtual void __Internal_RunImGuiCallbacks() = 0;
 };
 
-class Debug final : public ISystem, public IDebugSystemInternal
-{
-public:
-    static Debug& Instance();
-    
+class Debug final : public IDebugSystemInternal {
+    FAERIE___SYSTEM_SINGLETON_LIFECYCLE_DECLARE(Debug)
+public:    
     static void PushInstant(std::function<void()>&& callback);
 
     static void SetPersistent(const std::string& identifier, std::function<void()>&& callback);
@@ -33,10 +30,6 @@ public:
     }
 
 private:
-    Debug() = default;
-    virtual bool InitImpl() override;
-    virtual void ShutdownImpl() override;
-
     virtual void __Internal_RunImGuiCallbacks() override;
 
     std::map<std::string, std::function<void()>> m_persistentCallbacks;

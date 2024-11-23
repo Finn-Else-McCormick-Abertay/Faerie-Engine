@@ -1,6 +1,6 @@
 #pragma once
 
-#include <systems/system.h>
+#include <systems/system_lifecycle_declare.h>
 
 #include <string>
 #include <util/type_name.h>
@@ -18,11 +18,9 @@ template<typename T> static void FuncName(const T& id, const std::string& messag
 template<typename T, typename... Args> static void FuncName(Args... args) {}\
 template<typename T, typename... Args> static void FuncName(const T& id, Args... args) {}
 
-class Logger final : public ISystem
-{
+class Logger final {
+    FAERIE___SYSTEM_SINGLETON_LIFECYCLE_DECLARE(Logger)
 public:
-    static Logger& Instance();
-
     _LOGGER_FUNCTION(Info)
     _LOGGER_FUNCTION(Error)
     _LOGGER_FUNCTION(Warning)
@@ -35,10 +33,6 @@ public:
 #endif
 
 private:
-    Logger() = default;
-    virtual bool InitImpl() override;
-    virtual void ShutdownImpl() override;
-
     enum class OutputMode { Info, Error, Warning, Debug };
 
     void Output(const std::string& id, const std::string& message, OutputMode mode) const;

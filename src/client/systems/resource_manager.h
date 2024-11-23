@@ -1,6 +1,6 @@
 #pragma once
 
-#include <systems/system.h>
+#include <systems/system_lifecycle_declare.h>
 
 #include <resources/resource_info.h>
 #include <resources/shader.h>
@@ -20,11 +20,9 @@
 #include <vfspp/VirtualFileSystem.hpp>
 
 // Must be initialised after the window
-class ResourceManager final : public ISystem
-{
-public:
-    static ResourceManager& Instance();
-    
+class ResourceManager final {
+    FAERIE___SYSTEM_SINGLETON_LIFECYCLE_DECLARE(ResourceManager)
+public:    
     template<typename T> static T& Get(ResourceIdentifier id) {
         return __Map<T>().at(id);
     }
@@ -50,7 +48,7 @@ public:
         }
     }
 
-    // SHOULD BE PRIVATE, IS ONLY PUBLIC TEMPORARILY FOR TESTING
+    // !!SHOULD BE PRIVATE, IS ONLY PUBLIC TEMPORARILY FOR TESTING!!
     template<typename T> static ResourceIdentifier Emplace(ResourceIdentifier id, T&& resource) {
         __Map<T>().emplace(id, std::move(resource));
         return id;
@@ -72,10 +70,6 @@ protected:
     static std::vector<uint8_t> ReadBinaryFile(const std::string& virtualPath);
 
 private:
-    ResourceManager() = default;
-    virtual bool InitImpl() override;
-    virtual void ShutdownImpl() override;
-
     std::unique_ptr<vfspp::VirtualFileSystem> pm_vfs;
 
     std::unordered_map<ResourceIdentifier, Texture> m_textures;

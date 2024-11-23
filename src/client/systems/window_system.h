@@ -1,6 +1,6 @@
 #pragma once
 
-#include <systems/render_system.h>
+#include <systems/system_lifecycle_declare.h>
 
 #include <SDL.h>
 
@@ -8,21 +8,13 @@
 #include <memory>
 #include <maths_types.h>
 
-class WindowSystem final : public ISystem
-{
+class WindowSystem final {
+    FAERIE___SYSTEM_SINGLETON_LIFECYCLE_DECLARE(WindowSystem)
 public:
-    static WindowSystem& Instance();
-
-    IRenderSystem& RenderSystem();
-
     static int2 WindowSize();
     static float WindowAspect();
 
 private:
-    WindowSystem() = default;
-    virtual bool InitImpl() override;
-    virtual void ShutdownImpl() override;
-    
     // Begin main loop. Do not call except from main
     static void MainLoop();
     friend int main(int argc, char *argv[]);
@@ -33,6 +25,4 @@ private:
     bool m_shouldClose = false;
 
     int2 m_windowSize;
-
-    std::unique_ptr<IRenderSystem> m_renderSystem;
 };

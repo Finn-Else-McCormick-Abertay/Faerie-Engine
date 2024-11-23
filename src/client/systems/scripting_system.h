@@ -1,16 +1,12 @@
 #pragma once
 
-#include <systems/system.h>
+#include <systems/system_lifecycle_declare.h>
 
 #include <resources/script.h>
 
 #include <resources/resource_info.h>
 
-class ScriptingSystem : public ISystem
-{
-public:    
-    static ScriptingSystem& Instance();
-
-protected:
-    ScriptingSystem() = default;;
+class ScriptingSystem {
+    FAERIE___SYSTEM_ABSTRACT_SINGLETON_LIFECYCLE_DECLARE(ScriptingSystem)
+public:
 };

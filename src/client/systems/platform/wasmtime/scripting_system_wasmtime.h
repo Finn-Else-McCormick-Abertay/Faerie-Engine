@@ -11,14 +11,9 @@
 
 #include <memory>
 
-class ScriptingSystemWasmtime : public ScriptingSystem
-{
-public:
-
+class ScriptingSystemWasmtime : public ScriptingSystem {
+    FAERIE___SYSTEM_POLYMORPHIC_LIFECYCLE_DECLARE(ScriptingSystemWasmtime, ScriptingSystem)
 protected:
-    virtual bool InitImpl() override;
-    virtual void ShutdownImpl() override;
-
     static wasmtime::Engine& Engine();
     static wasmtime::Store& Store();
 

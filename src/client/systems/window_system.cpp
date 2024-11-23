@@ -1,46 +1,34 @@
 #include "window_system.h"
+#include <systems/system_lifecycle_define.h>
 
 #include <imgui.h>
-#include <imgui_impl_sdl2.h>
-
-#ifdef OPENGL3
-#include <systems/platform/render_system_opengl3.h>
-#endif // OPENGL3
+#include <backends/imgui_impl_sdl2.h>
 
 #include <systems/logger.h>
 #include <systems/ecs.h>
 #include <systems/input.h>
+#include <systems/render_system.h>
 
 #include <components/camera.h>
 
-WindowSystem& WindowSystem::Instance() {
-    static WindowSystem windowSystem;
-    return windowSystem;
-}
+FAERIE___SYSTEM_SINGLETON_INSTANCE_DEFINE_DEFAULT(WindowSystem)
+FAERIE___SYSTEM_SINGLETON_INIT_SHUTDOWN_DEFINE(WindowSystem)
 
-bool WindowSystem::InitImpl() {
-    // Setup SDL
-    if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER | SDL_INIT_GAMECONTROLLER) != 0)
-    {
+bool WindowSystem::__Internal_Init() {
+    if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER | SDL_INIT_GAMECONTROLLER) != 0) {
         Logger::Error(*this, "SDL_Init: ", SDL_GetError());
         return false;
     }
 
+    if (!RenderSystem::Init()) {
+        return false;
+    }
+    
 #ifdef SDL_HINT_IME_SHOW_UI
     SDL_SetHint(SDL_HINT_IME_SHOW_UI, "1");
 #endif
 
-    SDL_WindowFlags windowFlags = (SDL_WindowFlags)(SDL_WINDOW_RESIZABLE | SDL_WINDOW_ALLOW_HIGHDPI);
-
-#ifdef OPENGL3
-    m_renderSystem = std::make_unique<RenderSystemOpenGl3>();
-    windowFlags = (SDL_WindowFlags)(SDL_WINDOW_OPENGL | windowFlags);
-#endif // OPENGL3
-
-    if (!m_renderSystem->Init()) {
-        Logger::Error(*this, "Failed to initialise RenderSystem");
-        return false;
-    }
+    SDL_WindowFlags windowFlags = (SDL_WindowFlags)(SDL_WINDOW_RESIZABLE | SDL_WINDOW_ALLOW_HIGHDPI | RenderSystem::Instance().AdditionalWindowFlags());
 
     p_window = SDL_CreateWindow("Faerie Engine", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 1280, 720, windowFlags);
     if (p_window == nullptr) {
@@ -48,18 +36,17 @@ bool WindowSystem::InitImpl() {
         return false;
     }
 
-    m_renderSystem->CreateContext(p_window);
+    RenderSystem::Instance().CreateContext(p_window);
 
     int width, height;
     SDL_GetWindowSize(p_window, &width, &height);
     m_windowSize = int2(width, height);
 
-    Logger::Info(*this, "Initialised");
     return true;
 }
 
-void WindowSystem::ShutdownImpl() {
-    if (m_renderSystem) { m_renderSystem->Shutdown(); }
+void WindowSystem::__Internal_Shutdown() {
+    RenderSystem::Shutdown();
     if (p_window) { SDL_DestroyWindow(p_window); }
     SDL_Quit();
 }
@@ -227,12 +214,9 @@ void WindowSystem::Update() {
         return;
     }
 
-    m_renderSystem->ImGuiRender();
-    m_renderSystem->Render();
-}
-
-IRenderSystem& WindowSystem::RenderSystem() {
-    return *m_renderSystem.get();
+    auto& renderSystem = RenderSystem::Instance();
+    renderSystem.ImGuiRender();
+    renderSystem.Render();
 }
 
 int2 WindowSystem::WindowSize() {

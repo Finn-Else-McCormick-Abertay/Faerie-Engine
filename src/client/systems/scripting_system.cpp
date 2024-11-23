@@ -1,15 +1,9 @@
 #include "scripting_system.h"
+#include <systems/system_lifecycle_define.h>
 
-#include <memory>
 #ifdef WASMTIME
 #include <systems/platform/wasmtime/scripting_system_wasmtime.h>
+FAERIE___SYSTEM_SINGLETON_INSTANCE_DEFINE_POLYMORPHIC(ScriptingSystem, ScriptingSystemWasmtime)
 #endif // WASMTIME
 
-ScriptingSystem& ScriptingSystem::Instance() {
-    static std::unique_ptr<ScriptingSystem> inst = std::unique_ptr<ScriptingSystem>(
-#ifdef WASMTIME
-        new ScriptingSystemWasmtime()
-#endif // WASMTIME
-    );
-    return *inst;
-}
+FAERIE___SYSTEM_SINGLETON_INIT_SHUTDOWN_DEFINE(ScriptingSystem)

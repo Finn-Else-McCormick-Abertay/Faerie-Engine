@@ -1,21 +1,17 @@
 #include "ecs.h"
+#include <systems/system_lifecycle_define.h>
 
 #include <entity_wrapper.h>
 #include <systems/logger.h>
 
-ECS& ECS::Instance() {
-    static ECS instance;
-    return instance;
-}
+FAERIE___SYSTEM_SINGLETON_INSTANCE_DEFINE_DEFAULT(ECS)
+FAERIE___SYSTEM_SINGLETON_INIT_SHUTDOWN_DEFINE(ECS)
 
-bool ECS::InitImpl() {
-    Logger::Info(*this, "Initialised");
+bool ECS::__Internal_Init() {
     return true;
 }
 
-void ECS::ShutdownImpl() {
-    
-}
+void ECS::__Internal_Shutdown() {}
 
 entt::registry& ECS::Registry() {
     return Instance().m_registry;

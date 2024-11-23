@@ -1,6 +1,6 @@
 #pragma once
 
-#include <systems/system.h>
+#include <systems/system_lifecycle_declare.h>
 
 #include <SDL.h>
 #include <maths_types.h>
@@ -24,20 +24,14 @@ protected:
     virtual void SendMouseWheelEvent(vec2 scroll, Uint32 id) = 0;
 };
 
-class Input final : public ISystem, public IInputSystemInternal
-{
+class Input final : public IInputSystemInternal {
+    FAERIE___SYSTEM_SINGLETON_LIFECYCLE_DECLARE(Input)
 public:
-    static Input& Instance();
-
     static const ActionBinding& GetBinding(const ActionIdentifier&);
     static void SetBinding(const ActionIdentifier&, ActionBinding&&);
     static void SetBinding(const ActionIdentifier&, const ActionBinding&);
 
 private:
-    Input() = default;
-    virtual bool InitImpl() override;
-    virtual void ShutdownImpl() override;
-
     virtual void SendKeyEvent(SDL_Scancode scanCode, bool isPressed, bool isRepeat, Uint16 modifierState) override;
     
     virtual void SendControllerButtonEvent(SDL_GameControllerButton button, bool isPressed, SDL_JoystickID id) override;

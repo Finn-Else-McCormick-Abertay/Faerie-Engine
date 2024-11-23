@@ -19,13 +19,15 @@
 
 int main(int argc, char *argv[]) {
 
-    if (!Logger::Instance().Init()) { return -1; }
-    if (!WindowSystem::Instance().Init()) { return -1; }
-    if (!ResourceManager::Instance().Init()) { return -1; }
-	if (!ECS::Instance().Init()) { return -1; }
-    if (!ScriptingSystem::Instance().Init()) { return -1; }
-    if (!Input::Instance().Init()) { return -1; }
-    if (!Debug::Instance().Init()) { return -1; }
+    if (
+        !Logger::Init() ||
+        !WindowSystem::Init() ||
+        !ResourceManager::Init() ||
+        !ECS::Init() ||
+        !ScriptingSystem::Init() ||
+        !Input::Init() ||
+        !Debug::Init()
+    ) { return -1; }
 
     // Scene setup (TEMP)
     {
@@ -65,7 +67,7 @@ int main(int argc, char *argv[]) {
         auto cameraEntity = ECS::Create();
         cameraEntity.Add<Components::PerspectiveCamera, Components::Transform>();
 
-        WindowSystem::Instance().RenderSystem().SetActiveCamera(cameraEntity);
+        RenderSystem::Instance().SetActiveCamera(cameraEntity);
 
         Debug::SetPersistent("positions", [](){
             auto view = ECS::Registry().view<Components::Transform>();
@@ -84,13 +86,13 @@ int main(int argc, char *argv[]) {
     WindowSystem::MainLoop();
 
     // Cleanup
-    Debug::Instance().Shutdown();
-    Input::Instance().Shutdown();
-    WindowSystem::Instance().Shutdown();
-    ECS::Instance().Shutdown();
-    ScriptingSystem::Instance().Shutdown();
-    ResourceManager::Instance().Shutdown();
-    Logger::Instance().Shutdown();
+    Debug::Shutdown();
+    Input::Shutdown();
+    WindowSystem::Shutdown();
+    ECS::Shutdown();
+    ScriptingSystem::Shutdown();
+    ResourceManager::Shutdown();
+    Logger::Shutdown();
 
     return 0;
 }

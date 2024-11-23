@@ -16,7 +16,6 @@ shared_include = [ sh_rt ]
 cl_rt = 'src/client'
 client_src = [
     cl_rt/'client_main.cpp',
-    cl_rt/'systems/system.cpp',
     cl_rt/'systems/logger.cpp',
     cl_rt/'systems/debug.cpp',
     cl_rt/'systems/input.cpp',
