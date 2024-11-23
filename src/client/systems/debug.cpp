@@ -1,7 +1,6 @@
 #include "debug.h"
 #include <systems/system_lifecycle_define.h>
 
-#include <systems/window_system.h>
 #include <systems/logger.h>
 
 FAERIE___SYSTEM_SINGLETON_INSTANCE_DEFINE_DEFAULT(Debug)

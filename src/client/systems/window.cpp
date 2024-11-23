@@ -1,4 +1,4 @@
-#include "window_system.h"
+#include "window.h"
 #include <systems/system_lifecycle_define.h>
 
 #include <imgui.h>
@@ -7,20 +7,20 @@
 #include <systems/logger.h>
 #include <systems/ecs.h>
 #include <systems/input.h>
-#include <systems/render_system.h>
+#include <systems/renderer.h>
 
 #include <components/camera.h>
 
-FAERIE___SYSTEM_SINGLETON_INSTANCE_DEFINE_DEFAULT(WindowSystem)
-FAERIE___SYSTEM_SINGLETON_INIT_SHUTDOWN_DEFINE(WindowSystem)
+FAERIE___SYSTEM_SINGLETON_INSTANCE_DEFINE_DEFAULT(Window)
+FAERIE___SYSTEM_SINGLETON_INIT_SHUTDOWN_DEFINE(Window)
 
-bool WindowSystem::__Internal_Init() {
+bool Window::__Internal_Init() {
     if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER | SDL_INIT_GAMECONTROLLER) != 0) {
         Logger::Error(*this, "SDL_Init: ", SDL_GetError());
         return false;
     }
 
-    if (!RenderSystem::Init()) {
+    if (!Renderer::Init()) {
         return false;
     }
     
@@ -28,7 +28,7 @@ bool WindowSystem::__Internal_Init() {
     SDL_SetHint(SDL_HINT_IME_SHOW_UI, "1");
 #endif
 
-    SDL_WindowFlags windowFlags = (SDL_WindowFlags)(SDL_WINDOW_RESIZABLE | SDL_WINDOW_ALLOW_HIGHDPI | RenderSystem::Instance().AdditionalWindowFlags());
+    SDL_WindowFlags windowFlags = (SDL_WindowFlags)(SDL_WINDOW_RESIZABLE | SDL_WINDOW_ALLOW_HIGHDPI | Renderer::Instance().AdditionalWindowFlags());
 
     p_window = SDL_CreateWindow("Faerie Engine", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 1280, 720, windowFlags);
     if (p_window == nullptr) {
@@ -36,7 +36,7 @@ bool WindowSystem::__Internal_Init() {
         return false;
     }
 
-    RenderSystem::Instance().CreateContext(p_window);
+    Renderer::Instance().CreateContext(p_window);
 
     int width, height;
     SDL_GetWindowSize(p_window, &width, &height);
@@ -45,18 +45,18 @@ bool WindowSystem::__Internal_Init() {
     return true;
 }
 
-void WindowSystem::__Internal_Shutdown() {
-    RenderSystem::Shutdown();
+void Window::__Internal_Shutdown() {
+    Renderer::Shutdown();
     if (p_window) { SDL_DestroyWindow(p_window); }
     SDL_Quit();
 }
 
-void WindowSystem::MainLoop() {
+void Window::MainLoop() {
     auto& inst = Instance();
     while (!inst.m_shouldClose) { inst.Update(); }
 }
 
-void WindowSystem::Update() {
+void Window::Update() {
     auto windowFlags = SDL_GetWindowFlags(p_window);
     ImGuiIO& imIo = ImGui::GetIO();
     auto& input = dynamic_cast<IInputSystemInternal&>(Input::Instance());
@@ -214,16 +214,16 @@ void WindowSystem::Update() {
         return;
     }
 
-    auto& renderSystem = RenderSystem::Instance();
+    auto& renderSystem = Renderer::Instance();
     renderSystem.ImGuiRender();
     renderSystem.Render();
 }
 
-int2 WindowSystem::WindowSize() {
+int2 Window::WindowSize() {
     return Instance().m_windowSize;
 }
 
-float WindowSystem::WindowAspect() {
+float Window::WindowAspect() {
     auto& inst = Instance();
     return static_cast<float>(inst.m_windowSize.x) / static_cast<float>(inst.m_windowSize.y);
 }

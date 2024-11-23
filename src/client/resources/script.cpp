@@ -1,11 +1,11 @@
 #include "script.h"
 
 #include <systems/resource_manager.h>
-#include <systems/scripting_system.h>
+#include <systems/script_engine.h>
 #include <systems/logger.h>
 
 #ifdef WASMTIME
-#include <systems/platform/wasmtime/scripting_system_wasmtime.h>
+#include <systems/platform/script_engine_wasmtime.h>
 
 Script::Script(wasmtime::Instance&& instance) : m_instance(std::move(instance)) {}
 

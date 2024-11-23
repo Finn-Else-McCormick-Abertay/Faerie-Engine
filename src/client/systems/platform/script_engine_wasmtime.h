@@ -1,6 +1,6 @@
 #pragma once
 
-#include <systems/scripting_system.h>
+#include <systems/script_engine.h>
 
 #include <resources/script.h>
 
@@ -11,8 +11,8 @@
 
 #include <memory>
 
-class ScriptingSystemWasmtime : public ScriptingSystem {
-    FAERIE___SYSTEM_POLYMORPHIC_LIFECYCLE_DECLARE(ScriptingSystemWasmtime, ScriptingSystem)
+class ScriptingSystemWasmtime : public ScriptEngine {
+    FAERIE___SYSTEM_POLYMORPHIC_LIFECYCLE_DECLARE(ScriptingSystemWasmtime, ScriptEngine)
 protected:
     static wasmtime::Engine& Engine();
     static wasmtime::Store& Store();

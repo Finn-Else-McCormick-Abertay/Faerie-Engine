@@ -1,6 +1,6 @@
-#include <systems/window_system.h>
+#include <systems/window.h>
 #include <systems/resource_manager.h>
-#include <systems/scripting_system.h>
+#include <systems/script_engine.h>
 #include <systems/ecs.h>
 #include <systems/logger.h>
 #include <systems/input.h>
@@ -21,10 +21,10 @@ int main(int argc, char *argv[]) {
 
     if (
         !Logger::Init() ||
-        !WindowSystem::Init() ||
+        !Window::Init() ||
         !ResourceManager::Init() ||
         !ECS::Init() ||
-        !ScriptingSystem::Init() ||
+        !ScriptEngine::Init() ||
         !Input::Init() ||
         !Debug::Init()
     ) { return -1; }
@@ -67,7 +67,7 @@ int main(int argc, char *argv[]) {
         auto cameraEntity = ECS::Create();
         cameraEntity.Add<Components::PerspectiveCamera, Components::Transform>();
 
-        RenderSystem::Instance().SetActiveCamera(cameraEntity);
+        Renderer::Instance().SetActiveCamera(cameraEntity);
 
         Debug::SetPersistent("positions", [](){
             auto view = ECS::Registry().view<Components::Transform>();
@@ -83,14 +83,14 @@ int main(int argc, char *argv[]) {
     }
 
     // Enter main loop
-    WindowSystem::MainLoop();
+    Window::MainLoop();
 
     // Cleanup
     Debug::Shutdown();
     Input::Shutdown();
-    WindowSystem::Shutdown();
+    Window::Shutdown();
     ECS::Shutdown();
-    ScriptingSystem::Shutdown();
+    ScriptEngine::Shutdown();
     ResourceManager::Shutdown();
     Logger::Shutdown();
 

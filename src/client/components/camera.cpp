@@ -1,11 +1,11 @@
 #include "camera.h"
 
-#include <systems/window_system.h>
+#include <systems/window.h>
 #include <components/transform.h>
 
 using namespace Components;
 
-PerspectiveCamera::PerspectiveCamera(float fov, float near, float far) : m_fov(fov), m_near(near), m_far(far), m_aspect(WindowSystem::WindowAspect()) {
+PerspectiveCamera::PerspectiveCamera(float fov, float near, float far) : m_fov(fov), m_near(near), m_far(far), m_aspect(Window::WindowAspect()) {
     UpdateMatrix();
 }
 

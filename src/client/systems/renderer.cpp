@@ -1,4 +1,4 @@
-#include "render_system.h"
+#include "renderer.h"
 #include <systems/system_lifecycle_define.h>
 
 #include <imgui.h>
@@ -16,12 +16,12 @@
 #include <entity_wrapper.h>
 
 #ifdef OPENGL3
-#include <systems/platform/render_system_opengl3.h>
-FAERIE___SYSTEM_SINGLETON_INSTANCE_DEFINE_POLYMORPHIC(RenderSystem, RenderSystemOpenGl3)
+#include <systems/platform/renderer_opengl3.h>
+FAERIE___SYSTEM_SINGLETON_INSTANCE_DEFINE_POLYMORPHIC(Renderer, RendererOpenGl3)
 #endif
-FAERIE___SYSTEM_SINGLETON_INIT_SHUTDOWN_DEFINE(RenderSystem)
+FAERIE___SYSTEM_SINGLETON_INIT_SHUTDOWN_DEFINE(Renderer)
 
-void RenderSystem::ImGuiRender() {
+void Renderer::ImGuiRender() {
     BeginImGuiFrame();
 
     ImGui::DockSpaceOverViewport(0, NULL, ImGuiDockNodeFlags_NoDockingOverCentralNode | ImGuiDockNodeFlags_PassthruCentralNode);
@@ -33,8 +33,8 @@ void RenderSystem::ImGuiRender() {
     ImGui::Render();
 }
 
-Entity RenderSystem::ActiveCamera() const { return m_cameraEntity; }
-void RenderSystem::SetActiveCamera(Entity ent) {
+Entity Renderer::ActiveCamera() const { return m_cameraEntity; }
+void Renderer::SetActiveCamera(Entity ent) {
     if (!ent.Has<Components::PerspectiveCamera>() && !ent.Has<Components::OrthoCamera>()) {
         Logger::Warning(*this, ent, " set as active camera, but has no camera component.");
     }

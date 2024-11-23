@@ -10,7 +10,7 @@
 class IDebugSystemInternal
 {
 protected:
-    friend class RenderSystem;
+    friend class Renderer;
     virtual void __Internal_RunImGuiCallbacks() = 0;
 };
 

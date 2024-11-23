@@ -6,7 +6,7 @@
 
 #include <resources/resource_info.h>
 
-class ScriptingSystem {
-    FAERIE___SYSTEM_ABSTRACT_SINGLETON_LIFECYCLE_DECLARE(ScriptingSystem)
+class ScriptEngine {
+    FAERIE___SYSTEM_ABSTRACT_SINGLETON_LIFECYCLE_DECLARE(ScriptEngine)
 public:
 };

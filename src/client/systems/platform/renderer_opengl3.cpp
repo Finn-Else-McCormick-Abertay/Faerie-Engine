@@ -1,4 +1,4 @@
-#include "render_system_opengl3.h"
+#include "renderer_opengl3.h"
 
 #include <imgui.h>
 #include <imgui_impl_sdl2.h>
@@ -13,7 +13,7 @@
 
 #include <systems/Logger.h>
 
-bool RenderSystemOpenGl3::__Internal_Init() {
+bool RendererOpenGl3::__Internal_Init() {
     // GL 3.0 + GLSL 130
     m_glslVersion = "#version 130";
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, 0);
@@ -28,7 +28,7 @@ bool RenderSystemOpenGl3::__Internal_Init() {
     return true;
 }
 
-void RenderSystemOpenGl3::__Internal_Shutdown() {
+void RendererOpenGl3::__Internal_Shutdown() {
     if (ImGui::GetCurrentContext()) {
         ImGui_ImplOpenGL3_Shutdown();
         ImGui_ImplSDL2_Shutdown();
@@ -36,7 +36,7 @@ void RenderSystemOpenGl3::__Internal_Shutdown() {
     }
 }
 
-void RenderSystemOpenGl3::CreateContext(SDL_Window* window) {
+void RendererOpenGl3::CreateContext(SDL_Window* window) {
     p_window = window;
 
     m_glContext = SDL_GL_CreateContext(p_window);
@@ -64,15 +64,15 @@ void RenderSystemOpenGl3::CreateContext(SDL_Window* window) {
     Logger::Info(*this, "Initialised ImGui");
 }
 
-SDL_WindowFlags RenderSystemOpenGl3::AdditionalWindowFlags() { return SDL_WINDOW_OPENGL; }
+SDL_WindowFlags RendererOpenGl3::AdditionalWindowFlags() { return SDL_WINDOW_OPENGL; }
 
-void RenderSystemOpenGl3::BeginImGuiFrame() {
+void RendererOpenGl3::BeginImGuiFrame() {
     ImGui_ImplOpenGL3_NewFrame();
     ImGui_ImplSDL2_NewFrame();
     ImGui::NewFrame();
 }
 
-void RenderSystemOpenGl3::Render() {
+void RendererOpenGl3::Render() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glEnable(GL_DEPTH_TEST);
 
@@ -82,7 +82,7 @@ void RenderSystemOpenGl3::Render() {
     SDL_GL_SwapWindow(p_window);
 }
 
-void RenderSystemOpenGl3::DrawGameScene() {
+void RendererOpenGl3::DrawGameScene() {
     mat4 projMat;
     if (auto camPtr = ActiveCamera().TryGet<Components::PerspectiveCamera>(); camPtr) { projMat = camPtr->ProjectionMatrix(); }
     else if (auto camPtr = ActiveCamera().TryGet<Components::OrthoCamera>(); camPtr)  { projMat = camPtr->ProjectionMatrix(); }

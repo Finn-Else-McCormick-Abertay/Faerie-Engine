@@ -6,7 +6,7 @@
 #include <resources/resource_info.h>
 
 #ifdef OPENGL3
-#include <systems/platform/render_system_opengl3.h>
+#include <systems/platform/renderer_opengl3.h>
 #endif // OPENGL3
 
 namespace faerie {

@@ -12,7 +12,7 @@
 class IInputSystemInternal
 {
 protected:
-    friend class WindowSystem;
+    friend class Window;
 
     virtual void SendKeyEvent(SDL_Scancode scanCode, bool isPressed, bool isRepeat, Uint16 modifierState) = 0;
 

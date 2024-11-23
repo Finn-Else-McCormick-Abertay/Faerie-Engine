@@ -1,6 +1,6 @@
 #pragma once
 
-#include <systems/render_system.h>
+#include <systems/renderer.h>
 
 #include <SDL.h>
 #include <GL/glew.h>
@@ -8,8 +8,8 @@
 
 #include <string>
 
-class RenderSystemOpenGl3 : public RenderSystem {
-    FAERIE___SYSTEM_POLYMORPHIC_LIFECYCLE_DECLARE(RenderSystemOpenGl3, RenderSystem)
+class RendererOpenGl3 : public Renderer {
+    FAERIE___SYSTEM_POLYMORPHIC_LIFECYCLE_DECLARE(RendererOpenGl3, Renderer)
 public:
     virtual void CreateContext(SDL_Window* window) override;
     virtual SDL_WindowFlags AdditionalWindowFlags() override;

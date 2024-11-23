@@ -8,8 +8,8 @@
 #include <memory>
 #include <maths_types.h>
 
-class WindowSystem final {
-    FAERIE___SYSTEM_SINGLETON_LIFECYCLE_DECLARE(WindowSystem)
+class Window final {
+    FAERIE___SYSTEM_SINGLETON_LIFECYCLE_DECLARE(Window)
 public:
     static int2 WindowSize();
     static float WindowAspect();

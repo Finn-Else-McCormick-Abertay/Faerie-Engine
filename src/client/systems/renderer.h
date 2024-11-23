@@ -5,8 +5,8 @@
 
 #include <SDL.h>
 
-class RenderSystem {
-    FAERIE___SYSTEM_ABSTRACT_SINGLETON_LIFECYCLE_DECLARE(RenderSystem)
+class Renderer {
+    FAERIE___SYSTEM_ABSTRACT_SINGLETON_LIFECYCLE_DECLARE(Renderer)
 public:
     virtual void Render() = 0;
     void ImGuiRender();

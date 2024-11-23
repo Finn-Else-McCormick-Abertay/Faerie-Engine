@@ -1,4 +1,4 @@
-#include "scripting_system_wasmtime.h"
+#include "script_engine_wasmtime.h"
 
 #include <systems/resource_manager.h>
 
