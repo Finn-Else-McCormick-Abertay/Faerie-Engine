@@ -25,10 +25,10 @@ void ActionBinding::Unbind(MouseMotionSource v) { m_mouseMotionSources.erase(v);
 void ActionBinding::Unbind(ControllerStick v)   { m_controllerSticks.erase(v); }
 void ActionBinding::Unbind(ControllerTrigger v) { m_controllerTriggers.erase(v); }
 
-bool ActionBinding::Has(PhysicalKeyCode v)      { m_physicalKeys.contains(v); }
-bool ActionBinding::Has(LogicalKeyCode v)       { m_logicalKeys.contains(v); }
-bool ActionBinding::Has(ControllerButton v)     { m_controllerButtons.contains(v); }
-bool ActionBinding::Has(MouseButton v)          { m_mouseButtons.contains(v); }
-bool ActionBinding::Has(MouseMotionSource v)    { m_mouseMotionSources.contains(v); }
-bool ActionBinding::Has(ControllerStick v)      { m_controllerSticks.contains(v); }
-bool ActionBinding::Has(ControllerTrigger v)    { m_controllerTriggers.contains(v); }
+bool ActionBinding::Has(PhysicalKeyCode v)      { return m_physicalKeys.contains(v); }
+bool ActionBinding::Has(LogicalKeyCode v)       { return m_logicalKeys.contains(v); }
+bool ActionBinding::Has(ControllerButton v)     { return m_controllerButtons.contains(v); }
+bool ActionBinding::Has(MouseButton v)          { return m_mouseButtons.contains(v); }
+bool ActionBinding::Has(MouseMotionSource v)    { return m_mouseMotionSources.contains(v); }
+bool ActionBinding::Has(ControllerStick v)      { return m_controllerSticks.contains(v); }
+bool ActionBinding::Has(ControllerTrigger v)    { return m_controllerTriggers.contains(v); }
