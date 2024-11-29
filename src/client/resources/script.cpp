@@ -4,9 +4,8 @@
 #include <systems/script_engine.h>
 #include <systems/logger.h>
 
-#ifdef WASMTIME
-
-Script::Script(wasmtime::Instance&& instance) : m_instance(std::move(instance)) {}
+Script::Script(wasmtime::Instance&& instance) : pm_instance(std::make_unique<wasmtime::Instance>(std::move(instance))) {}
+Script::Script() : pm_instance(nullptr) {}
 
 std::vector<wasmtime::Val> Script::Call(const std::string& func, const std::vector<wasmtime::Val>& args) {
     try {
@@ -23,40 +22,89 @@ template<> Script ResourceManager::__LoadInternal(const ResourceInfo<Script>& in
     auto fileInfo = vfspp::FileInfo(info.Path());
     if (!fileInfo.IsValid()) {
         Logger::Error<Script>("Failed to load from ", info, ": path is invalid.");
-        //return Script();
+        return Script();
     }
 
     std::unique_ptr<wasmtime::Module> module = nullptr;
 
+    auto outputCompileError = [&info](const std::string& message, const wasmtime::Trace& trace) {
+        std::string frameTrace = "";
+        int index = 0;
+        for (auto& frame : trace) {
+            if (index > 0) { frameTrace += "\n"; }
+            for (int i = 0; i < index - 1; ++i) { frameTrace += "  "; }
+            if (index > 0) { frameTrace += " -"; }
+            frameTrace += "[" + std::to_string(index) + "] ";
+            frameTrace += " ("; frameTrace += frame.module_name().value_or("unnamed module"); frameTrace += ")";
+            frameTrace += " : " + std::to_string(frame.module_offset());
+            frameTrace += " -> func ("; frameTrace += frame.func_name().value_or("unnamed func"); frameTrace += ")";
+            frameTrace += " : " + std::to_string(frame.func_offset());
+            index++;
+        }
+        Logger::Error<Script>("Failed to compile while loading from ", info, ": ", message, "\n", frameTrace);
+    };
+
     // File is .wasm binary file
     if (fileInfo.Extension() == ".wasm") {
         std::vector<uint8_t> srcBytes = ReadBinaryFile(info.Path());
-        if (auto result = wasmtime::Module::compile(ScriptEngine::Engine(), srcBytes)) {
-            module = std::make_unique<wasmtime::Module>(std::move(result.ok()));
+        auto result = wasmtime::Module::compile(ScriptEngine::Engine(), srcBytes);
+        if (result) { module = std::make_unique<wasmtime::Module>(std::move(result.ok())); }
+        else {
+            outputCompileError(result.err().message(), result.err().trace());
+            return Script();
         }
-        else { Logger::Error<Script>("Failed to load from ", info, ": script does not compile."); }
     }
     // File is .wat text file
     else if (fileInfo.Extension() == ".wat") {
         std::string srcText = ReadTextFile(info.Path());
-        if (auto result = wasmtime::Module::compile(ScriptEngine::Engine(), srcText)) {
-            module = std::make_unique<wasmtime::Module>(std::move(result.ok()));
+        auto result = wasmtime::Module::compile(ScriptEngine::Engine(), srcText);
+        if (result) { module = std::make_unique<wasmtime::Module>(std::move(result.ok())); }
+        else {
+            outputCompileError(result.err().message(), result.err().trace());
+            return Script();
         }
-        else { Logger::Error<Script>("Failed to load from ", info, ": script does not compile."); }
     }
     else {
         Logger::Error<Script>("Failed to load from ", info, ": ", fileInfo.Extension(), " is not a valid WebAssembly script type.");
+        return Script();
     }
 
-    if (!module) {
-        //return Script();
+    // Module compiled successfully
+
+    // Get requested imports
+    std::vector<wasmtime::Extern> importExterns;
+    for (auto importType : module->imports()) {
+        if (importType.module() == "env") {
+            auto ext = ScriptEngine::GetExtern(std::string(importType.name()));
+            if (ext) { importExterns.push_back(ext.value()); }
+            else {
+                Logger::Error<Script>("Could not provide import '(",  importType.module(), ")::", importType.name(), "' while loading from ", info);
+                // Could also assign it to an empty function? idk
+                return Script();
+            }
+        }
+        else {
+            Logger::Warning<Script>("Attempted to import non-host function '(", importType.module(), ")::", importType.name(), "' (not currently implemented)");
+        }
     }
 
-    auto instance = ScriptEngine::CreateInstance(*module);
-    Script script(std::move(instance));
+    // Instantiate module
+    Script script;
+    auto result = wasmtime::Instance::create(ScriptEngine::Store(), *module, importExterns);
+    if (result) { script = Script(std::move(result.ok())); }
+    else {
+        Logger::Error<Script>("Failed to instantiate while loading from ", info, ": ", result.err().message());
+        return Script();
+    }
 
-    ScriptEngine::SetupExports(script);
+    // Add exports to script object
+    /*
+    for (auto exportType : module->exports()) {
+        Logger::Debug<Script>(info, " export: ", exportType.name());
+    }
+    */
+    script.m_funcs.emplace("run", std::get<wasmtime::Func>(*script.pm_instance->get(ScriptEngine::Store(), "run")));
+    script.m_funcs.emplace("number", std::get<wasmtime::Func>(*script.pm_instance->get(ScriptEngine::Store(), "number")));
 
     return script;
 }
-#endif // WASMTIME

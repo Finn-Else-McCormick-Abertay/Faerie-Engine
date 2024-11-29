@@ -7,8 +7,6 @@
 FAERIE___SYSTEM_SINGLETON_INSTANCE_DEFINE_DEFAULT(ScriptEngine)
 FAERIE___SYSTEM_SINGLETON_INIT_SHUTDOWN_DEFINE(ScriptEngine)
 
-#ifdef WASMTIME
-
 bool ScriptEngine::__Internal_Init() {
     wasmtime::Config config;
     pm_engine = std::make_unique<wasmtime::Engine>(std::move(config));
@@ -32,18 +30,10 @@ wasmtime::Store& ScriptEngine::Store() {
     return *Instance().pm_store;
 }
 
-wasmtime::Instance ScriptEngine::CreateInstance(const wasmtime::Module& module) {
-    for (auto& import : module.imports()) {
-        //?????
+std::optional<wasmtime::Extern> ScriptEngine::GetExtern(const std::string& name) {
+    auto& inst = Instance();
+    if (inst.m_wrappedFuncs.contains(name)) {
+        return inst.m_wrappedFuncs.at(name);
     }
-    std::vector<wasmtime::Extern> imports;
-    imports.push_back(wasmtime::Func::wrap(Store(), [](){ printf("Imported function called.\n"); }));
-    auto result = wasmtime::Instance::create(Store(), module, imports);
-    return result.unwrap();
+    return std::nullopt;
 }
-
-void ScriptEngine::SetupExports(Script& script) {
-    script.m_funcs.emplace("run", std::get<wasmtime::Func>(*script.m_instance.get(Store(), "run")));
-}
-
-#endif // WASMTIME
