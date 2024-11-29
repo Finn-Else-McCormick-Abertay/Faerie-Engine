@@ -102,7 +102,7 @@ stduuid = declare_dependency(include_directories: 'vendor/stduuid')
 # -- Targets --
 
 # Copy resources to build directory
-run_target('resources', command: ['buildscripts/copy_resources.cmd'])
+run_target('resources', command: ['xcopy', meson.current_source_dir()/'resources', meson.current_build_dir()/'resources', '/s', '/y', '/i'])
 
 # Compile client executable
 executable('client',
