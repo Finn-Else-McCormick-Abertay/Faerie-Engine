@@ -25,7 +25,6 @@ client_src = [
     cl_rt/'systems/platform/renderer_opengl3.cpp',
     cl_rt/'systems/resource_manager.cpp',
     cl_rt/'systems/script_engine.cpp',
-    cl_rt/'systems/platform/script_engine_wasmtime.cpp',
     cl_rt/'systems/ecs.cpp',
     cl_rt/'util/stb.cpp',
     cl_rt/'resources/script.cpp',

@@ -5,6 +5,7 @@
 #include <string>
 #include <util/type_name.h>
 #include <sstream>
+#include <util/container_to_string.h>
 
 #define _LOGGER_FUNCTION(FuncName)\
 template<typename T> static void FuncName(const std::string& message) { Instance().Output(type_name<T>(), message, OutputMode::FuncName); }\

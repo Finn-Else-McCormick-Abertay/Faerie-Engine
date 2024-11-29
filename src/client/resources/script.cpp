@@ -5,13 +5,17 @@
 #include <systems/logger.h>
 
 #ifdef WASMTIME
-#include <systems/platform/script_engine_wasmtime.h>
 
 Script::Script(wasmtime::Instance&& instance) : m_instance(std::move(instance)) {}
 
 std::vector<wasmtime::Val> Script::Call(const std::string& func, const std::vector<wasmtime::Val>& args) {
-    auto result = m_funcs.at(func).call(ScriptingSystemWasmtime::Store(), args);
-    return result.unwrap();
+    try {
+        auto result = m_funcs.at(func).call(ScriptEngine::Store(), args);
+        return result.unwrap();
+    } catch (const std::out_of_range& err) {
+        Logger::Error(*this, "Attempted to call non-existent function '", func, "'");
+        return std::vector<wasmtime::Val>{};
+    }
 }
 
 
@@ -27,7 +31,7 @@ template<> Script ResourceManager::__LoadInternal(const ResourceInfo<Script>& in
     // File is .wasm binary file
     if (fileInfo.Extension() == ".wasm") {
         std::vector<uint8_t> srcBytes = ReadBinaryFile(info.Path());
-        if (auto result = wasmtime::Module::compile(ScriptingSystemWasmtime::Engine(), srcBytes)) {
+        if (auto result = wasmtime::Module::compile(ScriptEngine::Engine(), srcBytes)) {
             module = std::make_unique<wasmtime::Module>(std::move(result.ok()));
         }
         else { Logger::Error<Script>("Failed to load from ", info, ": script does not compile."); }
@@ -35,7 +39,7 @@ template<> Script ResourceManager::__LoadInternal(const ResourceInfo<Script>& in
     // File is .wat text file
     else if (fileInfo.Extension() == ".wat") {
         std::string srcText = ReadTextFile(info.Path());
-        if (auto result = wasmtime::Module::compile(ScriptingSystemWasmtime::Engine(), srcText)) {
+        if (auto result = wasmtime::Module::compile(ScriptEngine::Engine(), srcText)) {
             module = std::make_unique<wasmtime::Module>(std::move(result.ok()));
         }
         else { Logger::Error<Script>("Failed to load from ", info, ": script does not compile."); }
@@ -48,10 +52,10 @@ template<> Script ResourceManager::__LoadInternal(const ResourceInfo<Script>& in
         //return Script();
     }
 
-    auto instance = ScriptingSystemWasmtime::CreateInstance(*module);
+    auto instance = ScriptEngine::CreateInstance(*module);
     Script script(std::move(instance));
 
-    ScriptingSystemWasmtime::SetupExports(script);
+    ScriptEngine::SetupExports(script);
 
     return script;
 }

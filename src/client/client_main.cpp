@@ -19,8 +19,7 @@
 
 int main(int argc, char *argv[]) {
 
-    if (
-        !Logger::Init() ||
+    if (!Logger::Init() ||
         !Window::Init() ||
         !ResourceManager::Init() ||
         !ECS::Init() ||
@@ -58,11 +57,11 @@ int main(int argc, char *argv[]) {
         });
         ent2.Get<Components::Transform>().Move(vec3(130.f, 0.f, 150.f));
 
-        /*
         auto scriptId = ResourceManager::Load<Script>("/resources/rust_module_example.wasm");
         auto& script = ResourceManager::Get<Script>(scriptId);
         script.Call("run", {});
-        */
+        auto returns = script.Call("number", {});
+        //Logger::Info(script, vector_to_string(returns));
 
         auto cameraEntity = ECS::Create();
         cameraEntity.Add<Components::PerspectiveCamera, Components::Transform>();
