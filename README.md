@@ -9,6 +9,8 @@ Finn Else-McCormick | 2200864
 
 Install [msys2](https://www.msys2.org/)
 
+!DOCS UNFINISHED! Install Rust, set default target to x86_64-pc-windows-gnu
+
 Add 'C:\msys64\ucrt64\bin' and 'C:\msys64\ucrt64\lib' (assuming default install location) to PATH.
 
 Use msys2 to install the following tools:

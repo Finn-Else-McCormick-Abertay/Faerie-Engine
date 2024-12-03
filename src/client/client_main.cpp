@@ -17,7 +17,11 @@
 
 #include <imgui.h>
 
+#include <lib.rs.h>
+
 int main(int argc, char *argv[]) {
+
+    greet_from_rust();
 
     if (!Logger::Init() ||
         !Window::Init() ||

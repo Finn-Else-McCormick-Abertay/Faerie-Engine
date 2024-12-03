@@ -1,6 +1,6 @@
 project(
     'faerie',
-    'cpp', default_options: ['cpp_std=c++20'],
+    ['cpp', 'rust'], default_options: ['cpp_std=c++20', 'rust_std=2021'],
     version: '0.0.1'
 )
 
@@ -82,7 +82,7 @@ imgui_src = [
 imgui_include = [ im_rt, im_rt/'backends' ]
 imgui_dependencies = [ sdl2, opengl ]
 imgui = declare_dependency(
-    link_with: library('imgui', sources: imgui_src, dependencies: imgui_dependencies, include_directories: imgui_include),
+    link_with: static_library('imgui', sources: imgui_src, dependencies: imgui_dependencies, include_directories: imgui_include),
     include_directories: imgui_include
 )
 
@@ -99,7 +99,31 @@ vfspp = vfspp_subproj.dependency('vfspp')
 # stduuid - header only library, provided locally
 stduuid = declare_dependency(include_directories: 'vendor/stduuid')
 
+#cxx = dependency('cxx-1-rs')
+
 # -- Targets --
+
+faerie_rust_lib = static_library('faerie-rust', sources: [ 'src/rust/lib.rs' ], rust_abi: 'c', dependencies: [])
+faerie_rust_dep = declare_dependency(link_with: faerie_rust_lib, include_directories: 'src/rust/generated/include')
+
+# Compile Rust portion of the engine as static library
+
+#faerie_rust_gen_cpp_target = custom_target('rust-generate-cpp-bindings', command: ['buildscripts/rust_cxxbridge.cmd', '@INPUT@', '@OUTPUT0@', '@OUTPUT1@'],
+#    build_always_stale: true, input:'faerie-rust/src/lib.rs', output:['faerie_rust_bindings.h', 'faerie_rust_bindings.cc'], console: true
+#)
+
+#cargo = find_program('cargo', native: true, required: true)
+#rust_toolchain = 'nightly-x86_64-pc-windows-gnu'
+#cargo_command = [
+#    cargo, '+'+rust_toolchain, 'build', '--lib', '-Z', 'unstable-options',
+#    '--target-dir', meson.current_build_dir()/'@PRIVATE_DIR@', '--artifact-dir', meson.current_build_dir()/'@OUTDIR@'
+#]
+#faerie_rust_target = custom_target('rust-build', command: ['buildscripts/cd_then.cmd', meson.current_source_dir()/'faerie-rust'] + cargo_command,
+#    build_always_stale: true, output: 'libfaerie_rust.a', console: true,
+#    depends: faerie_rust_gen_cpp_target
+#)
+
+#faerie_rust = declare_dependency( sources: faerie_rust_gen_cpp_target[1], include_directories: ['builddir', 'vendor/cxx'], link_with: faerie_rust_target )
 
 # Copy resources to build directory
 run_target('resources', command: ['xcopy', meson.current_source_dir()/'resources', meson.current_build_dir()/'resources', '/s', '/y', '/i'])
@@ -108,5 +132,5 @@ run_target('resources', command: ['xcopy', meson.current_source_dir()/'resources
 executable('client',
     sources: shared_src + client_src, include_directories: shared_include + client_include,
     cpp_pch: client_pch, cpp_args: client_args,
-    dependencies: [ sdl2, opengl, glew, glm, imgui, wasmtime, vfspp, enet, entt, stduuid, assimp ]
+    dependencies: [ faerie_rust_dep, sdl2, opengl, glew, glm, imgui, wasmtime, vfspp, enet, entt, stduuid, assimp ]
 )
