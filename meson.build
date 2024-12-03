@@ -99,11 +99,11 @@ vfspp = vfspp_subproj.dependency('vfspp')
 # stduuid - header only library, provided locally
 stduuid = declare_dependency(include_directories: 'vendor/stduuid')
 
-#cxx = dependency('cxx-1-rs')
+cxx = dependency('cxx-1-rs')
 
 # -- Targets --
 
-faerie_rust_lib = static_library('faerie-rust', sources: [ 'src/rust/lib.rs' ], rust_abi: 'c', dependencies: [])
+faerie_rust_lib = static_library('faerie-rust', sources: [ 'src/rust/lib.rs' ], rust_abi: 'c', dependencies: [cxx])
 faerie_rust_dep = declare_dependency(link_with: faerie_rust_lib, include_directories: 'src/rust/generated/include')
 
 # Compile Rust portion of the engine as static library

@@ -1,0 +1,9 @@
+[wrap-git]
+directory = unicode-ident
+url = https://github.com/dtolnay/unicode-ident.git
+revision = HEAD
+depth = 1
+
+method = cargo
+[provide]
+dependency_names = unicode-ident-1-rs

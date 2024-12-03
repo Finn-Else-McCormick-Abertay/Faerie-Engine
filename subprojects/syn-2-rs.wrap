@@ -1,0 +1,9 @@
+[wrap-git]
+directory = syn
+url = https://github.com/dtolnay/syn.git
+revision = HEAD
+depth = 1
+
+method = cargo
+[provide]
+dependency_names = syn-2-rs

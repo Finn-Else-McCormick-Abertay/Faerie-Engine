@@ -1,0 +1,9 @@
+[wrap-git]
+directory = quote
+url = https://github.com/dtolnay/quote.git
+revision = HEAD
+depth = 1
+
+method = cargo
+[provide]
+dependency_names = quote-1-rs

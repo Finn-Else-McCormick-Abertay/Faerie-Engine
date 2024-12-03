@@ -1,0 +1,7 @@
+option('feature-default', type : 'boolean', value : false)
+option('feature-cpp14', type : 'boolean', value : false)
+option('feature-cpp17', type : 'boolean', value : false)
+option('feature-cpp20', type : 'boolean', value : false)
+
+option('feature-alloc', type : 'boolean', value : false)
+option('feature-std', type : 'boolean', value : false)

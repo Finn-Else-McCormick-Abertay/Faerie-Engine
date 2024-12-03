@@ -1,0 +1,9 @@
+[wrap-git]
+directory = rustversion
+url = https://github.com/dtolnay/rustversion.git
+revision = HEAD
+depth = 1
+
+method = cargo
+[provide]
+dependency_names = rustversion-1-rs

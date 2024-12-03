@@ -1,0 +1,9 @@
+[wrap-git]
+directory = link-cplusplus
+url = https://github.com/dtolnay/link-cplusplus
+revision = HEAD
+depth = 1
+
+method = cargo
+[provide]
+dependency_names = link-cplusplus-1-rs

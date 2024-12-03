@@ -1,0 +1,9 @@
+[wrap-git]
+directory = proc-macro2
+url = https://github.com/dtolnay/proc-macro2.git
+revision = HEAD
+depth = 1
+
+method = cargo
+[provide]
+dependency_names = proc-macro2-1-rs
