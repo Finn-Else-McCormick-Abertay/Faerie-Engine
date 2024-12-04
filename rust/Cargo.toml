@@ -1,0 +1,13 @@
+[package]
+name = "faerie_rust"
+version = "0.0.1"
+edition = "2021"
+
+[lib]
+crate-type = ["staticlib"]
+
+[dependencies]
+cxx = "1.0.133"
+
+[build-dependencies]
+cxx-build = "1.0"

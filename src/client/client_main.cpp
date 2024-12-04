@@ -17,12 +17,9 @@
 
 #include <imgui.h>
 
-#include <lib.rs.h>
+#include <faerie_rust_bindings.h>
 
 int main(int argc, char *argv[]) {
-
-    greet_from_rust();
-
     if (!Logger::Init() ||
         !Window::Init() ||
         !ResourceManager::Init() ||
@@ -31,6 +28,10 @@ int main(int argc, char *argv[]) {
         !Input::Init() ||
         !Debug::Init()
     ) { return -1; }
+
+    auto rstring = greet_from_rust();
+
+    Logger::Debug(rstring, rstring.c_str());
 
     // Scene setup (TEMP)
     {
