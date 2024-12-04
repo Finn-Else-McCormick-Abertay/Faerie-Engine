@@ -75,5 +75,8 @@
         "variant": "cpp",
         "chrono": "cpp",
         "typeindex": "cpp"
-    }
+    },
+    "rust-analyzer.linkedProjects": [
+        "rust/Cargo.toml"
+    ]
 }

@@ -1,6 +1,7 @@
 {
     "recommendations": [
         "ms-vscode.cpptools",
-        "mesonbuild.mesonbuild"
+        "mesonbuild.mesonbuild",
+        "rust-lang.rust-analyzer"
     ]
 }
