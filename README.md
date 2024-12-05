@@ -9,7 +9,7 @@ Finn Else-McCormick | 2200864
 
 Install [msys2](https://www.msys2.org/)
 
-!DOCS UNFINISHED! Install Rust, set default target to x86_64-pc-windows-gnu
+!DOCS UNFINISHED! Install Rust
 
 Add 'C:\msys64\ucrt64\bin' and 'C:\msys64\ucrt64\lib' (assuming default install location) to PATH.
 
@@ -30,7 +30,7 @@ And the following dependencies:
 
 This can be done by running the following commands in the msys2 ucrt64 console:
 ```
-pacman -S mingw-w64-ucrt-x86_64-gcc mingw-w64-ucrt-x86_64-meson pkgconf mingw-w64-ucrt-x86_64-cmake
+pacman -S mingw-w64-ucrt-x86_64-gcc mingw-w64-ucrt-x86_64-meson pkgconf mingw-w64-ucrt-x86_64-cmake mingw-w64-ucrt-x86_64-sed
 ```
 ```
 pacman -S mingw-w64-ucrt-x86_64-SDL2 mingw-w64-ucrt-x86_64-glew mingw-w64-ucrt-x86_64-glm mingw-w64-ucrt-x86_64-enet mingw-w64-ucrt-x86_64-entt mingw-w64-ucrt-x86_64-libwasmtime mingw-w64-ucrt-x86_64-assimp

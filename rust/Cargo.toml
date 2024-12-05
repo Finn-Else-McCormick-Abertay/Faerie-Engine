@@ -8,6 +8,7 @@ crate-type = ["staticlib"]
 
 [dependencies]
 cxx = "1.0.133"
+wasmtime = "27.0.0"
 
 [build-dependencies]
 cxx-build = "1.0"

@@ -78,5 +78,8 @@
     },
     "rust-analyzer.linkedProjects": [
         "rust/Cargo.toml"
-    ]
+    ],
+    "files.eol": "\n",
+    "files.trimFinalNewlines": false,
+    "files.insertFinalNewline": false
 }

@@ -107,7 +107,7 @@ cargo = find_program('cargo', native: true, required: true)
 rust_toolchain = 'nightly-x86_64-pc-windows-gnu'
 cargo_command = [cargo, '+'+rust_toolchain, 'build', '--lib', '-Z', 'unstable-options', '--target-dir', meson.current_build_dir()/'@PRIVATE_DIR@', '--artifact-dir', meson.current_build_dir()/'@OUTDIR@']
 
-faerie_rust_link_args = ['-lkernel32', '-ladvapi32', '-lntdll', '-luserenv', '-lws2_32', '-ldbghelp']
+faerie_rust_link_args = ['-lstdc++', '-lkernel32', '-ladvapi32', '-lntdll', '-luserenv', '-lws2_32', '-ldbghelp']
 
 faerie_rust_target = custom_target('rust-build', command: ['buildscripts/cd_then.cmd', meson.current_source_dir()/'rust'] + cargo_command,
     build_always_stale: true, input: 'rust/src/lib.rs', output: 'libfaerie_rust.a', console: true
