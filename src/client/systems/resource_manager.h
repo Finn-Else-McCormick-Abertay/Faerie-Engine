@@ -62,7 +62,8 @@ protected:
     // Load resource from given resource definition
     template<typename T> static T __LoadInternal(const ResourceInfo<T>&);
 
-protected:
+    // !!SHOULD BE PRIVATE, IS ONLY PUBLIC TEMPORARILY FOR TESTING!!
+public:
     static vfspp::VirtualFileSystem& FileSystem();
     
     static bool FileExists(const std::string& virtualPath);

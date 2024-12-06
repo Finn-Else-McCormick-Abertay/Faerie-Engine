@@ -11,7 +11,8 @@
 #include <iostream>
 #include <wasmtime.hh>
 
-#include <faerie_rust_bindings.h>
+#include <rust/cxx.h>
+#include <faerie_rust/src/lib.rs.h>
 
 class ScriptEngine {
     FAERIE___SYSTEM_SINGLETON_LIFECYCLE_DECLARE(ScriptEngine)

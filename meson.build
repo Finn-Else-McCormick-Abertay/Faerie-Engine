@@ -104,20 +104,23 @@ stduuid = declare_dependency(include_directories: 'vendor/stduuid')
 # Compile Rust portion of the engine as static library
 
 cargo = find_program('cargo', native: true, required: true)
-rust_toolchain = 'nightly-x86_64-pc-windows-gnu'
+rust_architecture = 'x86_64'
+rust_compiler = 'pc-windows-gnu'
+rust_toolchain = 'nightly-' + rust_architecture + '-' + rust_compiler
 cargo_command = [cargo, '+'+rust_toolchain, 'build', '--lib', '-Z', 'unstable-options', '--target-dir', meson.current_build_dir()/'@PRIVATE_DIR@', '--artifact-dir', meson.current_build_dir()/'@OUTDIR@']
+if (not get_option('debug'))
+cargo_command += ['--release']
+endif
 
 faerie_rust_link_args = ['-lstdc++', '-lkernel32', '-ladvapi32', '-lntdll', '-luserenv', '-lws2_32', '-ldbghelp']
 
+faerie_rust_bindings_root = 'libfaerie_rust.a.p/cxxbridge'
+
 faerie_rust_target = custom_target('rust-build', command: ['buildscripts/cd_then.cmd', meson.current_source_dir()/'rust'] + cargo_command,
-    build_always_stale: true, input: 'rust/src/lib.rs', output: 'libfaerie_rust.a', console: true
+    build_always_stale: true, output: ['libfaerie_rust.a'], console: true
 )
 
-faerie_rust_gen_bindings_target = custom_target('rust-generate-cpp-bindings', command: ['buildscripts/rust_cxxbridge.cmd', '@INPUT@', '@OUTPUT0@', '@OUTPUT1@'],
-    input:'rust/src/lib.rs', output:['faerie_rust_bindings.h', 'faerie_rust_bindings.cc'], console: true
-)
-
-faerie_rust_dep = declare_dependency(link_with: faerie_rust_target, link_args: faerie_rust_link_args, include_directories: 'builddir', sources: faerie_rust_gen_bindings_target)
+faerie_rust_dep = declare_dependency(link_with: faerie_rust_target, link_args: faerie_rust_link_args, sources: 'builddir'/faerie_rust_bindings_root/'faerie_rust/src/lib.rs.cc', include_directories: 'builddir'/faerie_rust_bindings_root)
 
 # Copy resources to build directory
 run_target('resources', command: ['xcopy', meson.current_source_dir()/'resources', meson.current_build_dir()/'resources', '/s', '/y', '/i'])

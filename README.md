@@ -19,11 +19,6 @@ rustup install nightly-x86_64-pc-windows-gnu
 ```
 > It needs to be the nightly version as we use some nightly-only command line options when integrating with Meson.
 
-Install the `cxxbridge-cmd` package with Cargo:
-```
-cargo install cxxbridge-cmd
-```
-
 Use msys2 to install the following tools:
 - [gcc](https://gcc.gnu.org/)
 - [Meson](https://mesonbuild.com/)
