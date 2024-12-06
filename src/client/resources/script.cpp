@@ -4,9 +4,10 @@
 #include <systems/script_engine.h>
 #include <systems/logger.h>
 
-Script::Script(wasmtime::Instance&& instance) : pm_instance(std::make_unique<wasmtime::Instance>(std::move(instance))) {}
-Script::Script() : pm_instance(nullptr) {}
+Script::Script(wasmtime::Instance&& instance) {}//: pm_instance(std::make_unique<wasmtime::Instance>(std::move(instance))) {}
+Script::Script() {}//: pm_instance(nullptr) {}
 
+/*
 std::vector<wasmtime::Val> Script::Call(const std::string& func, const std::vector<wasmtime::Val>& args) {
     try {
         auto result = m_funcs.at(func).call(ScriptEngine::Store(), args);
@@ -16,9 +17,10 @@ std::vector<wasmtime::Val> Script::Call(const std::string& func, const std::vect
         return std::vector<wasmtime::Val>{};
     }
 }
-
+*/
 
 template<> Script ResourceManager::__LoadInternal(const ResourceInfo<Script>& info) {
+    /*
     auto fileInfo = vfspp::FileInfo(info.Path());
     if (!fileInfo.IsValid()) {
         Logger::Error<Script>("Failed to load from ", info, ": path is invalid.");
@@ -98,13 +100,12 @@ template<> Script ResourceManager::__LoadInternal(const ResourceInfo<Script>& in
     }
 
     // Add exports to script object
-    /*
-    for (auto exportType : module->exports()) {
-        Logger::Debug<Script>(info, " export: ", exportType.name());
-    }
-    */
+    //for (auto exportType : module->exports()) {
+    //    Logger::Debug<Script>(info, " export: ", exportType.name());
+    //}
     script.m_funcs.emplace("run", std::get<wasmtime::Func>(*script.pm_instance->get(ScriptEngine::Store(), "run")));
     script.m_funcs.emplace("number", std::get<wasmtime::Func>(*script.pm_instance->get(ScriptEngine::Store(), "number")));
 
     return script;
+    */
 }

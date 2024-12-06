@@ -459,6 +459,7 @@ dependencies = [
 name = "faerie_rust"
 version = "0.0.1"
 dependencies = [
+ "anyhow",
  "cxx",
  "cxx-build",
  "wasmtime",

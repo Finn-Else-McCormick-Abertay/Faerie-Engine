@@ -7,6 +7,7 @@ edition = "2021"
 crate-type = ["staticlib"]
 
 [dependencies]
+anyhow = "1.0.94"
 cxx = "1.0.133"
 wasmtime = "27.0.0"
 
