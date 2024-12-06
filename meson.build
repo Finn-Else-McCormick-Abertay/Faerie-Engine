@@ -1,6 +1,6 @@
 project(
     'faerie',
-    ['cpp', 'rust'], default_options: ['cpp_std=c++20', 'rust_std=2021'],
+    ['cpp'], default_options: ['cpp_std=c++20'],
     version: '0.0.1'
 )
 
@@ -114,7 +114,7 @@ faerie_rust_target = custom_target('rust-build', command: ['buildscripts/cd_then
 )
 
 faerie_rust_gen_bindings_target = custom_target('rust-generate-cpp-bindings', command: ['buildscripts/rust_cxxbridge.cmd', '@INPUT@', '@OUTPUT0@', '@OUTPUT1@'],
-    build_always_stale: true, input:'rust/src/lib.rs', output:['faerie_rust_bindings.h', 'faerie_rust_bindings.cc'], console: true
+    input:'rust/src/lib.rs', output:['faerie_rust_bindings.h', 'faerie_rust_bindings.cc'], console: true
 )
 
 faerie_rust_dep = declare_dependency(link_with: faerie_rust_target, link_args: faerie_rust_link_args, include_directories: 'builddir', sources: faerie_rust_gen_bindings_target)

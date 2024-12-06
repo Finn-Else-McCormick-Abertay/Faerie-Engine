@@ -6,8 +6,14 @@ mod ffi {
         type ScriptEngine;
         fn create_script_engine() -> Box<ScriptEngine>;
 
+        fn this_function_does_nothing();
+
         //fn load_module_from_binary(&self, binary: &[u8]);
     }
+}
+
+pub fn this_function_does_nothing() {
+
 }
 
 pub struct ScriptEngine {
