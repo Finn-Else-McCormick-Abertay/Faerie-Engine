@@ -9,9 +9,20 @@ Finn Else-McCormick | 2200864
 
 Install [msys2](https://www.msys2.org/)
 
-!DOCS UNFINISHED! Install Rust
-
 Add 'C:\msys64\ucrt64\bin' and 'C:\msys64\ucrt64\lib' (assuming default install location) to PATH.
+
+Install [Rust](https://www.rust-lang.org/tools/install)
+
+Install the nightly toolchain for your architecture and compiler. For GCC, this will be nightly-\<architecture\>-pc-windows-gnu:
+```
+rustup install nightly-x86_64-pc-windows-gnu
+```
+> It needs to be the nightly version as we use some nightly-only command line options when integrating with Meson.
+
+Install the `cxxbridge-cmd` package with Cargo:
+```
+cargo install cxxbridge-cmd
+```
 
 Use msys2 to install the following tools:
 - [gcc](https://gcc.gnu.org/)
