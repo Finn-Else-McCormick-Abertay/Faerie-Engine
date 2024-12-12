@@ -1,6 +1,8 @@
 #pragma once
 
-#include <wasmtime.hh>
+#include <cxx.h>
+#include <util/cxx_ergonomics.h>
+#include <faerie_rust_bindings.h>
 
 #include <unordered_map>
 #include <string>
@@ -12,11 +14,10 @@ public:
     //std::vector<wasmtime::Val> Call(const std::string& func, const std::vector<wasmtime::Val>& args);
 
 private:
-    Script(wasmtime::Instance&&);
+    Script(OptionalBox<faerie_rust::Script>&&);
     Script();
 
-    //std::unique_ptr<wasmtime::Instance> pm_instance;
-    //std::unordered_map<std::string, wasmtime::Func> m_funcs;
+    OptionalBox<faerie_rust::Script> pm_script;
 
     friend class ScriptEngine;
     friend class ResourceManager;

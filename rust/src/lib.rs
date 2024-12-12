@@ -4,20 +4,20 @@ use anyhow::{Result, Ok};
 mod ffi {
     extern "Rust" {
         type ScriptEngine;
+        type Script;
+
         fn create_script_engine() -> Box<ScriptEngine>;
 
-        fn this_function_does_nothing();
-
-        //fn load_module_from_binary(&self, binary: &[u8]);
+        fn load_module(self: &ScriptEngine, bytes: &[u8]) -> Result<Box<Script>>;
     }
-}
-
-pub fn this_function_does_nothing() {
-
 }
 
 pub struct ScriptEngine {
     engine: wasmtime::Engine
+}
+
+pub struct Script {
+    module: wasmtime::Module
 }
 
 impl Default for ScriptEngine {
@@ -33,8 +33,9 @@ impl ScriptEngine {
         Ok(ScriptEngine{engine})
     }
 
-    pub fn load_module_from_binary(&self, binary: &[u8]) {
-        wasmtime::Module::from_binary(&self.engine, binary);
+    pub fn load_module(&self, bytes: &[u8]) -> Result<Box<Script>> {
+        let module = wasmtime::Module::new(&self.engine, bytes)?;
+        Ok(Box::new(Script{ module }))
     }
 }
 
