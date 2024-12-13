@@ -2,7 +2,6 @@
 	path = vendor/imgui
 	url = https://github.com/ocornut/imgui.git
 	branch = docking
-[submodule "subprojects/vfspp"]
-	path = subprojects/vfspp
-	url = https://github.com/Finn-Else-McCormick-Abertay/vfspp.git
-	branch = normalise-paths
+[submodule "vendor/json5cpp"]
+	path = vendor/json5cpp
+	url = https://github.com/mortie/json5cpp.git
