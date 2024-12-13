@@ -27,6 +27,7 @@ client_src = [
     cl_rt/'systems/script_engine.cpp',
     cl_rt/'systems/ecs.cpp',
     cl_rt/'util/stb.cpp',
+    cl_rt/'util/json_archive.cpp',
     cl_rt/'resources/script.cpp',
     cl_rt/'resources/shader.cpp',
     cl_rt/'resources/texture.cpp',
@@ -54,9 +55,6 @@ server_pch = 'pch/server_pch.h'
 server_args = []
 
 # -- Dependencies --
-cpp = meson.get_compiler('cpp')
-
-# Found from pkg-config files in msys64/ucrt64/lib/pkgconfig
 sdl2 = dependency('sdl2')
 opengl = dependency('gl')
 glew = dependency('glew')
@@ -64,14 +62,10 @@ glm = dependency('glm')
 enet = dependency('libenet')
 entt = dependency('entt')
 assimp = dependency('assimp')
-
-# Library and C api headers found in msys64/ucrt64/lib and include respectively (it doesn't have a pkg-config file)
-# but C++ api header is provided locally as the msys2 package doesn't provide it
-wasmtime = declare_dependency(
-    dependencies: cpp.find_library('wasmtime.dll'),
-    include_directories: 'vendor/wasmtime/include',
-    compile_args: '-DWASMTIME'
-)
+vfspp = dependency('vfspp-1.0')
+jsoncpp = dependency('jsoncpp')
+json5cpp = declare_dependency(include_directories: 'vendor/json5cpp')
+stduuid = declare_dependency(include_directories: 'vendor/stduuid')
 
 # ImGui - provided locally in git submodule
 im_rt = 'vendor/imgui'
@@ -86,19 +80,6 @@ imgui = declare_dependency(
     include_directories: imgui_include
 )
 
-cmake = import('cmake')
-
-# vfspp - provided locally in git submodule, built as CMake subproject
-vfspp_opt = cmake.subproject_options()
-vfspp_opt.set_override_option('cpp_std', 'c++17')
-vfspp_opt.append_compile_args('cpp', '-DVFSPP_ENABLE_MULTITHREADING')
-vfspp_subproj = cmake.subproject('vfspp', options: vfspp_opt)
-
-vfspp = vfspp_subproj.dependency('vfspp')
-
-# stduuid - header only library, provided locally
-stduuid = declare_dependency(include_directories: 'vendor/stduuid')
-
 # -- Targets --
 
 # Compile Rust portion of the engine as static library
@@ -109,7 +90,7 @@ rust_compiler = 'pc-windows-gnu'
 rust_toolchain = 'nightly-' + rust_architecture + '-' + rust_compiler
 cargo_command = [cargo, '+'+rust_toolchain, 'build', '--lib', '-Z', 'unstable-options', '--target-dir', meson.current_build_dir()/'@PRIVATE_DIR@', '--artifact-dir', meson.current_build_dir()/'@OUTDIR@']
 if (not get_option('debug'))
-cargo_command += ['--release']
+    cargo_command += ['--release']
 endif
 
 faerie_rust_link_args = ['-lstdc++', '-lkernel32', '-ladvapi32', '-lntdll', '-luserenv', '-lws2_32', '-ldbghelp']
@@ -118,6 +99,7 @@ faerie_rust_target = custom_target('rust-build', command: ['buildscripts/cd_then
     input: ['rust/src/lib.rs'], output: 'libfaerie_rust.a', console: true
 )
 
+# This doesn't run the first time a project is built -> why?
 faerie_rust_gen_bindings_target = custom_target('rust-generate-cpp-bindings', command: ['buildscripts/rust_cxxbridge.cmd', '@INPUT@', '@OUTPUT0@', '@OUTPUT1@'],
     input:'rust/src/lib.rs', output:['faerie_rust_bindings.h', 'faerie_rust_bindings.cc'], console: true, depends: [faerie_rust_target]
 )
@@ -138,5 +120,5 @@ run_target('resources', command: ['xcopy', meson.current_source_dir()/'resources
 executable('client',
     sources: shared_src + client_src, include_directories: shared_include + client_include,
     cpp_pch: client_pch, cpp_args: client_args,
-    dependencies: [ faerie_rust_dep, sdl2, opengl, glew, glm, imgui, wasmtime, vfspp, enet, entt, stduuid, assimp ]
+    dependencies: [ faerie_rust_dep, sdl2, opengl, glew, glm, imgui, jsoncpp, json5cpp, vfspp, enet, entt, stduuid, assimp ]
 )
