@@ -453,20 +453,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "cxx-build"
-version = "1.0.133"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "9afa390d956ee7ccb41aeed7ed7856ab3ffb4fc587e7216be7e0f83e949b4e6c"
-dependencies = [
- "cc",
- "codespan-reporting",
- "proc-macro2",
- "quote",
- "scratch",
- "syn",
-]
-
-[[package]]
 name = "cxxbridge-cmd"
 version = "1.0.133"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -617,7 +603,6 @@ version = "0.0.1"
 dependencies = [
  "anyhow",
  "cxx",
- "cxx-build",
  "wasmtime",
  "wasmtime-wasi",
 ]
@@ -1384,12 +1369,6 @@ name = "ryu"
 version = "1.0.18"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "f3cb5ba0dc43242ce17de99c180e96db90b235b8a9fdc9543c96d2209116bd9f"
-
-[[package]]
-name = "scratch"
-version = "1.0.7"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a3cf7c11c38cb994f3d40e8a8cde3bbd1f72a435e4c49e85d6553d8312306152"
 
 [[package]]
 name = "semver"

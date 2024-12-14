@@ -40,7 +40,8 @@ client_src = [
     cl_rt/'components/camera.cpp',
     cl_rt/'components/mesh.cpp',
     cl_rt/'components/sprite.cpp',
-    cl_rt/'components/material.cpp'
+    cl_rt/'components/material.cpp',
+    cl_rt/'test.cpp'
 ]
 client_include = [ cl_rt ]
 client_pch = 'pch/client_pch.h'

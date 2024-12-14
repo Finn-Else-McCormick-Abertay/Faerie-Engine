@@ -1,10 +1,12 @@
 use anyhow::{Result, Ok};
 use component::ResourceTable;
+use ffi::TestFunction;
 use wasmtime::*;
 use wasmtime_wasi::{bindings::*, WasiCtx, WasiCtxBuilder, WasiView};
 
-#[cxx::bridge(namespace = "faerie_rust")]
+#[cxx::bridge]
 mod ffi {
+    #[namespace = "faerie_rust"]
     extern "Rust" {
         type ScriptEngine;
         type Script;
@@ -14,6 +16,13 @@ mod ffi {
         fn load_script(self: &mut ScriptEngine, bytes: &[u8]) -> Result<Box<Script>>;
 
         fn test(self: &Script, engine: &mut ScriptEngine);
+    }
+
+    unsafe extern "C++" {
+        include!("src/client/test.h");
+
+        fn TestFunction() -> u32;
+
     }
 }
 
@@ -61,6 +70,9 @@ impl ScriptEngine {
         let store = Store::<ScriptState>::new(&engine, ScriptState{ ctx: wasi, resource_table: ResourceTable::new() });
         let mut linker = component::Linker::<ScriptState>::new(&engine);
         wasmtime_wasi::add_to_linker_sync(&mut linker)?;
+
+        let result = TestFunction();
+        println!("TestFunction result: {result}");
 
         Ok(ScriptEngine{engine, store, linker})
     }
