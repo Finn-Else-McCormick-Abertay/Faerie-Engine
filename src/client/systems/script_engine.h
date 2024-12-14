@@ -13,7 +13,7 @@
 class ScriptEngine {
     FAERIE___SYSTEM_SINGLETON_LIFECYCLE_DECLARE(ScriptEngine)
 public:
-    static const faerie_rust::ScriptEngine& Engine();
+    static faerie_rust::ScriptEngine& Engine();
 
 private:
     OptionalBox<faerie_rust::ScriptEngine> pm_engine;

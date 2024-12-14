@@ -93,7 +93,10 @@ if (not get_option('debug'))
     cargo_command += ['--release']
 endif
 
-faerie_rust_link_args = ['-lstdc++', '-lkernel32', '-ladvapi32', '-lntdll', '-luserenv', '-lws2_32', '-ldbghelp']
+# found in the output of the command 'cargo +nightly-x86_64-pc-windows-gnu rustc -- --print=native-static-libs'
+#faerie_rust_link_args = ['-lstdc++', '-lwindows.0.52.0', '-lbcrypt', '-ladvapi32', '-lwindows.0.52.0', '-lwinapi_advapi32', '-lwinapi_cfgmgr32', '-lwinapi_gdi32', '-lwinapi_kernel32', '-lwinapi_msimg32', '-lwinapi_ole32', '-lwinapi_opengl32', '-lwinapi_shell32', '-lwinapi_user32', '-lwinapi_winspool', '-lwindows.0.52.0', '-lkernel32', '-ladvapi32', '-lntdll', '-luserenv', '-lws2_32', '-ldbghelp']
+faerie_rust_link_args = ['-lstdc++', '-lbcrypt', '-ladvapi32', '-lkernel32', '-ladvapi32', '-lntdll', '-luserenv', '-lws2_32', '-ldbghelp']
+
 
 faerie_rust_target = custom_target('rust-build', command: ['buildscripts/cd_then.cmd', meson.current_source_dir()/'rust'] + cargo_command,
     input: ['rust/src/lib.rs'], output: 'libfaerie_rust.a', console: true

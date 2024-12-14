@@ -15,6 +15,6 @@ bool ScriptEngine::__Internal_Init() {
 
 void ScriptEngine::__Internal_Shutdown() {};
 
-const faerie_rust::ScriptEngine& ScriptEngine::Engine() {
+faerie_rust::ScriptEngine& ScriptEngine::Engine() {
     return *Instance().pm_engine;
 }
