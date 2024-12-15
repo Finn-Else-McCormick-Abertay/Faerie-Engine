@@ -76,10 +76,7 @@ imgui_src = [
 ]
 imgui_include = [ im_rt, im_rt/'backends' ]
 imgui_dependencies = [ sdl2, opengl ]
-imgui = declare_dependency(
-    link_with: static_library('imgui', sources: imgui_src, dependencies: imgui_dependencies, include_directories: imgui_include),
-    include_directories: imgui_include
-)
+imgui = declare_dependency(link_with: static_library('imgui', sources: imgui_src, dependencies: imgui_dependencies, include_directories: imgui_include), include_directories: imgui_include)
 
 # -- Targets --
 
@@ -94,18 +91,17 @@ if (not get_option('debug'))
     cargo_command += ['--release']
 endif
 
-# found in the output of the command 'cargo +nightly-x86_64-pc-windows-gnu rustc -- --print=native-static-libs'
-#faerie_rust_link_args = ['-lstdc++', '-lwindows.0.52.0', '-lbcrypt', '-ladvapi32', '-lwindows.0.52.0', '-lwinapi_advapi32', '-lwinapi_cfgmgr32', '-lwinapi_gdi32', '-lwinapi_kernel32', '-lwinapi_msimg32', '-lwinapi_ole32', '-lwinapi_opengl32', '-lwinapi_shell32', '-lwinapi_user32', '-lwinapi_winspool', '-lwindows.0.52.0', '-lkernel32', '-ladvapi32', '-lntdll', '-luserenv', '-lws2_32', '-ldbghelp']
+# found in the output of the command 'cargo +nightly-x86_64-pc-windows-gnu rustc -- --print=native-static-libs' (ignore winapi ones)
 faerie_rust_link_args = ['-lstdc++', '-lbcrypt', '-ladvapi32', '-lkernel32', '-ladvapi32', '-lntdll', '-luserenv', '-lws2_32', '-ldbghelp']
 
 
-faerie_rust_target = custom_target('rust-build', command: ['buildscripts/cd_then.cmd', meson.current_source_dir()/'rust'] + cargo_command,
-    input: ['rust/src/lib.rs'], output: 'libfaerie_rust.a', console: true
+faerie_rust_target = custom_target('faerie-rust', command: ['buildscripts/cd_then.cmd', meson.current_source_dir()/'src/rust'] + cargo_command,
+    input: ['src/rust/src/lib.rs'], output: 'libfaerie_rust.a', console: true
 )
 
 # This doesn't run the first time a project is built -> why?
-faerie_rust_gen_bindings_target = custom_target('rust-generate-cpp-bindings', command: ['buildscripts/rust_cxxbridge.cmd', '@INPUT@', '@OUTPUT0@', '@OUTPUT1@'],
-    input:'rust/src/lib.rs', output:['faerie_rust_bindings.h', 'faerie_rust_bindings.cc'], console: true, depends: [faerie_rust_target]
+faerie_rust_gen_bindings_target = custom_target('faerie-rust-generate-cpp-bindings', command: ['buildscripts/rust_cxxbridge.cmd', '@INPUT@', '@OUTPUT0@', '@OUTPUT1@'],
+    input:'src/rust/src/lib.rs', output:['faerie_rust_bindings.h', 'faerie_rust_bindings.cc'], console: true, depends: [faerie_rust_target]
 )
 
 faerie_rust_include = include_directories('vendor/cxx', 'builddir')
@@ -113,7 +109,7 @@ faerie_rust_include = include_directories('vendor/cxx', 'builddir')
 faerie_rust_bindings_lib = static_library('faerie-rust-cxx-bindings',
     link_with: faerie_rust_target, link_args: faerie_rust_link_args,
     sources: [faerie_rust_gen_bindings_target[1]], include_directories: faerie_rust_include,
-    cpp_pch: 'rust/pch/rust_bindings_pch.h'
+    cpp_pch: 'src/rust/pch/rust_bindings_pch.h'
 )
 faerie_rust_dep = declare_dependency(link_with: [faerie_rust_target, faerie_rust_bindings_lib], link_args: faerie_rust_link_args, include_directories: faerie_rust_include)
 

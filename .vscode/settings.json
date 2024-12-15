@@ -77,7 +77,7 @@
         "typeindex": "cpp"
     },
     "rust-analyzer.linkedProjects": [
-        "rust/Cargo.toml"
+        "src/rust/Cargo.toml"
     ],
     "files.eol": "\n",
     "files.trimFinalNewlines": false,
