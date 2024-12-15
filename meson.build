@@ -44,7 +44,7 @@ client_src = [
     cl_rt/'test.cpp'
 ]
 client_include = [ cl_rt ]
-client_pch = 'pch/client_pch.h'
+client_pch = 'src/client/pch/client_pch.h'
 client_args = ['-DOPENGL3']
 
 sv_rt = 'src/server'
@@ -52,7 +52,7 @@ server_src = [
     sv_rt/'server_main.cpp'
 ]
 server_include = [ sv_rt ]
-server_pch = 'pch/server_pch.h'
+server_pch = 'src/server/pch/server_pch.h'
 server_args = []
 
 # -- Dependencies --
@@ -113,7 +113,7 @@ faerie_rust_include = include_directories('vendor/cxx', 'builddir')
 faerie_rust_bindings_lib = static_library('faerie-rust-cxx-bindings',
     link_with: faerie_rust_target, link_args: faerie_rust_link_args,
     sources: [faerie_rust_gen_bindings_target[1]], include_directories: faerie_rust_include,
-    cpp_pch: 'pch/rust_bindings_pch.h'
+    cpp_pch: 'rust/pch/rust_bindings_pch.h'
 )
 faerie_rust_dep = declare_dependency(link_with: [faerie_rust_target, faerie_rust_bindings_lib], link_args: faerie_rust_link_args, include_directories: faerie_rust_include)
 
