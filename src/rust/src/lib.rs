@@ -1,7 +1,9 @@
 use anyhow::Result;
-use component::ResourceTable;
+use component::{bindgen, ResourceTable};
 use wasmtime::*;
 use wasmtime_wasi::{WasiCtx, WasiCtxBuilder, WasiView};
+
+bindgen!("module" in "../wit");
 
 #[cxx::bridge]
 mod ffi {
