@@ -40,8 +40,7 @@ client_src = [
     cl_rt/'components/camera.cpp',
     cl_rt/'components/mesh.cpp',
     cl_rt/'components/sprite.cpp',
-    cl_rt/'components/material.cpp',
-    cl_rt/'test.cpp'
+    cl_rt/'components/material.cpp'
 ]
 client_include = [ cl_rt ]
 client_pch = 'src/client/pch/client_pch.h'
@@ -96,7 +95,7 @@ faerie_rust_link_args = ['-lstdc++', '-lbcrypt', '-ladvapi32', '-lkernel32', '-l
 
 
 faerie_rust_target = custom_target('faerie-rust', command: ['buildscripts/cd_then.cmd', meson.current_source_dir()/'src/rust'] + cargo_command,
-    input: ['src/rust/src/lib.rs'], output: 'libfaerie_rust.a', console: true
+    input: ['src/rust/src/lib.rs', 'src/rust/src/debug.rs'], output: 'libfaerie_rust.a', console: true
 )
 
 # This doesn't run the first time a project is built -> why?

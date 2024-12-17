@@ -1,9 +1,11 @@
 use anyhow::Result;
-use component::{bindgen, ResourceTable};
 use wasmtime::*;
+use wasmtime::component::{types::ComponentItem, ResourceTable};
 use wasmtime_wasi::{WasiCtx, WasiCtxBuilder, WasiView};
 
-bindgen!("module" in "../wit");
+mod debug;
+
+//bindgen!("module" in "../wit");
 
 #[cxx::bridge]
 mod ffi {
@@ -14,18 +16,15 @@ mod ffi {
 
 		fn create_script_engine() -> Box<ScriptEngine>;
 
-		fn load_script(self: &mut ScriptEngine, bytes: &[u8]) -> Result<Box<Script>>;
+		fn load_script(self: &ScriptEngine, bytes: &[u8]) -> Result<Box<Script>>;
 
-		fn test(self: &Script, engine: &mut ScriptEngine);
+		fn test(self: &mut Script);
 	}
 }
 
 #[cxx::bridge]
 mod other_ffi {
 	unsafe extern "C++" {
-		include!("src/client/test.h");
-
-		fn TestFunction() -> u32;
 	}
 }
 
@@ -46,12 +45,12 @@ impl WasiView for ScriptState {
 
 pub struct ScriptEngine {
 	engine: Engine,
-	store: Store::<ScriptState>,
 	linker: component::Linker::<ScriptState>,
 }
 
 pub struct Script {
-	instance: component::Instance
+	instance: component::Instance,
+	store: Store::<ScriptState>,
 }
 
 impl Default for ScriptEngine {
@@ -67,31 +66,37 @@ impl Default for ScriptEngine {
 impl ScriptEngine {
 	pub fn new(config: &Config) -> Result<Self> {
 		let engine = Engine::new(config)?;
-		let wasi = WasiCtxBuilder::new()
-			.inherit_stdio()
-			.build();
-		let store = Store::<ScriptState>::new(&engine, ScriptState{ ctx: wasi, resource_table: ResourceTable::new() });
 		let mut linker = component::Linker::<ScriptState>::new(&engine);
 		wasmtime_wasi::add_to_linker_sync(&mut linker)?;
 
-		let result = other_ffi::TestFunction();
-		println!("TestFunction Result: {result}");
-
-		Ok(ScriptEngine{engine, store, linker})
+		Ok(ScriptEngine{engine, linker})
 	}
 
-	pub fn load_script(&mut self, bytes: &[u8]) -> Result<Box<Script>> {
+	pub fn load_script(&self, bytes: &[u8]) -> Result<Box<Script>> {
 		let component = component::Component::new(&self.engine, bytes)?;
 
-		let instance = self.linker.instantiate(&mut self.store, &component)?;
-		Ok(Box::new(Script{ instance }))
+		let script = Script::new(component, &self)?;
+		Ok(Box::new(script))
 	}
 }
 
 impl Script {
-	pub fn test(&self, engine: &mut ScriptEngine) {
-		let opt = self.instance.get_func(&mut engine.store, "hello-world").and_then(|func|{
-			let result = func.typed::<(),(String,)>(&engine.store);
+	pub fn new(component: component::Component, engine: &ScriptEngine) -> Result<Script> {
+		let wasi = WasiCtxBuilder::new()
+			.inherit_stdio()
+			.build();
+		let mut store = Store::<ScriptState>::new(&engine.engine, ScriptState{ ctx: wasi, resource_table: ResourceTable::new() });
+		let instance = engine.linker.instantiate(&mut store, &component)?;
+
+		let component_type = component.component_type();
+		println!("{}", debug::component_item_to_string(ComponentItem::Component(component_type), &engine.engine));
+
+		Ok(Script{ instance, store })
+	}
+
+	pub fn test(&mut self) {
+		let opt = self.instance.get_func(&mut self.store, "setup").and_then(|func|{
+			let result = func.typed::<(),()>(&self.store);
 			match result {
 				Ok(typed_func) => Some(typed_func),
 				Err(_error) => None
@@ -99,12 +104,16 @@ impl Script {
 		});
 		match opt {
 			Some(func) => {
-				match func.call(&mut engine.store, ()) {
-					Ok(result) => { println!("Result: {:?}", result.0); }
-					Err(_error) => ()
+				match func.call(&mut self.store, ()) {
+					Ok(_) => { println!("Successfully called setup"); }
+					Err(error) => { eprintln!("Error during call: {error}"); }
+				}
+				match func.post_return(&mut self.store) {
+					Ok(_) => {}
+					Err(error) => { eprintln!("Error during post_return: {error}"); }
 				}
 			}
-			None => ()
+			None => { println!("Function does not exist"); }
 		}
 	}
 }

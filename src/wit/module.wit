@@ -1,9 +1,0 @@
-package faerie:module;
-
-world module {
-	import host: interface {
-		log: func(param: string);
-	}
-
-	export run: func();
-}

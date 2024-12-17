@@ -15,7 +15,7 @@ FAERIE___SYSTEM_SINGLETON_INSTANCE_DEFINE_DEFAULT(Window)
 FAERIE___SYSTEM_SINGLETON_INIT_SHUTDOWN_DEFINE(Window)
 
 bool Window::__Internal_Init() {
-    if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER | SDL_INIT_GAMECONTROLLER) != 0) {
+    if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER | SDL_INIT_GAMECONTROLLER)) {
         Logger::Error(*this, "SDL_Init: ", SDL_GetError());
         return false;
     }

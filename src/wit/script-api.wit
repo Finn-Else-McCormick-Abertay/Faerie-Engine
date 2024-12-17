@@ -1,0 +1,5 @@
+package faerie:script-api;
+
+world script {
+	export setup: func();
+}

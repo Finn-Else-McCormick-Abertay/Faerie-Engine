@@ -30,7 +30,7 @@ template<> Script ResourceManager::__LoadInternal(const ResourceInfo<Script>& in
         return Script();
     }
 
-    rustScript->test(ScriptEngine::Engine());
+    rustScript->test();
 
     return Script(std::move(rustScript));
 }

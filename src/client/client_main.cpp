@@ -60,7 +60,7 @@ int main(int argc, char *argv[]) {
 
 		//ScriptEngine::SetFunc("alert", [](){ printf("Imported function called.\n");});
 
-		auto scriptId = ResourceManager::Load<Script>("/resources/rust_module_example_component_model.wasm");
+		auto scriptId = ResourceManager::Load<Script>("/resources/faerie_module_example.wasm");
 		auto& script = ResourceManager::Get<Script>(scriptId);
 
 		//script.Call("run", {});
