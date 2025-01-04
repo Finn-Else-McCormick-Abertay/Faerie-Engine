@@ -4,16 +4,21 @@
 
 std::string JsonOutputArchive::ToString() const {
 	std::stringstream ss;
-	Json5::serialize(ss, m_root);
+	auto json = ToJson();
+	Json5::SerializeConfig config {};
+	config.indent = "    ";
+	Json5::serialize(ss, json, config);
 	return ss.str();
 }
 
-void JsonOutputArchive::operator()(entt::entity ent) {
-	Json::Value val;
-	val["id"] = static_cast<std::underlying_type_t<entt::entity>>(ent);
-	m_root["entities"].append(val);
-}
+JsonInputArchive::JsonInputArchive(const std::string& json_string) {
+	std::stringstream ss; ss << json_string;
+	Json::Value root;
+	Json5::ParseConfig config {};
+	config.newlinesAsCommas = true;
+	std::string err;
+	if(!Json5::parse(ss, root, &err, config)) { Logger::Error<JsonInputArchive>(err); }
 
-void JsonOutputArchive::operator()(std::underlying_type_t<entt::entity> v) {
-	m_root["size"] = v;
+	for (auto& json : root["entities"]) { AddToMap(json); }
+	//p_currentRoot= &m_root["entities"];
 }

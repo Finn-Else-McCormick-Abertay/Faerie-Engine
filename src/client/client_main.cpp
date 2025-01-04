@@ -58,15 +58,29 @@ int main(int argc, char *argv[]) {
 		});
 		ent2.Get<Components::Transform>().Move(vec3(130.f, 0.f, 150.f));
 		
+		std::string jsonString;
 		{
 			JsonOutputArchive archive;
 
 			entt::snapshot(ECS::Registry())
-				.get<entt::entity>(archive);
-				//.get<Components::Transform>(archive)
-				//.get<Components::Hierarchy>(archive);
+				.get<entt::entity>(archive)
+				.get<Components::Transform>(archive)
+				.get<Components::Hierarchy>(archive)
+				.get<Components::Mesh>(archive);
 
-			Logger::Debug<ECS>(archive.ToString());
+			jsonString = archive.ToString();
+			Logger::Debug<ECS>("\n", archive.ToString());
+		}
+
+		{
+			ECS::Registry().clear();
+
+			JsonInputArchive archive(jsonString);
+			entt::snapshot_loader(ECS::Registry())
+				.get<entt::entity>(archive)
+				.get<Components::Transform>(archive)
+				.get<Components::Hierarchy>(archive)
+				.get<Components::Mesh>(archive);
 		}
 
 		//ScriptEngine::SetFunc("alert", [](){ printf("Imported function called.\n");});

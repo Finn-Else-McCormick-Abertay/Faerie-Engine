@@ -2,6 +2,7 @@
 
 #include <maths_types.h>
 #include <entity_wrapper.h>
+#include <json/json.h>
 
 namespace Components
 {
@@ -24,6 +25,9 @@ namespace Components
         void SetRotation(const quat&);
 
         void Move(const vec3&);
+
+        void __Serialise(Json::Value&) const;
+        void __Deserialise(const Json::Value&);
     private:
         vec3 m_position; vec3 m_scale; quat m_rotation;
         mat4 m_localTransform, m_globalTransform;

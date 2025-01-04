@@ -112,7 +112,7 @@ void Components::Hierarchy::RemoveChild(Entity ent) {
     if (found) { ent.Get<Hierarchy>().m_parent = Entity(); }
 }
 
-void Components::Hierarchy::ForEachChild(std::function<void(Entity)> callback) {
+void Components::Hierarchy::ForEachChild(std::function<void(Entity)> callback) const {
     Entity current = m_childRoot;
     while (current) {
         callback(current);
@@ -120,7 +120,7 @@ void Components::Hierarchy::ForEachChild(std::function<void(Entity)> callback) {
     }
 }
 
-void Components::Hierarchy::ForEachDescendant(std::function<void(Entity)> callback) {
+void Components::Hierarchy::ForEachDescendant(std::function<void(Entity)> callback) const {
     Entity current = m_childRoot;
     while (current) {
         callback(current);

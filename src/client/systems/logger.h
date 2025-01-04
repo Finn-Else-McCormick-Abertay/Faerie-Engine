@@ -9,7 +9,7 @@
 
 #define _LOGGER_FUNCTION(FuncName)\
 template<typename T> static void FuncName(const std::string& message) { Instance().Output(type_name<T>(), message, OutputMode::FuncName); }\
-template<typename T> static void FuncName(const T& id, const std::string& message) { FuncName(type_name<T>(), message); }\
+template<typename T> static void FuncName(const T& id, const std::string& message) { FuncName(message); }\
 template<typename T, typename... Args> static void FuncName(Args... args) { std::stringstream ss; ((ss << args), ...); FuncName<T>(ss.str()); }\
 template<typename T, typename... Args> static void FuncName(const T& id, Args... args) { FuncName<T>(args...); }
 

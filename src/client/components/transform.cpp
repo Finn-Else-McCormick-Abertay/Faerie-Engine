@@ -59,3 +59,13 @@ void Components::Transform::UpdateMatrices() {
     }
     else { m_globalTransform = m_localTransform; }
 }
+
+void Components::Transform::__Serialise(Json::Value& val) const {
+    Json::Value posVal;
+    posVal["x"] = m_position.x; posVal["y"] = m_position.y; posVal["z"] = m_position.z;
+    val["position"] = posVal;
+}
+
+void Components::Transform::__Deserialise(const Json::Value& val) {
+
+}
