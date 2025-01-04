@@ -19,6 +19,8 @@
 
 #include <util/json_archive.h>
 
+#include <util/json_archive.h>
+
 int main(int argc, char *argv[]) {
 	if (!Logger::Init() ||
 		!Window::Init() ||
