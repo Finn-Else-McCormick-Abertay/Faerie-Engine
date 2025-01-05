@@ -58,8 +58,6 @@ int main(int argc, char *argv[]) {
 		});
 		ent2.Get<Components::Transform>().Move(vec3(130.f, 0.f, 150.f));
 
-		//ScriptEngine::SetFunc("alert", [](){ printf("Imported function called.\n");});
-
 		auto scriptId = ResourceManager::Load<Script>("/resources/faerie_module_example.wasm");
 		auto& script = ResourceManager::Get<Script>(scriptId);
 

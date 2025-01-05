@@ -8,6 +8,7 @@
 #include <systems/ecs.h>
 #include <systems/input.h>
 #include <systems/renderer.h>
+#include <systems/script_engine.h>
 
 #include <components/camera.h>
 
@@ -42,6 +43,8 @@ bool Window::__Internal_Init() {
     SDL_GetWindowSize(p_window, &width, &height);
     m_windowSize = int2(width, height);
 
+    m_lastFrameTime = SDL_GetTicks64();
+
     return true;
 }
 
@@ -60,6 +63,12 @@ void Window::Update() {
     auto windowFlags = SDL_GetWindowFlags(p_window);
     ImGuiIO& imIo = ImGui::GetIO();
     auto& input = dynamic_cast<IInputSystemInternal&>(Input::Instance());
+
+    Uint64 time = SDL_GetTicks64();
+    double deltaTimeSeconds = static_cast<double>(time - m_lastFrameTime) / 1000.f;
+    m_lastFrameTime = time;
+
+    ScriptEngine::Process(deltaTimeSeconds);
 
     SDL_Event event;
     while (SDL_PollEvent(&event))

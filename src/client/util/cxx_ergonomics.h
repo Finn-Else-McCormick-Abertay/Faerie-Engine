@@ -7,8 +7,8 @@ template<typename T>
 class OptionalBox
 {
 public:
-    OptionalBox(OptionalBox&&) = default;
-    OptionalBox() = default;
+    OptionalBox(OptionalBox&& rhs) noexcept : ppm_val(std::move(rhs.ppm_val)) {}
+    OptionalBox() noexcept : ppm_val(nullptr) {}
 
     OptionalBox(rust::Box<T>&& rhs) noexcept : ppm_val(new rust::Box<T>(std::move(rhs))) {}
     
@@ -28,7 +28,7 @@ public:
     inline T *operator->() { return &(**ppm_val); }
     inline T &operator*() { return **ppm_val; }
 
-    inline operator bool() const { return ppm_val; }
+    inline operator bool() const { return ppm_val != nullptr; }
 
 private:
     std::unique_ptr<rust::Box<T>> ppm_val;

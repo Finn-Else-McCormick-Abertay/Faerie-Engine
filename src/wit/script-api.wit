@@ -1,5 +1,13 @@
 package faerie:script-api;
 
+interface script-lifecycle {
+	init: func();
+}
+
+interface process-hook {
+	process: func(delta: f64);
+}
+
 world script {
-	export setup: func();
+	export script-lifecycle;
 }

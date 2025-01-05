@@ -11,7 +11,8 @@
 class Script
 {
 public:
-    //std::vector<wasmtime::Val> Call(const std::string& func, const std::vector<wasmtime::Val>& args);
+    bool Exists() const;
+    faerie_rust::Script& Handle();
 
 private:
     Script(OptionalBox<faerie_rust::Script>&&);

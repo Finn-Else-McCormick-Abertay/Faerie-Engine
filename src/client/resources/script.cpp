@@ -30,7 +30,15 @@ template<> Script ResourceManager::__LoadInternal(const ResourceInfo<Script>& in
         return Script();
     }
 
-    rustScript->test();
+    rustScript->init();
 
     return Script(std::move(rustScript));
+}
+
+bool Script::Exists() const {
+    return pm_script;
+}
+
+faerie_rust::Script& Script::Handle() {
+    return *pm_script;
 }

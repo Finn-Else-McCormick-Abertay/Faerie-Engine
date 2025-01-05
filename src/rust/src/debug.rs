@@ -31,7 +31,7 @@ fn component_type_to_string(ty: Type) -> String {
 		Type::Record(record) => {
 			let mut output_string = "record {\n".to_string();
 			for (i, field) in record.fields().enumerate() {
-				output_string += "\t";
+				output_string += "    ";
 				output_string += field.name;
 				output_string += ": ";
 				let field_string = component_type_to_string(field.ty);
@@ -39,7 +39,7 @@ fn component_type_to_string(ty: Type) -> String {
 					output_string += line;
 					output_string += "\n";
 					if (i + 1) < field_string.lines().count() {
-						output_string += "\t";
+						output_string += "    ";
 					}
 				}
 				if (i + 1) < record.fields().len() {
@@ -53,7 +53,7 @@ fn component_type_to_string(ty: Type) -> String {
 		Type::Variant(variant) => {
 			let mut output_string = "variant {\n".to_string();
 			for (i, case) in variant.cases().enumerate() {
-				output_string += "\t";
+				output_string += "    ";
 				output_string += case.name;
 				match case.ty {
 					Some(ty) => {
@@ -91,7 +91,7 @@ fn component_type_to_string(ty: Type) -> String {
 		Type::Enum(en) => {
 			let mut output_string = "enum {\n".to_string();
 			for (i, name) in en.names().enumerate() {
-				output_string += "\t";
+				output_string += "    ";
 				output_string += name;
 				if (i + 1) < en.names().len() {
 					output_string += ",";
@@ -104,7 +104,7 @@ fn component_type_to_string(ty: Type) -> String {
 		Type::Flags(flags) => {
 			let mut output_string = "flags {\n".to_string();
 			for (i, name) in flags.names().enumerate() {
-				output_string += "\t";
+				output_string += "    ";
 				output_string += name;
 				if (i + 1) < flags.names().len() {
 					output_string += ",";
@@ -163,7 +163,7 @@ pub fn component_item_to_string(item: ComponentItem, engine: &Engine) -> String 
 				for (i, line) in item_string.lines().enumerate() {
 					output_string += line;
 					if (i + 1) < item_string.lines().count() {
-						output_string += "\n\t";
+						output_string += "\n    ";
 					}
 				}
 				output_string += ", ";
@@ -177,7 +177,7 @@ pub fn component_item_to_string(item: ComponentItem, engine: &Engine) -> String 
 				for (i, line) in item_string.lines().enumerate() {
 					output_string += line;
 					if (i + 1) < item_string.lines().count() {
-						output_string += "\t";
+						output_string += "    ";
 					}
 				}
 				output_string += ",\n";
@@ -195,7 +195,7 @@ pub fn component_item_to_string(item: ComponentItem, engine: &Engine) -> String 
 				for (i, line) in item_string.lines().enumerate() {
 					output_string += line;
 					if (i + 1) < item_string.lines().count() {
-						output_string += "\n\t";
+						output_string += "\n    ";
 					}
 				}
 				if (i + 1) < instance.exports(&engine).len() {

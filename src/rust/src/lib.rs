@@ -1,6 +1,6 @@
 use anyhow::Result;
 use wasmtime::*;
-use wasmtime::component::{types::ComponentItem, ResourceTable};
+use wasmtime::component::{types::ComponentItem, ResourceTable, ComponentNamedList, Lower, Lift};
 use wasmtime_wasi::{WasiCtx, WasiCtxBuilder, WasiView};
 
 mod debug;
@@ -18,7 +18,8 @@ mod ffi {
 
 		fn load_script(self: &ScriptEngine, bytes: &[u8]) -> Result<Box<Script>>;
 
-		fn test(self: &mut Script);
+		fn init(self: &mut Script);
+		fn process(self: &mut Script, delta: f64);
 	}
 }
 
@@ -88,34 +89,38 @@ impl Script {
 		let mut store = Store::<ScriptState>::new(&engine.engine, ScriptState{ ctx: wasi, resource_table: ResourceTable::new() });
 		let instance = engine.linker.instantiate(&mut store, &component)?;
 
-		let component_type = component.component_type();
-		println!("{}", debug::component_item_to_string(ComponentItem::Component(component_type), &engine.engine));
+		println!("{}", debug::component_item_to_string(ComponentItem::Component(component.component_type()), &engine.engine));
 
 		Ok(Script{ instance, store })
 	}
 
-	pub fn test(&mut self) {
-		let opt = self.instance.get_func(&mut self.store, "setup").and_then(|func|{
-			let result = func.typed::<(),()>(&self.store);
-			match result {
-				Ok(typed_func) => Some(typed_func),
-				Err(_error) => None
-			}
-		});
-		match opt {
-			Some(func) => {
-				match func.call(&mut self.store, ()) {
-					Ok(_) => { println!("Successfully called setup"); }
-					Err(error) => { eprintln!("Error during call: {error}"); }
-				}
-				match func.post_return(&mut self.store) {
-					Ok(_) => {}
-					Err(error) => { eprintln!("Error during post_return: {error}"); }
-				}
-			}
-			None => { println!("Function does not exist"); }
-		}
+	fn call<Params, Return>(&mut self, interface_name: &str, func_name: &str, params: Params) -> Option<Return>
+	where Params: ComponentNamedList + Lower, Return: ComponentNamedList + Lift {
+		let func = self.instance.get_export(&mut self.store, None, interface_name)
+			.and_then(|interface_index| self.instance.get_export(&mut self.store, Some(&interface_index), func_name)
+			.and_then(|func_index| self.instance.get_func(&mut self.store, func_index)
+			.and_then(|func| func.typed::<Params, Return>(&self.store)
+				.inspect_err(|err|eprintln!("Error while getting typed func: {err}"))
+				.ok()
+			)));
+		
+		func.and_then(|func|{
+			let result = func.call(&mut self.store, params)
+				.inspect_err(|err|eprintln!("Error during call: {err}"))
+				.ok();
+			let _ = func.post_return(&mut self.store).inspect_err(|err|eprintln!("Error during post_return: {err}"));
+			result
+		})
 	}
+
+	pub fn init(&mut self) {
+		self.call::<(),()>("faerie:script-api/script-lifecycle", "init", ());
+	}
+
+	pub fn process(&mut self, delta: f64) {
+		self.call::<(f64,),()>("faerie:script-api/process-hook", "process", (delta,));
+	}
+
 }
 
 pub fn create_script_engine() -> Box<ScriptEngine> {

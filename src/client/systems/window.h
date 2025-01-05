@@ -24,5 +24,7 @@ private:
     SDL_Window* p_window = nullptr;
     bool m_shouldClose = false;
 
+    Uint64 m_lastFrameTime;
+
     int2 m_windowSize;
 };

@@ -15,6 +15,8 @@ class ScriptEngine {
 public:
     static faerie_rust::ScriptEngine& Engine();
 
+    static void Process(double delta);
+
 private:
     OptionalBox<faerie_rust::ScriptEngine> pm_engine;
 };

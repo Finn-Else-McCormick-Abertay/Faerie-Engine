@@ -42,8 +42,8 @@ public:
     template<typename T> static void Unload(const ResourceInfo<T>& info) { Unload<T>(info.Identifier()); }
     template<typename T> static void Unload(const std::string& path) { return Unload<T>(ResourceInfo<T>(path)); }
 
-    template<typename T> static void ForEach(std::function<void(ResourceIdentifier, const T&)> callback) {
-        for (auto const& [id, resource] : __Map<T>()) {
+    template<typename T> static void ForEach(std::function<void(ResourceIdentifier, T&)> callback) {
+        for (auto& [id, resource] : __Map<T>()) {
             callback(id, resource);
         }
     }
