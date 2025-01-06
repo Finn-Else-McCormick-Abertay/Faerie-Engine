@@ -2,6 +2,7 @@ package faerie:script-api;
 
 interface script-lifecycle {
 	init: func();
+	namespace: func() -> string;
 }
 
 interface process-hook {
@@ -9,23 +10,52 @@ interface process-hook {
 }
 
 interface ecs {
-	resource entity {
-		create: static func() -> entity;
+	record vec3 { x: f32, y:f32, z:f32 }
+
+	resource transform {
+		get-position: func() -> vec3;
+		set-position: func(pos: vec3);
+		move: func(vec: vec3);
 	}
+
+	resource hierarchy {
+		add-child: func(entity: entity);
+		get-children: func() -> list<entity>;
+		get-descendants: func() -> list<entity>;
+	}
+
+	resource camera {
+		set-active: func();
+	}
+
+	resource entity {
+		constructor(id: u32);
+
+		create: static func() -> entity;
+
+		add-transform: func() -> transform;
+		add-hierarchy: func() -> hierarchy;
+		add-camera: func() -> camera;
+		instantiate-model: func(model-path: string);
+		add-material: func(material-name: string);
+	}
+
+	load-material: func(vert-shader-path: string, frag-shader-path: string, material-name:string);
+	load-model: func(model-path: string);
 }
 
 interface input {
-	/*
 	enum scancode {
 		a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q, r, s, t, u, v, w, x, y, z,
-		-1, -2, -3, -4, -5, -6, -7, -8, -9, -0,
+		one, two, three, four, five, six, seven, eight, nine, zero,
 		minus, equals, left-bracket, right-bracket,
 		comma, period, slash, semicolon, apostrophe, backslash,
 		left, right, up, down, home, end, pageup, pagedown, delete,
-		numpad-1, numpad-2, numpad-3, numpad-4, numpad-5, numpad-6, numpad-7, numpad-8, numpad-9, numpad-0,
+		numpad-one, numpad-two, numpad-three, numpad-four, numpad-five, numpad-six, numpad-seven, numpad-eight, numpad-nine, numpad-zero,
 		numpad-period, numpad-divide, numpad-multiply, numpad-minus, numpad-plus, numpad-enter,
 		return, escape, backspace, tab, space,
-		f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12
+		function-one, function-two, function-three, function-four, function-five, function-six, function-seven, function-eight,
+		function-nine, function-ten, function-eleven, function-twelve
 	}
 	enum controller-button {
 		a, b, x, y, back, guide, start,
@@ -33,7 +63,7 @@ interface input {
 		dpad-up, dpad-down, dpad-left, dpad-right,
 		misc, touchpad
 	}
-	enum mouse-button { left, middle, right, x1, x2 }
+	enum mouse-button { left, middle, right, x-one, x-two }
 	enum controller-stick { left, right }
 	enum controller-trigger { left, right }
 	enum mouse-motion-source { mouse-motion, mouse-wheel }
@@ -61,23 +91,30 @@ interface input {
 	has-controller-trigger: func(action: string, stick: controller-trigger) -> bool;
 	has-mouse-button: func(action: string, button: mouse-button) -> bool;
 	has-mouse-motion: func(action: string, source: mouse-motion-source) -> bool;
-	*/
 }
 
 interface input-listen {
-	record input-event {
-		action: string,
-		//event: variant {
-		//	press(bool),
-		//	motion(record{ x: f32, y: f32 })
-		//}
+	record vec2 {
+		x: f32,
+		y: f32
+	}
+
+	variant input-event {
+		press(bool),
+		motion(vec2)
 	}
 	
-	on-input: func(event: input-event);
+	on-input: func(action: string, event: input-event);
 }
 
 world script {
 	export script-lifecycle;
 	import input;
 	import ecs;
+}
+
+world script-all {
+	include script;
+	export process-hook;
+	export input-listen;
 }

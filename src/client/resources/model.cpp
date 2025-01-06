@@ -113,7 +113,10 @@ Entity Model::Instantiate(Entity parent) const {
     };
 
     auto rootEntity = instantiateNode(m_rootNode);
-    if (parent) { rootEntity.Get<Components::Hierarchy>().SetParent(parent); }
+    if (parent) {
+        parent.GetOrAdd<Components::Hierarchy>();
+        rootEntity.Get<Components::Hierarchy>().SetParent(parent);
+    }
 
     return rootEntity;
 }

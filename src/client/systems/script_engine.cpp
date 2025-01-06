@@ -26,3 +26,21 @@ void ScriptEngine::Process(double delta) {
         }
     });
 }
+
+void ScriptEngine::OnInput(const std::string& actionName, bool isPressed) {
+    auto rustStr = rust::Str(actionName);
+    ResourceManager::ForEach<Script>([&rustStr, &isPressed](ResourceIdentifier id, Script& script){
+        if (script.Exists()) {
+            script.Handle().on_input_press(rustStr, isPressed);
+        }
+    });
+}
+
+void ScriptEngine::OnInput(const std::string& actionName, const vec2& motion) {
+    auto rustStr = rust::Str(actionName);
+    ResourceManager::ForEach<Script>([&rustStr, &motion](ResourceIdentifier id, Script& script){
+        if (script.Exists()) {
+            script.Handle().on_input_motion(rustStr, motion.x, motion.y);
+        }
+    });
+}

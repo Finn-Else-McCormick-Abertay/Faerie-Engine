@@ -29,8 +29,11 @@ int main(int argc, char *argv[]) {
 		!Debug::Init()
 	) { return -1; }
 
+	ResourceManager::Load<Script>("/resources/script.wasm");
+
 	// Scene setup (TEMP)
 	{
+		/*
 		auto ent1 = ECS::Create(); auto& hier1 = ent1.Add<Components::Hierarchy>();
 
 		auto ent2 = ECS::Create(); auto& hier2 = ent2.Add<Components::Hierarchy>();
@@ -65,6 +68,7 @@ int main(int argc, char *argv[]) {
 		cameraEntity.Add<Components::PerspectiveCamera, Components::Transform>();
 
 		Renderer::Instance().SetActiveCamera(cameraEntity);
+		*/
 
 		Debug::SetPersistent("positions", [](){
 			auto view = ECS::Registry().view<Components::Transform>();

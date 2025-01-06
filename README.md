@@ -57,6 +57,8 @@ Once builddir exists, the project can be built with the following command:
 meson compile -C builddir
 ```
 
+Note that it will fail to link with the Rust portion the first time it builds, but will work every time after that. It was that or have the Rust portion rebuild every time whether it had changed or not.
+
 > If Meson cannot find the dependencies, check that it is finding the right pkg-config. It will use the first one available in PATH, and libraries like gstreamer will sometimes have their own one.
 
 ## VSCode
@@ -72,3 +74,11 @@ If you don't already have it, it can be installed through msys2 with the followi
 ```
 pacman -S mingw-w64-ucrt-x86_64-gdb
 ```
+
+
+## Usage
+The engine currently runs the script at 'resources/script.wasm' relative to the executable.
+
+The script should be built with [Cargo Component](https://github.com/bytecodealliance/cargo-component) according to the instructions there. The wit file from 'src/wit' should be copied into your component's wit/dep folder and added as a dependency, then imported.
+
+An example can be found [here](https://github.com/throckmorpheus/rust-module-example-component-model).

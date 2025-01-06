@@ -1,10 +1,31 @@
 #include "input.h"
 #include <systems/system_lifecycle_define.h>
+#include <systems/script_engine.h>
 
 FAERIE___SYSTEM_SINGLETON_INSTANCE_DEFINE_DEFAULT(Input)
 FAERIE___SYSTEM_SINGLETON_INIT_SHUTDOWN_DEFINE(Input)
 
 bool Input::__Internal_Init() {
+    auto leftAction = ActionIdentifier("faerie", "left");
+    auto leftBinding = GetBinding(leftAction);
+    leftBinding.Bind(PhysicalKeyCode::SDL_SCANCODE_LEFT);
+    SetBinding(leftAction, leftBinding);
+
+    auto rightAction = ActionIdentifier("faerie", "right");
+    auto rightBinding = GetBinding(rightAction);
+    rightBinding.Bind(PhysicalKeyCode::SDL_SCANCODE_RIGHT);
+    SetBinding(rightAction, rightBinding);
+    
+    auto upAction = ActionIdentifier("faerie", "up");
+    auto upBinding = GetBinding(upAction);
+    upBinding.Bind(PhysicalKeyCode::SDL_SCANCODE_UP);
+    SetBinding(upAction, upBinding);
+    
+    auto downAction = ActionIdentifier("faerie", "down");
+    auto downBinding = GetBinding(downAction);
+    downBinding.Bind(PhysicalKeyCode::SDL_SCANCODE_DOWN);
+    SetBinding(downAction, downBinding);
+
     return true;
 }
 
@@ -68,27 +89,45 @@ void Input::UpdateBindingReflectionMaps() {
 
 
 void Input::SendKeyEvent(SDL_Scancode scanCode, bool isPressed, bool isRepeat, Uint16 modifierState) {
-
+    if (!m_scancodesToActions.contains(scanCode)) { return; }
+    for (auto& action : m_scancodesToActions.at(scanCode)) {
+        ScriptEngine::OnInput(action.AsString(), isPressed);
+    }
 }
 
 
 void Input::SendControllerButtonEvent(SDL_GameControllerButton button, bool isPressed, SDL_JoystickID id) {
-
+    if (!m_controllerButtonsToActions.contains(button)) { return; }
+    for (auto& action : m_controllerButtonsToActions.at(button)) {
+        ScriptEngine::OnInput(action.AsString(), isPressed);
+    }
 }
 
 void Input::SendControllerAxisEvent(SDL_GameControllerAxis axis, float value, SDL_JoystickID id) {
-    
+    if (!m_controllerAxesToActions.contains(axis)) { return; }
+    //for (auto& action : m_controllerAxesToActions.at(axis)) {
+    //    ScriptEngine::OnInput(action.AsString(), isPressed);
+    //}
 }
 
 
 void Input::SendMouseButtonEvent(MouseButton button, bool isPressed, bool isDoubleClick, int2 screenPos, Uint32 id) {
-
+    if (!m_mouseButtonsToActions.contains(button)) { return; }
+    for (auto& action : m_mouseButtonsToActions.at(button)) {
+        ScriptEngine::OnInput(action.AsString(), isPressed);
+    }
 }
 
 void Input::SendMouseMotionEvent(int2 screenPos, int2 motion, Uint32 id) {
-
+    if (!m_mouseMotionSourcesToActions.contains(MouseMotionSource::MOUSE_MOTION)) { return;}
+    for (auto& action : m_mouseMotionSourcesToActions.at(MouseMotionSource::MOUSE_MOTION)) {
+        ScriptEngine::OnInput(action.AsString(), vec2((float)motion.x, (float)motion.y));
+    }
 }
 
 void Input::SendMouseWheelEvent(vec2 scroll, Uint32 id) {
-
+    if (!m_mouseMotionSourcesToActions.contains(MouseMotionSource::MOUSE_WHEEL)) { return;}
+    for (auto& action : m_mouseMotionSourcesToActions.at(MouseMotionSource::MOUSE_WHEEL)) {
+        ScriptEngine::OnInput(action.AsString(), vec2((float)scroll.x, (float)scroll.y));
+    }
 }
