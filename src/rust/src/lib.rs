@@ -1,11 +1,25 @@
 use anyhow::Result;
+use component::{Resource, ResourceType, Val};
 use wasmtime::*;
 use wasmtime::component::{types::ComponentItem, ResourceTable, ComponentNamedList, Lower, Lift};
 use wasmtime_wasi::{WasiCtx, WasiCtxBuilder, WasiView};
 
 mod debug;
+mod bindings {
+	use wasmtime::component::bindgen;
 
-//bindgen!("module" in "../wit");
+	bindgen!({
+		path: "../wit/script-api.wit",
+		world: "script",
+		with: {
+		    "faerie:script-api/ecs/entity": Entity
+		}
+	});
+
+	pub struct Entity {
+		pub id: u32,
+	}
+}
 
 #[cxx::bridge]
 mod ffi {
@@ -21,11 +35,12 @@ mod ffi {
 		fn init(self: &mut Script);
 		fn process(self: &mut Script, delta: f64);
 	}
-}
 
-#[cxx::bridge]
-mod other_ffi {
+	#[namespace = "bridge"]
 	unsafe extern "C++" {
+		include!("bridge.h");
+
+		fn CreateEntity() -> u32;
 	}
 }
 
@@ -41,6 +56,21 @@ impl WasiView for ScriptState {
 
 	fn table(&mut self) -> &mut component::ResourceTable {
 		& mut self.resource_table
+	}
+}
+
+impl bindings::faerie::script_api::ecs::Host for ScriptState {}
+impl bindings::faerie::script_api::ecs::HostEntity for ScriptState {
+	fn create(&mut self) -> wasmtime::component::Resource<bindings::Entity> {
+		let id = ffi::CreateEntity();
+		self.resource_table
+			.push(bindings::Entity{ id })
+			.unwrap()
+	}
+
+	fn drop(&mut self, resource:wasmtime::component::Resource<bindings::Entity>) -> Result<()> {
+		self.resource_table.delete(resource)?;
+		Ok(())
 	}
 }
 
@@ -70,6 +100,46 @@ impl ScriptEngine {
 		let mut linker = component::Linker::<ScriptState>::new(&engine);
 		wasmtime_wasi::add_to_linker_sync(&mut linker)?;
 
+		//bindings::faerie::script_api::ecs::Entity
+		
+		/*
+		let mut input_interface = linker.instance("faerie:script-api/input")?;
+		input_interface.func_wrap("test-func", |_store, params: (bool,)| -> Result<(Option<String>,)> {
+			if params.0 {
+				Ok((Some(String::from("True passed")),))
+			}
+			else {
+				Ok((Some(String::from("False passed")),))
+			}
+		})?;
+		*/
+		
+		//let mut ecs_interface = linker.instance("faerie:script-api/ecs")?;
+		//ecs_interface.resource("entity", ResourceType::host::<()>(), |_store, _id|{ Ok(()) })?;
+		
+		/*
+		let mut input_interface = linker.instance("faerie:script-api/input")?;
+
+		input_interface.func_new("bind-physical-scancode", |_store, params, results| {
+			assert!(params.len() == 2);
+			assert!(results.is_empty());
+
+			let action = match &params[0] {
+				Val::String(name) => name,
+				_ => panic!("Unexpected type")
+			};
+			let scancode = match &params[1] {
+				Val::Enum(scancode) => match scancode.as_str() {
+					"a" => (),
+					_ => ()
+				},
+				_ => panic!("Unexpected type")
+			};
+
+			Ok(())
+		})?;
+		*/
+
 		Ok(ScriptEngine{engine, linker})
 	}
 
@@ -87,9 +157,10 @@ impl Script {
 			.inherit_stdio()
 			.build();
 		let mut store = Store::<ScriptState>::new(&engine.engine, ScriptState{ ctx: wasi, resource_table: ResourceTable::new() });
+
 		let instance = engine.linker.instantiate(&mut store, &component)?;
 
-		println!("{}", debug::component_item_to_string(ComponentItem::Component(component.component_type()), &engine.engine));
+		//println!("{}", debug::component_item_to_string(ComponentItem::Component(component.component_type()), &engine.engine));
 
 		Ok(Script{ instance, store })
 	}

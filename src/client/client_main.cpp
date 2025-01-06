@@ -61,10 +61,6 @@ int main(int argc, char *argv[]) {
 		auto scriptId = ResourceManager::Load<Script>("/resources/faerie_module_example.wasm");
 		auto& script = ResourceManager::Get<Script>(scriptId);
 
-		//script.Call("run", {});
-		//auto returns = script.Call("number", {});
-		//Logger::Info(script, vector_to_string(returns));
-
 		auto cameraEntity = ECS::Create();
 		cameraEntity.Add<Components::PerspectiveCamera, Components::Transform>();
 

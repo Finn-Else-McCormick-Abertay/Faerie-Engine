@@ -40,7 +40,8 @@ client_src = [
     cl_rt/'components/camera.cpp',
     cl_rt/'components/mesh.cpp',
     cl_rt/'components/sprite.cpp',
-    cl_rt/'components/material.cpp'
+    cl_rt/'components/material.cpp',
+    cl_rt/'bridge.cpp'
 ]
 client_include = [ cl_rt ]
 client_pch = 'src/client/pch/client_pch.h'
@@ -103,7 +104,7 @@ faerie_rust_gen_bindings_target = custom_target('faerie-rust-generate-cpp-bindin
     input:'src/rust/src/lib.rs', output:['faerie_rust_bindings.h', 'faerie_rust_bindings.cc'], console: true, depends: [faerie_rust_target]
 )
 
-faerie_rust_include = include_directories('vendor/cxx', 'builddir')
+faerie_rust_include = include_directories('vendor/cxx', 'builddir', 'src/client')
 
 faerie_rust_bindings_lib = static_library('faerie-rust-cxx-bindings',
     link_with: faerie_rust_target, link_args: faerie_rust_link_args,
